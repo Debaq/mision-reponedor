@@ -1,0 +1,170 @@
+{
+ "prod_atun": {
+  "voz": "guia",
+  "texto": "Atún."
+ },
+ "prod_leche": {
+  "voz": "guia",
+  "texto": "Leche."
+ },
+ "prod_aceite": {
+  "voz": "guia",
+  "texto": "Aceite."
+ },
+ "prod_bebida": {
+  "voz": "guia",
+  "texto": "Bebida."
+ },
+ "prod_tomate": {
+  "voz": "guia",
+  "texto": "Salsa de tomate."
+ },
+ "prod_ketchup": {
+  "voz": "guia",
+  "texto": "Kétchup."
+ },
+ "prod_miel": {
+  "voz": "guia",
+  "texto": "Miel."
+ },
+ "prod_chocolate": {
+  "voz": "guia",
+  "texto": "Chocolate."
+ },
+ "prod_jugo": {
+  "voz": "guia",
+  "texto": "Jugo."
+ },
+ "prod_mani": {
+  "voz": "guia",
+  "texto": "Mantequilla de maní."
+ },
+ "prod_pan": {
+  "voz": "guia",
+  "texto": "Pan de molde."
+ },
+ "prod_queso": {
+  "voz": "guia",
+  "texto": "Queso."
+ },
+ "num_1": {
+  "voz": "guia",
+  "texto": "Uno."
+ },
+ "num_2": {
+  "voz": "guia",
+  "texto": "Dos."
+ },
+ "num_3": {
+  "voz": "guia",
+  "texto": "Tres."
+ },
+ "num_4": {
+  "voz": "guia",
+  "texto": "Cuatro."
+ },
+ "num_5": {
+  "voz": "guia",
+  "texto": "Cinco."
+ },
+ "num_6": {
+  "voz": "guia",
+  "texto": "Seis."
+ },
+ "num_7": {
+  "voz": "guia",
+  "texto": "Siete."
+ },
+ "num_8": {
+  "voz": "guia",
+  "texto": "Ocho."
+ },
+ "num_9": {
+  "voz": "guia",
+  "texto": "Nueve."
+ },
+ "num_10": {
+  "voz": "guia",
+  "texto": "Diez."
+ },
+ "lista_atun_3": {
+  "voz": "guia",
+  "texto": "Tres latas de atún."
+ },
+ "lista_leche_2": {
+  "voz": "guia",
+  "texto": "Dos cajas de leche."
+ },
+ "lista_aceite_4": {
+  "voz": "guia",
+  "texto": "Cuatro botellas de aceite."
+ },
+ "lista_bebida_3": {
+  "voz": "guia",
+  "texto": "Tres botellas de bebida."
+ },
+ "lista_tomate_5": {
+  "voz": "guia",
+  "texto": "Cinco latas de salsa de tomate."
+ },
+ "lista_chocolate_2": {
+  "voz": "guia",
+  "texto": "Dos chocolates."
+ },
+ "r1_mal1_f": {
+  "voz": "jugadora",
+  "texto": "Sí. ¿Qué hay que hacer?"
+ },
+ "r1_mal1_n": {
+  "voz": "jugadore",
+  "texto": "Sí. ¿Qué hay que hacer?"
+ },
+ "r2_bodega_f": {
+  "voz": "jugadora",
+  "texto": "Sí. ¿Dónde está la bodega?"
+ },
+ "r2_bodega_n": {
+  "voz": "jugadore",
+  "texto": "Sí. ¿Dónde está la bodega?"
+ },
+ "r2_gracias_f": {
+  "voz": "jugadora",
+  "texto": "Entendido. Muchas gracias."
+ },
+ "r2_gracias_n": {
+  "voz": "jugadore",
+  "texto": "Entendido. Muchas gracias."
+ },
+ "r2_mal_f": {
+  "voz": "jugadora",
+  "texto": "No me interesa."
+ },
+ "r2_mal_n": {
+  "voz": "jugadore",
+  "texto": "No me interesa."
+ },
+ "rc_bien_f": {
+  "voz": "jugadora",
+  "texto": "Claro. El aceite está en el pasillo dos. Venga, la acompaño."
+ },
+ "rc_bien_n": {
+  "voz": "jugadore",
+  "texto": "Claro. El aceite está en el pasillo dos. Venga, la acompaño."
+ },
+ "rc_nose_f": {
+  "voz": "jugadora",
+  "texto": "No sé. Pregúntele a otro."
+ },
+ "rc_nose_n": {
+  "voz": "jugadore",
+  "texto": "No sé. Pregúntele a otro."
+ },
+ "rc_p3_f": {
+  "voz": "jugadora",
+  "texto": "Está en el pasillo tres."
+ },
+ "rc_p3_n": {
+  "voz": "jugadore",
+  "texto": "Está en el pasillo tres."
+ }
+}

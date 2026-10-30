@@ -1,0 +1,14 @@
+{
+  "atun":      { "nombre": "Atún",              "uno": "una",  "sing": "lata de atún",              "plur": "latas de atún" },
+  "leche":     { "nombre": "Leche",             "uno": "una",  "sing": "caja de leche",             "plur": "cajas de leche" },
+  "aceite":    { "nombre": "Aceite",            "uno": "una",  "sing": "botella de aceite",         "plur": "botellas de aceite" },
+  "bebida":    { "nombre": "Bebida",            "uno": "una",  "sing": "botella de bebida",         "plur": "botellas de bebida" },
+  "tomate":    { "nombre": "Salsa de tomate",   "uno": "una",  "sing": "lata de salsa de tomate",   "plur": "latas de salsa de tomate" },
+  "ketchup":   { "nombre": "Kétchup",           "uno": "un",   "sing": "kétchup",                   "plur": "kétchup" },
+  "miel":      { "nombre": "Miel",              "uno": "un",   "sing": "frasco de miel",            "plur": "frascos de miel" },
+  "chocolate": { "nombre": "Chocolate",         "uno": "un",   "sing": "chocolate",                 "plur": "chocolates" },
+  "jugo":      { "nombre": "Jugo",              "uno": "una",  "sing": "caja de jugo",              "plur": "cajas de jugo" },
+  "mani":      { "nombre": "Mantequilla de maní","uno": "un",  "sing": "frasco de mantequilla de maní", "plur": "frascos de mantequilla de maní" },
+  "pan":       { "nombre": "Pan de molde",      "uno": "un",   "sing": "pan de molde",              "plur": "panes de molde" },
+  "queso":     { "nombre": "Queso",             "uno": "un",   "sing": "queso",                     "plur": "quesos" }
+}

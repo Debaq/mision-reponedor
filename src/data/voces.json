@@ -1,0 +1,475 @@
+{
+  "_info": "Guion de todas las voces. voz: guia | jefe | cliente | jugador | jugadora | jugadore. Variantes por género: 'id_f' (mujer) e 'id_n' (no binario, lenguaje neutro) reemplazan a 'id'. Las líneas 'jugador' sin variante se duplican solas con la voz que corresponde. Después de editar: npm run voces",
+  "inicio_bienvenida": {
+    "voz": "guia",
+    "texto": "Hola. Te damos la bienvenida a Misión Reponedor. En este juego vas a trabajar en un supermercado, reponiendo productos."
+  },
+  "avatar_intro": {
+    "voz": "guia",
+    "texto": "Primero, vamos a crear tu personaje. Toca las flechas para elegir cómo te identificas, tu piel, tu pelo y tu ropa de trabajo."
+  },
+  "avatar_nombre": {
+    "voz": "guia",
+    "texto": "Escribe tu nombre en el recuadro blanco."
+  },
+  "avatar_genero": {
+    "voz": "guia",
+    "texto": "Elige: hombre, mujer o persona no binaria."
+  },
+  "gen_hombre": {
+    "voz": "guia",
+    "texto": "Hombre."
+  },
+  "gen_mujer": {
+    "voz": "guia",
+    "texto": "Mujer."
+  },
+  "gen_nobinario": {
+    "voz": "guia",
+    "texto": "Persona no binaria."
+  },
+  "avatar_piel": {
+    "voz": "guia",
+    "texto": "Color de piel."
+  },
+  "avatar_peinado": {
+    "voz": "guia",
+    "texto": "Peinado."
+  },
+  "avatar_colorpelo": {
+    "voz": "guia",
+    "texto": "Color de pelo."
+  },
+  "avatar_cara": {
+    "voz": "guia",
+    "texto": "Cara."
+  },
+  "avatar_polera": {
+    "voz": "guia",
+    "texto": "Polera."
+  },
+  "avatar_pantalon": {
+    "voz": "guia",
+    "texto": "Pantalón."
+  },
+  "avatar_zapatos": {
+    "voz": "guia",
+    "texto": "Zapatos."
+  },
+  "avatar_chaleco": {
+    "voz": "guia",
+    "texto": "Chaleco del supermercado."
+  },
+  "avatar_falta_nombre": {
+    "voz": "guia",
+    "texto": "Te falta escribir tu nombre."
+  },
+  "avatar_mal_short": {
+    "voz": "guia",
+    "texto": "Para trabajar en el supermercado no se usa short. Elige un pantalón largo."
+  },
+  "avatar_mal_chaleco": {
+    "voz": "guia",
+    "texto": "Te falta el chaleco del supermercado. Sirve para que las personas que compran te reconozcan."
+  },
+  "avatar_bien": {
+    "voz": "guia",
+    "texto": "¡Muy bien! Ya puedes trabajar: pantalón largo, zapatos cerrados y el chaleco de la empresa."
+  },
+  "contrato_llega": {
+    "voz": "guia",
+    "texto": "¡Mira! Te llegó un mensaje al celular. Tócalo para leerlo."
+  },
+  "contrato_mensaje": {
+    "voz": "guia",
+    "texto": "Supermercado El Barrio: ¡Felicitaciones! Fuiste contratado como reponedor. Te esperamos mañana a las ocho de la mañana. Preséntate con el supervisor, don Jorge."
+  },
+  "contrato_mensaje_f": {
+    "voz": "guia",
+    "texto": "Supermercado El Barrio: ¡Felicitaciones! Fuiste contratada como reponedora. Te esperamos mañana a las ocho de la mañana. Preséntate con el supervisor, don Jorge."
+  },
+  "contrato_mensaje_n": {
+    "voz": "guia",
+    "texto": "Supermercado El Barrio: ¡Felicitaciones! Conseguiste el trabajo en reposición. Te esperamos mañana a las ocho de la mañana. Preséntate con el supervisor, don Jorge."
+  },
+  "contrato_seguir": {
+    "voz": "guia",
+    "texto": "Toca la flecha verde para ir al supermercado."
+  },
+  "sup_llegada": {
+    "voz": "guia",
+    "texto": "Llegaste al supermercado. Él es don Jorge, el supervisor. Escucha lo que te dice."
+  },
+  "sup_hola": {
+    "voz": "jefe",
+    "texto": "Hola, buenos días. ¿Tú eres el nuevo reponedor?"
+  },
+  "sup_hola_f": {
+    "voz": "jefe",
+    "texto": "Hola, buenos días. ¿Tú eres la nueva reponedora?"
+  },
+  "sup_hola_n": {
+    "voz": "jefe",
+    "texto": "Hola, buenos días. ¿Tú eres la persona nueva en reposición?"
+  },
+  "elige_respuesta": {
+    "voz": "guia",
+    "texto": "Toca una respuesta para escucharla. Después toca el botón verde para elegirla."
+  },
+  "r1_bien": {
+    "voz": "jugador",
+    "texto": "Buenos días, don Jorge. Sí, soy el nuevo reponedor. Mucho gusto."
+  },
+  "r1_bien_f": {
+    "voz": "jugadora",
+    "texto": "Buenos días, don Jorge. Sí, soy la nueva reponedora. Mucho gusto."
+  },
+  "r1_bien_n": {
+    "voz": "jugadore",
+    "texto": "Buenos días, don Jorge. Sí, soy la persona nueva en reposición. Mucho gusto."
+  },
+  "r1_mal1": {
+    "voz": "jugador",
+    "texto": "Sí. ¿Qué hay que hacer?"
+  },
+  "r1_mal2": {
+    "voz": "guia",
+    "texto": "No digo nada y miro el celular."
+  },
+  "sup_r1_bien": {
+    "voz": "jefe",
+    "texto": "Mucho gusto. Bienvenido al equipo."
+  },
+  "sup_r1_bien_f": {
+    "voz": "jefe",
+    "texto": "Mucho gusto. Bienvenida al equipo."
+  },
+  "sup_r1_bien_n": {
+    "voz": "jefe",
+    "texto": "Mucho gusto. Te damos la bienvenida al equipo."
+  },
+  "sup_r1_mal1": {
+    "voz": "jefe",
+    "texto": "Eh... bueno. Primero se saluda, ¿no?"
+  },
+  "sup_r1_mal2": {
+    "voz": "jefe",
+    "texto": "¿Hola? ¿Me escuchas?"
+  },
+  "guia_saludo": {
+    "voz": "guia",
+    "texto": "Cuando conocemos a alguien, lo saludamos, lo miramos y nos presentamos. Intenta otra vez."
+  },
+  "sup_funciones": {
+    "voz": "jefe",
+    "texto": "Te explico el trabajo. En reposición llenamos las estanterías. Buscas los productos en la bodega, los llevas a la sala de ventas y los ordenas en su lugar. También ayudas a que los pasillos estén limpios y ordenados."
+  },
+  "sup_pregunta": {
+    "voz": "jefe",
+    "texto": "¿Tienes alguna duda?"
+  },
+  "r2_bodega": {
+    "voz": "jugador",
+    "texto": "Sí. ¿Dónde está la bodega?"
+  },
+  "r2_gracias": {
+    "voz": "jugador",
+    "texto": "Entendido. Muchas gracias."
+  },
+  "r2_mal": {
+    "voz": "jugador",
+    "texto": "No me interesa."
+  },
+  "sup_r2_bodega": {
+    "voz": "jefe",
+    "texto": "Buena pregunta. La bodega está al fondo, detrás de la puerta gris. Te voy a mostrar."
+  },
+  "sup_r2_gracias": {
+    "voz": "jefe",
+    "texto": "Perfecto. Me gusta tu actitud."
+  },
+  "sup_r2_mal": {
+    "voz": "jefe",
+    "texto": "Mmm. Aquí trabajamos en equipo. Es importante escuchar."
+  },
+  "guia_respeto": {
+    "voz": "guia",
+    "texto": "En el trabajo respondemos con respeto, aunque sintamos nervios. Intenta otra vez."
+  },
+  "sup_lista": {
+    "voz": "jefe",
+    "texto": "Aquí tienes tu lista. Cada dibujo es un producto, y el número dice cuántos tienes que reponer."
+  },
+  "lista_intro": {
+    "voz": "guia",
+    "texto": "Esta es tu lista de reposición. Toca cada producto para escuchar cuántos necesitas. Cuando termines, toca la flecha verde."
+  },
+  "tut_intro": {
+    "voz": "guia",
+    "texto": "Ahora vamos a aprender a reponer. Te voy a ayudar paso a paso."
+  },
+  "tut_paso1": {
+    "voz": "guia",
+    "texto": "Paso uno: identificar. Mira tu lista, aquí a la izquierda. Ahí están los productos que necesitas."
+  },
+  "tut_paso2": {
+    "voz": "guia",
+    "texto": "Paso dos: buscar. Estás en la bodega. Aquí se guardan los productos en cajas. Cada caja tiene el dibujo de su producto."
+  },
+  "tut_paso3_atun": {
+    "voz": "guia",
+    "texto": "Paso tres: seleccionar. Busca la caja con latas de atún. Tócala tres veces para sacar tres latas."
+  },
+  "tut_paso3_leche": {
+    "voz": "guia",
+    "texto": "Ahora busca la caja de leche. Saca dos cajas de leche."
+  },
+  "tut_verifica": {
+    "voz": "guia",
+    "texto": "Muy bien. Mira la lista: cuando el número se pone verde, tienes la cantidad correcta."
+  },
+  "tut_paso4": {
+    "voz": "guia",
+    "texto": "Paso cuatro: trasladar. Ya tienes todo en el carro. Toca el carro para llevarlo a la sala de ventas."
+  },
+  "tut_paso5": {
+    "voz": "guia",
+    "texto": "Paso cinco: ubicar. Estás en la sala de ventas. Arrastra cada producto del carro a la estantería que tiene su mismo dibujo."
+  },
+  "tut_paso6": {
+    "voz": "guia",
+    "texto": "Paso seis: ordenar. Algunos productos están chuecos. Tócalos para dejarlos derechos, mirando hacia adelante."
+  },
+  "tut_fin": {
+    "voz": "guia",
+    "texto": "¡Excelente! Aprendiste a reponer. Ahora te toca hacerlo sin ayuda."
+  },
+  "bodega_intro": {
+    "voz": "guia",
+    "texto": "Estás en la bodega. Saca los productos de tu lista. Toca una caja una vez por cada producto."
+  },
+  "bodega_listo": {
+    "voz": "guia",
+    "texto": "Tienes todo. Toca el carro para ir a la sala de ventas."
+  },
+  "traslado": {
+    "voz": "guia",
+    "texto": "Llevando los productos a la sala de ventas."
+  },
+  "sala_intro": {
+    "voz": "guia",
+    "texto": "Estás en la sala de ventas. Arrastra cada producto a su lugar en la estantería."
+  },
+  "sala_ordenar": {
+    "voz": "guia",
+    "texto": "Ahora ordena la estantería. Toca los productos chuecos y arrastra a su lugar los que están mal puestos."
+  },
+  "fb_bien1": {
+    "voz": "guia",
+    "texto": "¡Muy bien!"
+  },
+  "fb_bien2": {
+    "voz": "guia",
+    "texto": "¡Excelente trabajo!"
+  },
+  "fb_bien3": {
+    "voz": "guia",
+    "texto": "¡Eso es!"
+  },
+  "fb_no_lista": {
+    "voz": "guia",
+    "texto": "Ese producto no está en tu lista. Revisa los dibujos de la lista."
+  },
+  "fb_demasiados": {
+    "voz": "guia",
+    "texto": "Ya tienes suficientes de ese producto. Si sacaste de más, toca el producto en el carro para devolverlo."
+  },
+  "fb_devuelto": {
+    "voz": "guia",
+    "texto": "Devolviste uno a la caja."
+  },
+  "fb_falta": {
+    "voz": "guia",
+    "texto": "Todavía te faltan productos. Mira la lista: los números en rojo son los que faltan."
+  },
+  "fb_lugar_mal": {
+    "voz": "guia",
+    "texto": "Ese no es su lugar. Busca la etiqueta con el mismo dibujo."
+  },
+  "fb_lleno": {
+    "voz": "guia",
+    "texto": "Ese espacio ya está lleno."
+  },
+  "fb_estante_listo": {
+    "voz": "guia",
+    "texto": "La estantería quedó llena y ordenada."
+  },
+  "prac_intro": {
+    "voz": "jefe",
+    "texto": "Bien, ahora te toca a ti, sin ayuda. Aquí tienes una lista nueva. Ve a la bodega, saca los productos, llévalos a la sala y ordénalos."
+  },
+  "prac_fin": {
+    "voz": "jefe",
+    "texto": "¡Muy buen trabajo! La sala quedó impecable."
+  },
+  "extra_intro": {
+    "voz": "guia",
+    "texto": "Durante el turno, el supervisor te puede pedir otras tareas. Escucha bien."
+  },
+  "extra_derrame_jefe": {
+    "voz": "jefe",
+    "texto": "¡Atención! Un cliente botó una bebida en el pasillo. Por favor, límpialo antes de que alguien se resbale."
+  },
+  "derrame_elige": {
+    "voz": "guia",
+    "texto": "¿Qué necesitas para limpiar el líquido? Toca la herramienta correcta."
+  },
+  "herr_trapero": {
+    "voz": "guia",
+    "texto": "Trapero."
+  },
+  "herr_escoba": {
+    "voz": "guia",
+    "texto": "Escoba."
+  },
+  "herr_plumero": {
+    "voz": "guia",
+    "texto": "Plumero."
+  },
+  "derrame_mal": {
+    "voz": "guia",
+    "texto": "Con eso no se puede limpiar un líquido. Prueba con otra herramienta."
+  },
+  "derrame_limpia": {
+    "voz": "guia",
+    "texto": "¡Bien! Pasa el trapero sobre el líquido, de un lado a otro, hasta que quede limpio."
+  },
+  "derrame_letrero": {
+    "voz": "guia",
+    "texto": "Muy bien. Ahora arrastra el letrero amarillo de piso mojado para avisar a las personas que compran."
+  },
+  "derrame_fin": {
+    "voz": "jefe",
+    "texto": "Gracias. Así evitamos accidentes."
+  },
+  "extra_basura_jefe": {
+    "voz": "jefe",
+    "texto": "Hay basura en el pasillo. Recógela y bótala en el basurero, por favor."
+  },
+  "basura_instr": {
+    "voz": "guia",
+    "texto": "Arrastra cada basura al basurero. Los productos buenos déjalos en el piso, no son basura."
+  },
+  "basura_no": {
+    "voz": "guia",
+    "texto": "Eso no es basura. Es un producto que se le cayó a alguien. Déjalo, después lo devolvemos a su lugar."
+  },
+  "basura_fin": {
+    "voz": "guia",
+    "texto": "Pasillo limpio. ¡Buen trabajo!"
+  },
+  "extra_vencidos_jefe": {
+    "voz": "jefe",
+    "texto": "Revisa la fecha de vencimiento de la leche. Si está vencida, sácala de la estantería."
+  },
+  "vencidos_instr": {
+    "voz": "guia",
+    "texto": "Hoy es quince de noviembre. Toca cada caja de leche para escuchar su fecha. Si la fecha ya pasó, arrástrala al canasto rojo de vencidos."
+  },
+  "vencidos_mal": {
+    "voz": "guia",
+    "texto": "Esa leche todavía no vence. Déjala en la estantería."
+  },
+  "vencidos_bien": {
+    "voz": "guia",
+    "texto": "Correcto, esa estaba vencida."
+  },
+  "vencidos_falta": {
+    "voz": "guia",
+    "texto": "Todavía queda leche vencida en la estantería."
+  },
+  "vencidos_fin": {
+    "voz": "jefe",
+    "texto": "Muy bien. Nunca debemos vender productos vencidos."
+  },
+  "fecha_0511": {
+    "voz": "guia",
+    "texto": "Vence el cinco de noviembre."
+  },
+  "fecha_1011": {
+    "voz": "guia",
+    "texto": "Vence el diez de noviembre."
+  },
+  "fecha_1411": {
+    "voz": "guia",
+    "texto": "Vence el catorce de noviembre."
+  },
+  "fecha_2011": {
+    "voz": "guia",
+    "texto": "Vence el veinte de noviembre."
+  },
+  "fecha_2811": {
+    "voz": "guia",
+    "texto": "Vence el veintiocho de noviembre."
+  },
+  "fecha_0212": {
+    "voz": "guia",
+    "texto": "Vence el dos de diciembre."
+  },
+  "cliente_pregunta": {
+    "voz": "cliente",
+    "texto": "Disculpe, ¿dónde encuentro el aceite?"
+  },
+  "cliente_instr": {
+    "voz": "guia",
+    "texto": "Una clienta necesita ayuda. Mira los carteles de los pasillos y elige la mejor respuesta."
+  },
+  "cartel_1": {
+    "voz": "guia",
+    "texto": "Pasillo uno: lácteos. Leche y queso."
+  },
+  "cartel_2": {
+    "voz": "guia",
+    "texto": "Pasillo dos: abarrotes. Aceite, atún y salsa de tomate."
+  },
+  "cartel_3": {
+    "voz": "guia",
+    "texto": "Pasillo tres: bebidas y jugos."
+  },
+  "rc_bien": {
+    "voz": "jugador",
+    "texto": "Claro. El aceite está en el pasillo dos. Venga, la acompaño."
+  },
+  "rc_nose": {
+    "voz": "jugador",
+    "texto": "No sé. Pregúntele a otro."
+  },
+  "rc_p3": {
+    "voz": "jugador",
+    "texto": "Está en el pasillo tres."
+  },
+  "cliente_gracias": {
+    "voz": "cliente",
+    "texto": "¡Muchas gracias, muy amable!"
+  },
+  "cliente_mal_nose": {
+    "voz": "cliente",
+    "texto": "Ah... bueno."
+  },
+  "guia_cliente_nose": {
+    "voz": "guia",
+    "texto": "Siempre ayudamos con amabilidad a quienes vienen a comprar. Si no sabes, mira los carteles o pregunta al supervisor. Intenta otra vez."
+  },
+  "guia_cliente_p3": {
+    "voz": "guia",
+    "texto": "Revisa los carteles. En el pasillo tres están las bebidas. El aceite está con los abarrotes. Intenta otra vez."
+  },
+  "fin_jefe": {
+    "voz": "jefe",
+    "texto": "Terminó tu turno. Hiciste un gran trabajo hoy. ¡Te esperamos mañana!"
+  },
+  "fin_guia": {
+    "voz": "guia",
+    "texto": "¡Felicitaciones! Completaste Misión Reponedor."
+  }
+}

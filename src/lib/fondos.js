@@ -1,0 +1,90 @@
+import Phaser from 'phaser';
+import { ANCHO, ALTO, COLOR, estiloTexto } from './estilo.js';
+
+const PRODUCTOS_DECO = ['atun', 'leche', 'aceite', 'bebida', 'tomate', 'ketchup', 'miel', 'chocolate', 'jugo', 'mani', 'pan', 'queso'];
+
+function piso(g, y, colorA, colorB, tam = 80) {
+  for (let fila = 0; y + fila * tam < ALTO; fila++) {
+    for (let col = 0; col * tam < ANCHO; col++) {
+      g.fillStyle((fila + col) % 2 ? colorA : colorB, 1);
+      g.fillRect(col * tam, y + fila * tam, tam, tam);
+    }
+  }
+}
+
+// Sala de ventas: pared clara, piso de baldosas, letrero del supermercado.
+export function fondoSala(scene, { pisoY = 560, letrero = true } = {}) {
+  const g = scene.add.graphics();
+  g.fillStyle(0xeef3f6, 1).fillRect(0, 0, ANCHO, pisoY);
+  g.fillStyle(0xd8e2e8, 1).fillRect(0, pisoY - 14, ANCHO, 14);
+  piso(g, pisoY, 0xe7e1d6, 0xf4efe6);
+  if (letrero) {
+    g.fillStyle(COLOR.marca, 1).fillRect(0, 0, ANCHO, 56);
+    g.fillStyle(COLOR.marcaAcento, 1).fillRect(0, 56, ANCHO, 6);
+    scene.add.text(ANCHO / 2, 28, 'SUPERMERCADO EL BARRIO', estiloTexto(28, '#ffffff')).setOrigin(0.5);
+  }
+  return g;
+}
+
+// Bodega: muro gris, piso de cemento con línea de seguridad amarilla.
+export function fondoBodega(scene) {
+  const g = scene.add.graphics();
+  g.fillStyle(0x8a96a3, 1).fillRect(0, 0, ANCHO, ALTO);
+  for (let y = 0; y < 560; y += 40) {
+    g.lineStyle(2, 0x7a8693, 1).lineBetween(0, y, ANCHO, y);
+  }
+  g.fillStyle(0x6b737c, 1).fillRect(0, 560, ANCHO, ALTO - 560);
+  g.fillStyle(COLOR.amarillo, 1).fillRect(0, 566, ANCHO, 8);
+  g.fillStyle(0x3d4852, 1).fillRect(0, 0, ANCHO, 56);
+  scene.add.text(ANCHO / 2, 28, 'BODEGA', estiloTexto(28, '#ffffff')).setOrigin(0.5);
+  return g;
+}
+
+// Exterior / entrada del supermercado.
+export function fondoEntrada(scene) {
+  const g = scene.add.graphics();
+  g.fillStyle(0x9fd3ef, 1).fillRect(0, 0, ANCHO, 560);
+  g.fillStyle(0xf2efe8, 1).fillRect(80, 120, ANCHO - 160, 440);
+  g.fillStyle(COLOR.marca, 1).fillRect(60, 90, ANCHO - 120, 80);
+  g.fillStyle(COLOR.marcaAcento, 1).fillRect(60, 170, ANCHO - 120, 8);
+  scene.add.text(ANCHO / 2, 130, 'SUPERMERCADO EL BARRIO', estiloTexto(44, '#ffffff')).setOrigin(0.5);
+  // puertas de vidrio
+  g.fillStyle(0xbfe3f5, 1).fillRect(470, 230, 340, 330);
+  g.lineStyle(8, 0x7f8c97, 1).strokeRect(470, 230, 340, 330).lineBetween(640, 230, 640, 560);
+  // vitrinas
+  g.fillStyle(0xcfeaf7, 1).fillRect(130, 240, 280, 200).fillRect(870, 240, 280, 200);
+  g.lineStyle(6, 0x7f8c97, 1).strokeRect(130, 240, 280, 200).strokeRect(870, 240, 280, 200);
+  piso(g, 560, 0xb9b4aa, 0xc9c4ba, 90);
+  return g;
+}
+
+/** Estantería decorativa llena de productos al azar. */
+export function estanteDeco(scene, x, y, ancho, niveles = 3, altoNivel = 90, tam = 52, profundidad = 0) {
+  const g = scene.add.graphics().setDepth(profundidad);
+  const alto = niveles * altoNivel + 20;
+  g.fillStyle(0x5f6b78, 1).fillRect(x, y, 12, alto).fillRect(x + ancho - 12, y, 12, alto);
+  g.fillStyle(0xdfe6ec, 1).fillRect(x + 12, y, ancho - 24, alto);
+  const rnd = new Phaser.Math.RandomDataGenerator([String(x + y)]);
+  for (let n = 0; n < niveles; n++) {
+    const yb = y + (n + 1) * altoNivel;
+    g.fillStyle(0x8795a1, 1).fillRect(x, yb, ancho, 12);
+    const prod = rnd.pick(PRODUCTOS_DECO);
+    for (let px = x + 20 + tam / 2; px < x + ancho - 20; px += tam * 0.9) {
+      scene.add.image(px, yb - tam / 2 + 6, 'prod_' + prod).setDisplaySize(tam, tam).setDepth(profundidad);
+    }
+  }
+  return g;
+}
+
+// Carro de reposición (plataforma con ruedas). Devuelve un container.
+export function carro(scene, x, y, ancho = 300) {
+  const c = scene.add.container(x, y);
+  const g = scene.add.graphics();
+  g.fillStyle(0x2b6cb0, 1).fillRoundedRect(-ancho / 2, -16, ancho, 28, 6);
+  g.fillStyle(0x1e4e80, 1).fillRect(ancho / 2 - 14, -150, 12, 140);
+  g.fillRoundedRect(ancho / 2 - 50, -160, 60, 14, 6);
+  g.fillStyle(0x222222, 1).fillCircle(-ancho / 2 + 34, 24, 16).fillCircle(ancho / 2 - 34, 24, 16);
+  g.fillStyle(0x888888, 1).fillCircle(-ancho / 2 + 34, 24, 6).fillCircle(ancho / 2 - 34, 24, 6);
+  c.add(g);
+  return c;
+}
