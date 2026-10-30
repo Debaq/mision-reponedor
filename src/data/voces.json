@@ -6,7 +6,7 @@
   },
   "avatar_intro": {
     "voz": "guia",
-    "texto": "Primero, vamos a crear tu personaje. Toca las flechas para elegir cómo te identificas, tu piel, tu pelo y tu ropa de trabajo."
+    "texto": "Primero, vamos a crear tu personaje. Toca las flechas para elegir cómo te identificas, tu piel, tu pelo y tu ropa."
   },
   "avatar_nombre": {
     "voz": "guia",
@@ -94,7 +94,7 @@
   },
   "contrato_seguir": {
     "voz": "guia",
-    "texto": "Toca la flecha verde para ir al supermercado."
+    "texto": "Toca la flecha verde para prepararte para tu primer día."
   },
   "sup_llegada": {
     "voz": "guia",
@@ -695,5 +695,17 @@
   "tiempo_120": {
     "voz": "jefe",
     "texto": "Tienes dos minutos. ¡Mira el reloj de arriba!"
+  },
+  "personaje_listo": {
+    "voz": "guia",
+    "texto": "¡Listo! Ya creaste tu personaje."
+  },
+  "vestir_intro": {
+    "voz": "guia",
+    "texto": "¡Conseguiste el trabajo! Antes de ir al supermercado, elige la ropa adecuada para trabajar."
+  },
+  "vestir_t2": {
+    "voz": "guia",
+    "texto": "Empieza un nuevo turno. Ponte la ropa de trabajo."
   }
 }

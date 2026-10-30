@@ -31,15 +31,18 @@ No hace falta que nadie fuerce la recarga:
 
 ## Etapas (según el documento)
 
-1. Crear personaje: nombre, hombre / mujer / no binario, piel, pelo y ropa. Se valida la vestimenta: pantalón largo y chaleco.
+1. Crear personaje: nombre, hombre / mujer / no binario, piel, pelo, cara y ropa de calle.
 2. Aviso de contratación en el celular.
-3. Conversación con el supervisor (habilidades sociales, con respuestas buenas y malas).
-4. Lista de reposición: imagen del producto + cantidad, leída en voz alta. Luego el mapa del supermercado: ir a la bodega y, con el carro, elegir el pasillo correcto (1 Alimentos, 2 Bebidas, 3 Limpieza, 4 Higiene).
-5. Tutorial guiado: identificar, buscar en la bodega, seleccionar y contar, trasladar, ubicar en la estantería, ordenar.
-6. Práctica sin ayuda con una lista nueva, en el pasillo de higiene.
-7. Órdenes del supervisor: encarga tres tareas en un orden al azar (derrame, basura, vencidos) y hay que elegirlas en ese orden; cada una tiene tiempo límite. Después, orientar a una clienta.
-8. Segundas órdenes (dos tareas): cambiar etiquetas de precio y colgar el cartel de oferta (pasillo de limpieza), y revisar faltantes en el pasillo de bebidas y verificar en la bodega si quedan (si no, avisar al jefe).
-9. Fin del turno, con estrellas, puntos y errores por etapa.
+3. Ropa de trabajo: elegir la vestimenta adecuada para el primer día. Se valida: pantalón largo y chaleco.
+4. Conversación con el supervisor (habilidades sociales, con respuestas buenas y malas).
+5. Lista de reposición: imagen del producto + cantidad, leída en voz alta. Luego el mapa del supermercado: ir a la bodega y, con el carro, elegir el pasillo correcto (1 Alimentos, 2 Bebidas, 3 Limpieza, 4 Higiene).
+6. Tutorial guiado: identificar, buscar en la bodega, seleccionar y contar, trasladar, ubicar en la estantería, ordenar.
+7. Práctica sin ayuda con una lista nueva, en el pasillo de higiene.
+8. Órdenes del supervisor: encarga tres tareas en un orden al azar (derrame, basura, vencidos) y hay que elegirlas en ese orden; cada una tiene tiempo límite. Después, orientar a una clienta.
+9. Segundas órdenes (dos tareas): cambiar etiquetas de precio y colgar el cartel de oferta (pasillo de limpieza), y revisar faltantes en el pasillo de bebidas y verificar en la bodega si quedan (si no, avisar al jefe).
+10. Fin del turno, con estrellas, puntos y errores por etapa.
+
+El documento pide elegir la vestimenta al crear el personaje; aquí se elige después del aviso de contratación, que es el orden lógico (el requisito de elegir la ropa adecuada se mantiene).
 
 ## Estrellas y puntos
 

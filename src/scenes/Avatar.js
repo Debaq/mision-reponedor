@@ -3,10 +3,10 @@ import { ANCHO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoSala } from '../lib/fondos.js';
 import { boton, flechaSiguiente, panel, sacudir } from '../lib/ui.js';
 import { crearPersonaje, actualizarPersonaje, opcionesDe, PEINADOS, MUESTRA } from '../lib/personaje.js';
-import { estado, sumarError } from '../lib/estado.js';
+import { estado, nombreJugador, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
-import { siguiente } from '../lib/flujo.js';
+import { FLUJO, siguiente } from '../lib/flujo.js';
 import { estrellasGuardadas } from '../lib/perfil.js';
 import { CHALECOS } from '../lib/premios.js';
 
@@ -33,20 +33,58 @@ const FILAS = [
     : { texto: { no: 'No', basico: 'Sí', estrella: 'Estrella', experto: 'Experto', plata: 'Plata', oro: 'Oro' }[v] })],
 ];
 
+// Columnas del editor según el modo.
+const FILAS_TU = FILAS.slice(0, 5);
+const FILAS_CALLE = [FILAS[5], FILAS[7]];
+const FILAS_TRABAJO = FILAS.slice(5);
+// Ropa de calle con la que se crea el personaje (en "trabajo" hay que cambiarla por la adecuada).
+const CALLE = { chaleco: 'no', pantalonLargo: 'shorter', poleraColor: 'red', pantalonColor: 'LightBlue', manga: 'short' };
+
+// Editor del personaje, en dos momentos:
+// - modo 'personaje' (al empezar): nombre, cómo te identificas, físico y ropa de calle.
+// - modo 'trabajo' (después del contrato): elegir la ropa adecuada para trabajar (se valida).
 export default class Avatar extends Phaser.Scene {
   constructor() {
     super('Avatar');
   }
 
+  init(datos) {
+    this.modo = datos.modo || 'personaje';
+  }
+
   create() {
     this.cameras.main.fadeIn(300);
     fondoSala(this);
-    // Empieza con ropa "de calle" para que el jugador elija la adecuada.
-    this.cfg = { ...estado.avatar, chaleco: 'no', pantalonLargo: 'shorter', poleraColor: 'red', pantalonColor: 'LightBlue' };
-    if (estado.nombre) Object.assign(this.cfg, estado.avatar);
+    const trabajo = this.modo === 'trabajo';
+    // Sin chaleco al empezar: en "trabajo" hay que ponérselo.
+    this.cfg = estado.nombre ? { ...estado.avatar, chaleco: 'no' } : { ...estado.avatar, ...CALLE };
 
     panel(this, 250, 360, 380, 520, 0xffffff, 24);
     this.muneco = crearPersonaje(this, 250, 420, this.cfg, 0.5);
+
+    // (Phaser reutiliza la escena: se limpian las filas de la vez anterior antes de refrescarlas.)
+    this.valores = {};
+    this.estrellas = 0;
+    this.iconoEstrellas = this.add.image(220, 212, 'ui_star').setTint(COLOR.amarillo).setDisplaySize(30, 30);
+    this.txtEstrellas = this.add.text(240, 212, '', estiloTexto(24, '#b7791f')).setOrigin(0, 0.5);
+    const mostrarEstrellas = (nombre) => {
+      this.estrellas = nombre ? estrellasGuardadas(nombre) : 0;
+      this.txtEstrellas.setText(String(this.estrellas));
+      this.iconoEstrellas.setVisible(this.estrellas > 0);
+      this.txtEstrellas.setVisible(this.estrellas > 0);
+      if (this.valores.chaleco) this.refrescarFila('chaleco');
+    };
+
+    if (trabajo) {
+      // Nombre fijo; las estrellas guardadas desbloquean chalecos.
+      this.add.text(250, 150, nombreJugador(), estiloTexto(30, '#553c9a')).setOrigin(0.5);
+      mostrarEstrellas(estado.nombre);
+      this.add.text(800, 70, 'ROPA DE TRABAJO', estiloTexto(26, '#553c9a')).setOrigin(0.5);
+      FILAS_TRABAJO.forEach((fila, i) => this.crearFila(800, 125 + i * 80, fila));
+      this.listo = flechaSiguiente(this, () => this.validarTrabajo());
+      voz.decir(FLUJO[estado.paso]?.turno === 2 ? 'vestir_t2' : 'vestir_intro');
+      return;
+    }
 
     // Nombre
     this.add.text(250, 118, 'Tu nombre', estiloTexto(24, '#553c9a')).setOrigin(0.5);
@@ -56,35 +94,15 @@ export default class Avatar extends Phaser.Scene {
     campo.value = estado.nombre;
     campo.addEventListener('focus', () => voz.decir('avatar_nombre'));
     campo.addEventListener('keydown', (e) => e.stopPropagation());
+    campo.addEventListener('input', () => mostrarEstrellas(campo.value.trim()));
+    mostrarEstrellas(campo.value.trim());
 
-    // Estrellas guardadas de este nombre: desbloquean chalecos.
-    // (Phaser reutiliza la escena: se limpian las filas de la vez anterior antes de refrescarlas.)
-    this.valores = {};
-    this.estrellas = 0;
-    this.iconoEstrellas = this.add.image(220, 212, 'ui_star').setTint(COLOR.amarillo).setDisplaySize(30, 30);
-    this.txtEstrellas = this.add.text(240, 212, '', estiloTexto(24, '#b7791f')).setOrigin(0, 0.5);
-    const alEscribir = () => {
-      this.estrellas = campo.value.trim() ? estrellasGuardadas(campo.value.trim()) : 0;
-      this.txtEstrellas.setText(String(this.estrellas));
-      this.iconoEstrellas.setVisible(this.estrellas > 0);
-      this.txtEstrellas.setVisible(this.estrellas > 0);
-      if (this.valores.chaleco) this.refrescarFila('chaleco');
-    };
-    campo.addEventListener('input', alEscribir);
-    alEscribir();
-
-    // Filas de opciones
-    FILAS.forEach((fila, i) => {
-      const col = i < 5 ? 0 : 1;
-      const n = col === 0 ? i : i - 5;
-      const x = col === 0 ? 640 : 1010;
-      const y = (col === 0 ? 125 : 115) + n * 82;
-      this.crearFila(x, y, fila);
-    });
     this.add.text(640, 72, 'TÚ', estiloTexto(26, '#553c9a')).setOrigin(0.5);
-    this.add.text(1010, 70, 'ROPA DE TRABAJO', estiloTexto(22, '#553c9a')).setOrigin(0.5).setDepth(1);
+    FILAS_TU.forEach((fila, i) => this.crearFila(640, 125 + i * 82, fila));
+    this.add.text(1010, 72, 'TU ROPA', estiloTexto(26, '#553c9a')).setOrigin(0.5);
+    FILAS_CALLE.forEach((fila, i) => this.crearFila(1010, 125 + i * 82, fila));
 
-    this.listo = flechaSiguiente(this, () => this.validar(campo));
+    this.listo = flechaSiguiente(this, () => this.validarPersonaje(campo));
     voz.secuencia(['avatar_intro', 'avatar_nombre']);
   }
 
@@ -130,8 +148,24 @@ export default class Avatar extends Phaser.Scene {
     return this.estrellas < CHALECOS[this.cfg.chaleco];
   }
 
-  async validar(campo) {
+  async validarPersonaje(campo) {
     const nombre = campo.value.trim();
+    if (!nombre) {
+      sacudir(this, this.muneco);
+      voz.decir('avatar_falta_nombre');
+      return;
+    }
+    estado.nombre = nombre;
+    estado.avatar = { ...this.cfg };
+    estado.estrellasInicio = estrellasGuardadas(nombre);
+    this.listo.setActivo(false);
+    sfx(this, 'logro');
+    this.tweens.add({ targets: this.muneco, scale: 0.56, duration: 250, yoyo: true });
+    await voz.decir('personaje_listo');
+    siguiente(this);
+  }
+
+  async validarTrabajo() {
     // Chaleco aún bloqueado: no es un error de vestimenta, solo se avisa.
     if (this.bloqueado()) {
       sacudir(this, this.muneco);
@@ -139,7 +173,6 @@ export default class Avatar extends Phaser.Scene {
       return;
     }
     const errores = [];
-    if (!nombre) errores.push('avatar_falta_nombre');
     if (this.cfg.pantalonLargo !== 'long') errores.push('avatar_mal_short');
     if (this.cfg.chaleco === 'no') errores.push('avatar_mal_chaleco');
     if (errores.length) {
@@ -149,9 +182,7 @@ export default class Avatar extends Phaser.Scene {
       voz.secuencia(errores);
       return;
     }
-    estado.nombre = nombre;
     estado.avatar = { ...this.cfg };
-    estado.estrellasInicio = estrellasGuardadas(nombre);
     this.listo.setActivo(false);
     sfx(this, 'logro');
     this.tweens.add({ targets: this.muneco, scale: 0.56, duration: 250, yoyo: true });
