@@ -57,7 +57,7 @@ export default class Lista extends Phaser.Scene {
       return c;
     });
 
-    const intro = this.nivel === 'practica' ? ['prac_intro', 'lista_intro'] : ['lista_intro'];
+    const intro = { practica: ['prac_intro', 'lista_intro'], turno2: ['t2_intro', 'lista_intro'] }[this.nivel] || ['lista_intro'];
     voz.secuencia(intro).then((ok) => ok && this.guiar());
   }
 

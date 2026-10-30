@@ -50,6 +50,6 @@ export function guardarPartida(puntos) {
 }
 
 // Suma de las mejores estrellas de cada etapa (para desbloquear ropa y secciones).
-export function estrellasGuardadas(nombre) {
+export function estrellasGuardadas(nombre = estado.nombre) {
   return Object.values(perfil(nombre).mejores).reduce((a, b) => a + b, 0);
 }

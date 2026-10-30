@@ -7,7 +7,7 @@ import { crearPersonaje } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
-import { siguiente } from '../lib/flujo.js';
+import { partirReloj, siguiente } from '../lib/flujo.js';
 import niveles from '../data/niveles.json';
 import productos from '../data/productos.json';
 
@@ -49,7 +49,7 @@ export default class Bodega extends Phaser.Scene {
     zonaCarro.on('pointerup', () => this.tocarCarro());
 
     if (this.guiado) this.tutorial();
-    else voz.decir('bodega_intro');
+    else voz.decir('bodega_intro').then((ok) => partirReloj(this, ok));
   }
 
   dibujarRack() {

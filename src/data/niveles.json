@@ -22,5 +22,15 @@
       {"p": "pasta", "llenos": 3, "vacios": 1, "chuecos": [2]}
     ],
     "malPuestos": [ {"p": "pasta", "en": "jabon"} ]
+  },
+  "turno2": {
+    "pasillo": "limpieza",
+    "lista": [ {"p": "detergente", "n": 4}, {"p": "cloro", "n": 3}, {"p": "lavaloza", "n": 5} ],
+    "estante": [
+      {"p": "detergente", "llenos": 1, "vacios": 4, "chuecos": [0]},
+      {"p": "cloro", "llenos": 2, "vacios": 3, "chuecos": [1]},
+      {"p": "lavaloza", "llenos": 0, "vacios": 6}
+    ],
+    "malPuestos": [ {"p": "lavaloza", "en": "cloro"} ]
   }
 }

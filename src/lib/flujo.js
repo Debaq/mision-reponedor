@@ -1,13 +1,17 @@
 import { estado, registrarResultado } from './estado.js';
 import { guardarEstrellas } from './perfil.js';
+import { turno2Desbloqueado } from './premios.js';
 import { voz } from './voz.js';
 
 // Orden de las etapas del juego (secuencia del documento).
 // Las etapas con `id` dan estrellas y puntos al terminar; `nombre` es el que aparece en el resumen final.
 // `enOrden`: id de la etapa Órdenes que encarga esta tarea (al terminarla se vuelve a ese tablero).
 // `datos.tiempo`: segundos para hacer la tarea (el jefe lo anuncia y aparece el reloj).
-export const FLUJO = [
+// `omitir`: si devuelve true, la etapa se salta al avanzar.
+const TURNO_1 = [
   { escena: 'Avatar', titulo: '1. Crear personaje', id: 'avatar', nombre: 'Vestimenta' },
+  // Quien ya desbloqueó el turno 2 elige qué turno jugar.
+  { escena: 'Turnos', omitir: () => !turno2Desbloqueado() },
   { escena: 'Contrato', titulo: '2. Aviso de contratación' },
   { escena: 'Supervisor', titulo: '3. Presentación con el supervisor', id: 'supervisor', nombre: 'Presentación' },
   { escena: 'Lista', datos: { nivel: 'tutorial' }, titulo: '4. Lista de productos' },
@@ -33,6 +37,27 @@ export const FLUJO = [
   { escena: 'Fin', titulo: 'Fin del turno' },
 ];
 
+// Turno 2 (se desbloquea con estrellas): pasillo de limpieza con reloj y tres tareas al azar.
+const TURNO_2 = [
+  { escena: 'Lista', datos: { nivel: 'turno2' }, titulo: 'T2. Lista de productos' },
+  { escena: 'Mapa', datos: { nivel: 'turno2', destino: 'bodega' } },
+  { escena: 'Bodega', datos: { nivel: 'turno2', tiempo: 60 }, titulo: 'T2. Bodega', id: 't2_bodega', nombre: 'Bodega' },
+  { escena: 'Mapa', datos: { nivel: 'turno2', destino: 'pasillo' }, id: 't2_mapa', nombre: 'Mapa' },
+  { escena: 'Traslado', datos: { nivel: 'turno2' } },
+  { escena: 'Sala', datos: { nivel: 'turno2', tiempo: 120 }, titulo: 'T2. Estantería', id: 't2_sala', nombre: 'Estantería' },
+  { escena: 'Ordenes', datos: { tareas: ['derrame', 'basura', 'vencidos', 'precios', 'faltantes'], elegir: 3 }, titulo: 'T2. Órdenes del supervisor', id: 't2_ordenes', nombre: 'Órdenes' },
+  { escena: 'Derrame', datos: { tiempo: 45 }, id: 't2_derrame', nombre: 'Derrame', enOrden: 't2_ordenes' },
+  { escena: 'Basura', datos: { tiempo: 45 }, id: 't2_basura', nombre: 'Basura', enOrden: 't2_ordenes' },
+  { escena: 'Vencidos', datos: { tiempo: 60 }, id: 't2_vencidos', nombre: 'Vencidos', enOrden: 't2_ordenes' },
+  { escena: 'Precios', datos: { tiempo: 45 }, id: 't2_precios', nombre: 'Precios', enOrden: 't2_ordenes' },
+  { escena: 'Faltantes', datos: { tiempo: 60 }, id: 't2_faltantes', nombre: 'Faltantes', enOrden: 't2_ordenes' },
+  { escena: 'Fin', titulo: 'T2. Fin del turno' },
+];
+
+export const FLUJO = [...TURNO_1.map((p) => ({ ...p, turno: 1 })), ...TURNO_2.map((p) => ({ ...p, turno: 2 }))];
+// Primera etapa de cada turno (en el turno 1, la que sigue a crear el personaje).
+export const inicioTurno = (n) => (n === 1 ? indiceDe('Contrato') : FLUJO.findIndex((p) => p.turno === 2));
+
 export const indiceDe = (escena) => FLUJO.findIndex((p) => p.escena === escena);
 
 // true mientras se cierra una etapa (premio o fundido): evita avanzar dos veces o partir un reloj.
@@ -47,7 +72,8 @@ export function irA(scene, indice, extra = {}) {
   const paso = FLUJO[indice];
   const hud = scene.scene.get('Hud');
   hud.detenerReloj();
-  scene.cameras.main.fadeOut(300, 31, 45, 58);
+  // fade con force: si la escena aún está entrando (fadeIn), un fadeOut normal se ignora y nunca termina.
+  scene.cameras.main.fade(300, 31, 45, 58, true);
   scene.cameras.main.once('camerafadeoutcomplete', () => {
     hud.ocultar();
     hud.mostrarMarcador(paso.escena !== 'Fin');
@@ -64,6 +90,7 @@ function proxima() {
   let i = estado.paso + 1;
   // Desde Órdenes (ya terminadas): saltar sus tareas, que se hicieron desde el tablero.
   if (paso.escena === 'Ordenes') while (FLUJO[i].enOrden === paso.id) i++;
+  while (FLUJO[i]?.omitir?.()) i++;
   return { indice: Math.min(i, FLUJO.length - 1) };
 }
 

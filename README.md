@@ -47,7 +47,16 @@ Cada etapa con decisiones (marcadas con `id` en `src/lib/flujo.js`) da estrellas
 
 Tiempo límite: las etapas con `datos.tiempo` en `src/lib/flujo.js` (en segundos) muestran un reloj arriba a la izquierda. Si se acaba, la tarea sigue pero vale una estrella menos. Cada tiempo necesita su voz `tiempo_<segundos>` en el guion.
 
-El progreso se guarda en el navegador (`localStorage`) por nombre de jugador: mejores estrellas por etapa, récord de puntos y partidas jugadas (`src/lib/perfil.js`). Se usará para desbloquear ropa y secciones.
+El progreso se guarda en el navegador (`localStorage`) por nombre de jugador: mejores estrellas por etapa, récord de puntos y partidas jugadas (`src/lib/perfil.js`).
+
+## Desbloqueos
+
+Con las estrellas guardadas (la mejor de cada etapa) se desbloquea, según `src/lib/premios.js`:
+
+- Chalecos de reconocimiento: estrella (10★), experto (25★), plata (40★) y oro (55★, requiere jugar el turno 2). Se eligen en la fila "Chaleco" al crear el personaje; los bloqueados muestran las estrellas que faltan.
+- Turno 2 (30★): pasillo de limpieza, con reloj en bodega y estantería, y el supervisor encarga 3 tareas al azar de las 5, con menos tiempo. Quien ya lo desbloqueó elige turno después de crear el personaje; también aparece un botón en la pantalla final.
+
+Al terminar un turno, una tarjeta "¡NUEVO!" muestra lo que se desbloqueó en esa partida. Los chalecos se generan con `uv run --with pillow python tools/gen_chaleco.py`.
 
 ## Editar textos y voces
 

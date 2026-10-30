@@ -10,7 +10,7 @@ export const AVATAR_INICIAL = {
   pantalonColor: 'Navy',
   pantalonLargo: 'long',
   zapatos: 'black',
-  chaleco: true,
+  chaleco: 'basico',
 };
 
 export const estado = {
@@ -20,7 +20,8 @@ export const estado = {
   erroresPaso: 0, // errores en la etapa actual (se reinicia al cambiar de etapa)
   tarde: false, // se acabó el tiempo en la etapa actual
   resultados: {}, // id de etapa → { errores, tarde, estrellas, puntos }
-  ordenes: null, // tareas encadenadas del supervisor: { lista, hechas, errores }
+  ordenes: null, // tareas encadenadas del supervisor: { bloque, lista, hechas, errores }
+  estrellasInicio: null, // estrellas guardadas al empezar la partida (para avisar lo que se desbloqueó)
 };
 
 // Nunca 0 estrellas: terminar la tarea siempre tiene premio.

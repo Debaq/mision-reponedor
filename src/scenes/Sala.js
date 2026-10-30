@@ -7,7 +7,7 @@ import { crearPersonaje } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
-import { siguiente } from '../lib/flujo.js';
+import { partirReloj, siguiente } from '../lib/flujo.js';
 import niveles from '../data/niveles.json';
 
 const ESTANTE = { x0: 250, ancho: 860, bases: [190, 330, 470] };
@@ -54,7 +54,7 @@ export default class Sala extends Phaser.Scene {
       voz.decir('tut_paso5');
       this.guiarUbicar();
     } else {
-      voz.decir('sala_intro');
+      voz.decir('sala_intro').then((ok) => partirReloj(this, ok));
     }
   }
 

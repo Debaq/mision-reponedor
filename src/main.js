@@ -5,6 +5,7 @@ import Hud from './scenes/Hud.js';
 import Inicio from './scenes/Inicio.js';
 import Etapas from './scenes/Etapas.js';
 import Avatar from './scenes/Avatar.js';
+import Turnos from './scenes/Turnos.js';
 import Contrato from './scenes/Contrato.js';
 import Supervisor from './scenes/Supervisor.js';
 import Lista from './scenes/Lista.js';
@@ -32,7 +33,7 @@ function iniciar() {
     backgroundColor: '#1f2d3a',
     dom: { createContainer: true },
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-    scene: [Boot, Inicio, Etapas, Avatar, Contrato, Supervisor, Lista, Mapa, Bodega, Traslado, Sala,
+    scene: [Boot, Inicio, Etapas, Avatar, Turnos, Contrato, Supervisor, Lista, Mapa, Bodega, Traslado, Sala,
       Ordenes, Derrame, Basura, Vencidos, Cliente, Precios, Faltantes, Fin, Hud],
   });
   pausarEnVertical(juego);

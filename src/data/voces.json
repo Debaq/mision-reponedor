@@ -663,5 +663,37 @@
   "faltan_fin": {
     "voz": "jefe",
     "texto": "¡Muy bien! Así sabemos qué hay que pedir."
+  },
+  "avatar_bloqueado": {
+    "voz": "guia",
+    "texto": "Ese chaleco todavía está bloqueado. Gana más estrellas para usarlo."
+  },
+  "premio_chaleco": {
+    "voz": "guia",
+    "texto": "¡Ganaste un chaleco nuevo! Lo puedes elegir la próxima vez que crees tu personaje."
+  },
+  "premio_turno2": {
+    "voz": "jefe",
+    "texto": "¡Muy buen trabajo! Ya puedes hacer el turno dos, en el pasillo de limpieza."
+  },
+  "turnos_elige": {
+    "voz": "guia",
+    "texto": "¿Qué turno quieres hacer? Toca una tarjeta y después la flecha verde."
+  },
+  "turno_1": {
+    "voz": "guia",
+    "texto": "Turno uno: el día completo, con todo lo que aprendiste."
+  },
+  "turno_2": {
+    "voz": "guia",
+    "texto": "Turno dos: pasillo de limpieza, con reloj. Es más difícil."
+  },
+  "t2_intro": {
+    "voz": "jefe",
+    "texto": "Hoy te toca el pasillo de limpieza, y esta vez con reloj. Aquí tienes tu lista."
+  },
+  "tiempo_120": {
+    "voz": "jefe",
+    "texto": "Tienes dos minutos. ¡Mira el reloj de arriba!"
   }
 }

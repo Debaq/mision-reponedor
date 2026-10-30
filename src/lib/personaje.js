@@ -11,7 +11,7 @@ export const OPCIONES = {
   pantalonColor: ['Navy', 'Grey', 'Brown', 'Blue1', 'LightBlue', 'Tan', 'Red', 'Green'],
   pantalonLargo: ['long', 'shorter'],
   zapatos: ['black', 'brown', 'brown2', 'grey', 'blue', 'red', 'tan'],
-  chaleco: [true, false],
+  chaleco: ['no', 'basico', 'estrella', 'experto', 'plata', 'oro'],
 };
 
 const CORTOS = ['Man1', 'Man2', 'Man3', 'Man4', 'Man5', 'Man6', 'Man7'];
@@ -85,7 +85,9 @@ function armar(scene, c) {
   }
   img('pantalon', frame.pantalonArriba(k.pantalonColor), 0, 95);
   img('polera', frame.polera(k.poleraColor, k.poleraEstilo || (k.genero === 'mujer' ? 4 : 1)), 0, 0);
-  if (k.chaleco) c.add(scene.add.image(0, 0, 'chaleco'));
+  // Chaleco: 'basico' (o true, en los personajes fijos) o una variante desbloqueada.
+  const chaleco = k.chaleco === true ? 'basico' : k.chaleco;
+  if (chaleco && chaleco !== 'no') c.add(scene.add.image(0, 0, chaleco === 'basico' ? 'chaleco' : 'chaleco_' + chaleco));
   img('piel', piel('head'), 0, -180);
   img('cara', frame.cara(k.cara), 0, -170);
   // El pelo se alinea por arriba, 28 px sobre la frente (cabeza: centro -180, alto 168).

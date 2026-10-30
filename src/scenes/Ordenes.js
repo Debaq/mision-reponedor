@@ -8,7 +8,7 @@ import { crearPersonaje, SUPERVISOR } from '../lib/personaje.js';
 import { estado } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
-import { FLUJO, indiceDe, irA, siguiente } from '../lib/flujo.js';
+import { FLUJO, irA, siguiente } from '../lib/flujo.js';
 
 const TAREAS = {
   derrame: { escena: 'Derrame', nombre: 'Derrame' },
@@ -20,8 +20,9 @@ const TAREAS = {
 const PUESTOS = { 2: [575, 825], 3: [450, 700, 950] };
 const Y_TARJETA = 320;
 
-// Instrucciones consecutivas: el supervisor encarga dos o tres tareas (datos.tareas) en un orden
-// al azar y el jugador debe elegirlas en ese orden. Después de cada tarea se vuelve a este tablero.
+// Instrucciones consecutivas: el supervisor encarga dos o tres tareas (datos.tareas; con datos.elegir,
+// solo esa cantidad al azar) en un orden al azar y el jugador debe elegirlas en ese orden.
+// Después de cada tarea se vuelve a este tablero.
 export default class Ordenes extends Phaser.Scene {
   constructor() {
     super('Ordenes');
@@ -48,12 +49,14 @@ export default class Ordenes extends Phaser.Scene {
 
     const bloque = FLUJO[estado.paso].id;
     if (!data.volver || estado.ordenes?.bloque !== bloque) {
-      estado.ordenes = { bloque, lista: Phaser.Utils.Array.Shuffle([...data.tareas]), hechas: 0, errores: 0 };
+      const lista = Phaser.Utils.Array.Shuffle([...data.tareas]).slice(0, data.elegir || data.tareas.length);
+      estado.ordenes = { bloque, lista, hechas: 0, errores: 0 };
     }
-    this.puestos = PUESTOS[data.tareas.length];
+    this.bloque = bloque;
+    this.puestos = PUESTOS[estado.ordenes.lista.length];
     this.erroresEleccion = 0;
     this.tarjetas = {};
-    for (const id of data.tareas) this.tarjetas[id] = this.crearTarjeta(id);
+    for (const id of estado.ordenes.lista) this.tarjetas[id] = this.crearTarjeta(id);
 
     const o = estado.ordenes;
     if (o.hechas === 0 && !data.volver) {
@@ -202,7 +205,7 @@ export default class Ordenes extends Phaser.Scene {
     t.num.setVisible(true);
     this.tweens.add({ targets: t, scale: 1.12, duration: 200, yoyo: true });
     if (!(await voz.decir('tarea_' + t.tarea))) return;
-    irA(this, indiceDe(TAREAS[t.tarea].escena));
+    irA(this, FLUJO.findIndex((p) => p.escena === TAREAS[t.tarea].escena && p.enOrden === this.bloque));
   }
 
   async terminar() {

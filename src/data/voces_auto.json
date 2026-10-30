@@ -139,6 +139,18 @@
   "voz": "guia",
   "texto": "Cinco jabones."
  },
+ "lista_detergente_4": {
+  "voz": "guia",
+  "texto": "Cuatro detergentes."
+ },
+ "lista_cloro_3": {
+  "voz": "guia",
+  "texto": "Tres botellas de cloro."
+ },
+ "lista_lavaloza_5": {
+  "voz": "guia",
+  "texto": "Cinco botellas de lavaloza."
+ },
  "r1_mal1_f": {
   "voz": "jugadora",
   "texto": "Sí. ¿Qué hay que hacer?"

@@ -7,6 +7,8 @@ import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { siguiente } from '../lib/flujo.js';
+import { estrellasGuardadas } from '../lib/perfil.js';
+import { CHALECOS } from '../lib/premios.js';
 
 const COLORES_ROPA = {
   white: 0xf5f5f5, blue: 0x3498db, navy: 0x34495e, grey: 0x95a5a6, red: 0xe05a47, green: 0x4caf50, pine: 0x2e7d6b,
@@ -26,7 +28,9 @@ const FILAS = [
   ['pantalonColor', 'avatar_pantalon', 'Pantalón', (v) => ({ color: COLORES_ROPA[v] })],
   ['pantalonLargo', 'avatar_pantalon', 'Largo', (v) => ({ texto: v === 'long' ? 'Largo' : 'Short' })],
   ['zapatos', 'avatar_zapatos', 'Zapatos', (v) => ({ color: COLORES_ROPA[v] })],
-  ['chaleco', 'avatar_chaleco', 'Chaleco', (v) => ({ texto: v ? 'Sí' : 'No' })],
+  ['chaleco', 'avatar_chaleco', 'Chaleco', (v, cfg, estrellas) => (estrellas < CHALECOS[v]
+    ? { texto: `★ ${CHALECOS[v]}`, bloqueado: true }
+    : { texto: { no: 'No', basico: 'Sí', estrella: 'Estrella', experto: 'Experto', plata: 'Plata', oro: 'Oro' }[v] })],
 ];
 
 export default class Avatar extends Phaser.Scene {
@@ -38,7 +42,7 @@ export default class Avatar extends Phaser.Scene {
     this.cameras.main.fadeIn(300);
     fondoSala(this);
     // Empieza con ropa "de calle" para que el jugador elija la adecuada.
-    this.cfg = { ...estado.avatar, chaleco: false, pantalonLargo: 'shorter', poleraColor: 'red', pantalonColor: 'LightBlue' };
+    this.cfg = { ...estado.avatar, chaleco: 'no', pantalonLargo: 'shorter', poleraColor: 'red', pantalonColor: 'LightBlue' };
     if (estado.nombre) Object.assign(this.cfg, estado.avatar);
 
     panel(this, 250, 360, 380, 520, 0xffffff, 24);
@@ -53,8 +57,23 @@ export default class Avatar extends Phaser.Scene {
     campo.addEventListener('focus', () => voz.decir('avatar_nombre'));
     campo.addEventListener('keydown', (e) => e.stopPropagation());
 
-    // Filas de opciones
+    // Estrellas guardadas de este nombre: desbloquean chalecos.
+    // (Phaser reutiliza la escena: se limpian las filas de la vez anterior antes de refrescarlas.)
     this.valores = {};
+    this.estrellas = 0;
+    this.iconoEstrellas = this.add.image(220, 212, 'ui_star').setTint(COLOR.amarillo).setDisplaySize(30, 30);
+    this.txtEstrellas = this.add.text(240, 212, '', estiloTexto(24, '#b7791f')).setOrigin(0, 0.5);
+    const alEscribir = () => {
+      this.estrellas = campo.value.trim() ? estrellasGuardadas(campo.value.trim()) : 0;
+      this.txtEstrellas.setText(String(this.estrellas));
+      this.iconoEstrellas.setVisible(this.estrellas > 0);
+      this.txtEstrellas.setVisible(this.estrellas > 0);
+      if (this.valores.chaleco) this.refrescarFila('chaleco');
+    };
+    campo.addEventListener('input', alEscribir);
+    alEscribir();
+
+    // Filas de opciones
     FILAS.forEach((fila, i) => {
       const col = i < 5 ? 0 : 1;
       const n = col === 0 ? i : i - 5;
@@ -90,6 +109,7 @@ export default class Avatar extends Phaser.Scene {
       }
       actualizarPersonaje(this, this.muneco, this.cfg);
       this.refrescarFila(clave);
+      if (clave === 'chaleco' && this.bloqueado()) voz.decir('avatar_bloqueado');
     };
     // Flechas grandes: en celular deben quedar de ~40 px para tocarlas fácil.
     boton(this, x - 132, y, { icono: 'ui_left', ancho: 74, alto: 66, color: COLOR.azul, onClick: () => cambiar(-1) });
@@ -100,18 +120,28 @@ export default class Avatar extends Phaser.Scene {
 
   refrescarFila(clave) {
     const { muestra, valor, mostrar } = this.valores[clave];
-    const m = mostrar(this.cfg[clave], this.cfg);
+    const m = mostrar(this.cfg[clave], this.cfg, this.estrellas);
     muestra.setVisible(m.color !== undefined);
     if (m.color !== undefined) muestra.setFillStyle(m.color);
-    valor.setText(m.texto || '');
+    valor.setText(m.texto || '').setColor(m.bloqueado ? '#c53030' : '#1f2d3a');
+  }
+
+  bloqueado() {
+    return this.estrellas < CHALECOS[this.cfg.chaleco];
   }
 
   async validar(campo) {
     const nombre = campo.value.trim();
+    // Chaleco aún bloqueado: no es un error de vestimenta, solo se avisa.
+    if (this.bloqueado()) {
+      sacudir(this, this.muneco);
+      voz.decir('avatar_bloqueado');
+      return;
+    }
     const errores = [];
     if (!nombre) errores.push('avatar_falta_nombre');
     if (this.cfg.pantalonLargo !== 'long') errores.push('avatar_mal_short');
-    if (!this.cfg.chaleco) errores.push('avatar_mal_chaleco');
+    if (this.cfg.chaleco === 'no') errores.push('avatar_mal_chaleco');
     if (errores.length) {
       sfx(this, 'error');
       sumarError();
@@ -121,6 +151,7 @@ export default class Avatar extends Phaser.Scene {
     }
     estado.nombre = nombre;
     estado.avatar = { ...this.cfg };
+    estado.estrellasInicio = estrellasGuardadas(nombre);
     this.listo.setActivo(false);
     sfx(this, 'logro');
     this.tweens.add({ targets: this.muneco, scale: 0.56, duration: 250, yoyo: true });
