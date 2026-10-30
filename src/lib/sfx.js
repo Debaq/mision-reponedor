@@ -12,6 +12,8 @@ export const SFX = {
   frotar: 'scratch_002',
 };
 
+// Además avisa a la escena ('reaccion') para que el personaje del jugador reaccione.
 export function sfx(scene, nombre, volumen = 0.6) {
   scene.sound.play('sfx_' + SFX[nombre], { volume: volumen });
+  scene.events.emit('reaccion', nombre);
 }

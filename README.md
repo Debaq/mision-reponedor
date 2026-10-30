@@ -58,6 +58,10 @@ Con las estrellas guardadas (la mejor de cada etapa) se desbloquea, según `src/
 
 Al terminar un turno, una tarjeta "¡NUEVO!" muestra lo que se desbloqueó en esa partida. Los chalecos se generan con `uv run --with pillow python tools/gen_chaleco.py`.
 
+## Personajes
+
+Se arman con piezas de Kenney "Modular Characters" en `src/lib/personaje.js`, con proporciones adultas (cabeza más chica, piernas y brazos más largos) y cara por piezas (cejas, ojos, nariz y boca). Tienen vida: respiran, parpadean, mueven la boca y muestran un globo de diálogo cuando habla su voz (`jefe`, `cliente` o la del jugador), y el personaje del jugador sonríe y salta con los aciertos o pone cara triste con los errores (cada `sfx()` emite el evento `reaccion` en la escena).
+
 ## Editar textos y voces
 
 - Guion: `src/data/voces.json`. Las versiones `id_f` (mujer) e `id_n` (no binario, lenguaje neutro) reemplazan a `id` según el personaje.

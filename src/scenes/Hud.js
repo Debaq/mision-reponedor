@@ -3,7 +3,7 @@ import { ANCHO, ALTO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { estado, totales } from '../lib/estado.js';
-import { dibujarReloj } from '../lib/ui.js';
+import { destello, dibujarReloj } from '../lib/ui.js';
 
 const COLOR_VOZ = { guia: COLOR.azul, jugador: COLOR.verde, jugadora: COLOR.verde, jugadore: COLOR.verde, jefe: 0x6b46c1, cliente: 0xb7791f };
 const VOZ_PREMIO = { 3: 'premio_3', 2: 'premio_2', 1: 'premio_1' };
@@ -157,7 +157,10 @@ export default class Hud extends Phaser.Scene {
       e.setScale(0);
       this.tweens.add({
         targets: e, scale: escala, delay: 250 + i * 300, duration: 300, ease: 'Back.easeOut',
-        onStart: () => sfx(this, 'tick'),
+        onStart: () => {
+          sfx(this, 'tick');
+          destello(this, x, cy - 20, 10, 1000);
+        },
       });
       llenas.push(e);
     }

@@ -104,8 +104,21 @@ export class Indicador {
   }
 }
 
+// Destello de estrellitas (aciertos y premios).
+export function destello(scene, x, y, cantidad = 12, profundidad = 960) {
+  const p = scene.add.particles(x, y, 'ui_star', {
+    speed: { min: 140, max: 320 }, angle: { min: 0, max: 360 }, scale: { start: 0.55, end: 0 },
+    lifespan: 800, gravityY: 300, rotate: { min: -180, max: 180 },
+    tint: [COLOR.amarillo, 0xffffff, COLOR.marcaAcento], emitting: false,
+  }).setDepth(profundidad);
+  p.explode(cantidad);
+  scene.time.delayedCall(1000, () => p.destroy());
+  return p;
+}
+
 // Marca grande de acierto / error en una posición.
 export function marca(scene, x, y, bien = true) {
+  if (bien) destello(scene, x, y);
   const c = scene.add.circle(x, y, 34, bien ? COLOR.verdeClaro : COLOR.rojo).setDepth(950);
   const i = scene.add.image(x, y, bien ? 'ui_checkmark' : 'ui_cross').setDisplaySize(44, 44).setDepth(951);
   c.setScale(0);
