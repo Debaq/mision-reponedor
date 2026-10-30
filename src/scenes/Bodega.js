@@ -77,7 +77,7 @@ export default class Bodega extends Phaser.Scene {
     if (!this.panelLista.tiene(p)) {
       sfx(this, 'error');
       sacudir(this, caja);
-      sumarError('bodega');
+      sumarError();
       voz.decir('fb_no_lista');
       return;
     }
@@ -96,7 +96,7 @@ export default class Bodega extends Phaser.Scene {
     const n = this.panelLista.filas[p].n;
     if (cant > n) {
       sfx(this, 'error');
-      sumarError('bodega');
+      sumarError();
       voz.decir('fb_demasiados');
     } else {
       voz.decir('num_' + cant);
@@ -177,7 +177,7 @@ export default class Bodega extends Phaser.Scene {
     if (this.terminado) return;
     if (!this.panelLista.todoCompleto()) {
       sfx(this, 'error');
-      sumarError('bodega');
+      sumarError();
       voz.decir('fb_falta');
       return;
     }

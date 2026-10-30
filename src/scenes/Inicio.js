@@ -5,7 +5,7 @@ import { boton } from '../lib/ui.js';
 import { voz } from '../lib/voz.js';
 import { irA } from '../lib/flujo.js';
 import { crearPersonaje } from '../lib/personaje.js';
-import { AVATAR_INICIAL } from '../lib/estado.js';
+import { AVATAR_INICIAL, nuevaPartida } from '../lib/estado.js';
 import { VERSION } from '../lib/version.js';
 import { pantallaCompleta } from '../lib/movil.js';
 
@@ -16,7 +16,10 @@ export default class Inicio extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(300);
-    this.scene.get('Hud').ocultar?.();
+    const hud = this.scene.get('Hud');
+    hud.ocultar();
+    hud.mostrarMarcador(false);
+    nuevaPartida();
     fondoEntrada(this);
     this.add.graphics().fillStyle(0x000000, 0.35).fillRect(0, 0, ANCHO, ALTO);
     crearPersonaje(this, 230, 470, AVATAR_INICIAL, 0.55);

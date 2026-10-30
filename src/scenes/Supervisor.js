@@ -102,7 +102,7 @@ export default class Supervisor extends Phaser.Scene {
         if (!(await voz.decir('sup_r1_bien'))) return;
         break;
       }
-      sumarError('supervisor');
+      sumarError();
       if (!(await voz.secuencia([r.id === 'r1_mal1' ? 'sup_r1_mal1' : 'sup_r1_mal2', 'guia_saludo']))) return;
     }
 
@@ -122,7 +122,7 @@ export default class Supervisor extends Phaser.Scene {
         if (!(await voz.decir(r.id === 'r2_bodega' ? 'sup_r2_bodega' : 'sup_r2_gracias'))) return;
         break;
       }
-      sumarError('supervisor');
+      sumarError();
       if (!(await voz.secuencia(['sup_r2_mal', 'guia_respeto']))) return;
     }
 

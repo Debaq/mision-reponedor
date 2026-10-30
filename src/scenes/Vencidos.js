@@ -80,7 +80,7 @@ export default class Vencidos extends Phaser.Scene {
     }
     if (!vencida(c.fecha)) {
       sfx(this, 'error');
-      sumarError('vencidos');
+      sumarError();
       voz.decir('vencidos_mal');
       this.tweens.add({ targets: c, x: c.origen.x, y: c.origen.y, duration: 300 });
       return;

@@ -1,4 +1,4 @@
-// Estado de la partida (se pierde al recargar la página).
+// Estado de la partida (se pierde al recargar la página; el progreso se guarda en perfil.js).
 export const AVATAR_INICIAL = {
   genero: 'hombre',
   piel: 2,
@@ -17,11 +17,43 @@ export const estado = {
   nombre: '',
   avatar: { ...AVATAR_INICIAL },
   paso: 0,
-  errores: {},
+  erroresPaso: 0, // errores en la etapa actual (se reinicia al cambiar de etapa)
+  resultados: {}, // id de etapa → { errores, estrellas, puntos }
 };
 
-export function sumarError(etapa) {
-  estado.errores[etapa] = (estado.errores[etapa] || 0) + 1;
+// Nunca 0 estrellas: terminar la tarea siempre tiene premio.
+export const PUNTOS = { 3: 100, 2: 70, 1: 40 };
+
+export function estrellasPor(errores) {
+  return errores === 0 ? 3 : errores <= 2 ? 2 : 1;
+}
+
+export function sumarError() {
+  estado.erroresPaso++;
+}
+
+export function nuevaPartida() {
+  estado.erroresPaso = 0;
+  estado.resultados = {};
+}
+
+// Cierra la etapa actual: calcula estrellas y puntos según los errores.
+export function registrarResultado(id) {
+  const errores = estado.erroresPaso;
+  const estrellas = estrellasPor(errores);
+  const r = { errores, estrellas, puntos: PUNTOS[estrellas] };
+  estado.resultados[id] = r;
+  return r;
+}
+
+export function totales() {
+  let estrellas = 0;
+  let puntos = 0;
+  for (const r of Object.values(estado.resultados)) {
+    estrellas += r.estrellas;
+    puntos += r.puntos;
+  }
+  return { estrellas, puntos };
 }
 
 export function nombreJugador() {

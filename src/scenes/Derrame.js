@@ -59,7 +59,7 @@ export default class Derrame extends Phaser.Scene {
         if (tipo !== 'trapero') {
           sacudir(this, t);
           sfx(this, 'error');
-          sumarError('derrame');
+          sumarError();
           await voz.decir('herr_' + tipo);
           voz.decir('derrame_mal');
           return;

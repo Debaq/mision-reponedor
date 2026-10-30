@@ -114,7 +114,7 @@ export default class Avatar extends Phaser.Scene {
     if (!this.cfg.chaleco) errores.push('avatar_mal_chaleco');
     if (errores.length) {
       sfx(this, 'error');
-      sumarError('avatar');
+      sumarError();
       sacudir(this, this.muneco);
       voz.secuencia(errores);
       return;

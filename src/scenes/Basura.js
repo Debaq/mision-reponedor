@@ -55,7 +55,7 @@ export default class Basura extends Phaser.Scene {
     }
     if (!it.basura) {
       sfx(this, 'error');
-      sumarError('basura');
+      sumarError();
       voz.decir('basura_no');
       this.tweens.add({ targets: it, x: it.origen.x, y: it.origen.y, duration: 300 });
       sacudir(this, it);

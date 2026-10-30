@@ -471,5 +471,17 @@
   "fin_guia": {
     "voz": "guia",
     "texto": "¡Felicitaciones! Completaste Misión Reponedor."
+  },
+  "premio_3": {
+    "voz": "guia",
+    "texto": "¡Excelente! Tres estrellas."
+  },
+  "premio_2": {
+    "voz": "guia",
+    "texto": "¡Bien hecho! Dos estrellas."
+  },
+  "premio_1": {
+    "voz": "guia",
+    "texto": "Tarea lista. Una estrella. La próxima vez, con más calma."
   }
 }

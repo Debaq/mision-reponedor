@@ -66,7 +66,7 @@ export default class Cliente extends Phaser.Scene {
       marca(this, 640, 380, r.ok);
       sfx(this, r.ok ? 'bien' : 'error');
       if (r.ok) break;
-      sumarError('cliente');
+      sumarError();
       const linea = r.id === 'rc_nose' ? ['cliente_mal_nose', 'guia_cliente_nose'] : ['guia_cliente_p3'];
       if (!(await voz.secuencia(linea))) return;
     }

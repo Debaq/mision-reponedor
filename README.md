@@ -38,7 +38,13 @@ No hace falta que nadie fuerce la recarga:
 5. Tutorial guiado: identificar, buscar en la bodega, seleccionar y contar, trasladar, ubicar en la estantería, ordenar.
 6. Práctica sin ayuda con una lista nueva.
 7. Tareas extra: limpiar un derrame, recoger basura, retirar productos vencidos y orientar a una clienta.
-8. Fin del turno, con un resumen de errores por etapa.
+8. Fin del turno, con estrellas, puntos y errores por etapa.
+
+## Estrellas y puntos
+
+Cada etapa con decisiones (marcadas con `id` en `src/lib/flujo.js`) da estrellas al terminar: 0 errores = 3, 1 o 2 errores = 2, más = 1 (nunca 0). Puntos: 100 / 70 / 40. El marcador está arriba a la derecha.
+
+El progreso se guarda en el navegador (`localStorage`) por nombre de jugador: mejores estrellas por etapa, récord de puntos y partidas jugadas (`src/lib/perfil.js`). Se usará para desbloquear ropa y secciones.
 
 ## Editar textos y voces
 

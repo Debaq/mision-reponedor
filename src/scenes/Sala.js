@@ -179,7 +179,7 @@ export default class Sala extends Phaser.Scene {
       return;
     }
     sfx(this, 'error');
-    sumarError('sala');
+    sumarError();
     voz.decir(sec.p === it.p ? 'fb_lleno' : 'fb_lugar_mal');
     if (this.guiado) this.guiarUbicar();
   }
