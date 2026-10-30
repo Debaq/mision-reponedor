@@ -1,19 +1,14 @@
 import { COLOR, estiloTexto } from './estilo.js';
 
-// Góndola de tres secciones (una por producto), con dos repisas cada una.
+// Productos de una góndola de tres secciones (una por producto), con dos repisas cada una.
+// El mueble es el fondo renderizado 'esc_gondola3' (tools/gen_escenarios.py), con estas mismas medidas.
 // items: [{ p, faltan }]: `faltan` deja huecos (marcos vacíos) al final de la repisa de arriba.
-// centros: posición x de cada sección (para dejar espacio a un panel a la izquierda).
 // Devuelve las secciones con su geometría: { p, x, x0, x1, arriba, abajo, etiqueta: {x, y}, huecos: [{x, y}] }.
-export const GONDOLA = { centros: [260, 560, 860], ancho: 280, repisas: [270, 450], porFila: 4, paso: 62, tam: 56 };
+export const GONDOLA = { centros: [365, 650, 935], ancho: 280, repisas: [270, 450], porFila: 4, paso: 62, tam: 56 };
 
-export function gondola(scene, items, centros = GONDOLA.centros) {
-  const { ancho, repisas, porFila, paso, tam } = GONDOLA;
-  const x0 = centros[0] - ancho / 2 - 20;
-  const x1 = centros[centros.length - 1] + ancho / 2 + 20;
+export function gondola(scene, items) {
+  const { centros, ancho, repisas, porFila, paso, tam } = GONDOLA;
   const g = scene.add.graphics();
-  g.fillStyle(0x5f6b78, 1).fillRect(x0 - 14, 100, 14, 380).fillRect(x1, 100, 14, 380);
-  g.fillStyle(0xdfe6ec, 1).fillRect(x0, 100, x1 - x0, 380);
-  for (const b of repisas) g.fillStyle(0x8795a1, 1).fillRect(x0 - 14, b, x1 - x0 + 28, 14);
 
   return items.map((it, i) => {
     const x = centros[i];

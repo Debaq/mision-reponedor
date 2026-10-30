@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
-import { fondoSala, carro } from '../lib/fondos.js';
+import { fondoRender } from '../lib/fondos.js';
 import { Indicador, marca, aleatorio, FELICITAR, letreroPasillo } from '../lib/ui.js';
 import { ListaPanel } from '../lib/listaPanel.js';
 import { crearPersonaje } from '../lib/personaje.js';
@@ -9,11 +9,14 @@ import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
 import niveles from '../data/niveles.json';
+import ESCENARIOS from '../data/escenarios.json';
+import productos from '../data/productos.json';
 
 const ESTANTE = { x0: 250, ancho: 860, bases: [190, 330, 470] };
 const SECCION_ANCHO = 420;
 const TAM = 60;
-const CARRO = { x: 660, y: 585, ancho: 700 };
+// Superficie del carro en el render (los productos se ponen encima).
+const CARRO = ESCENARIOS.sala.carro;
 
 // Etapas 5 y 6 (parte 2): ubicar en la estantería y ordenar.
 export default class Sala extends Phaser.Scene {
@@ -28,7 +31,7 @@ export default class Sala extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(300);
-    fondoSala(this);
+    fondoRender(this, 'esc_sala', 'SUPERMERCADO EL BARRIO');
     const nivel = niveles[this.nivel];
     this.panelLista = new ListaPanel(this, nivel.lista);
     this.ind = new Indicador(this);
@@ -38,12 +41,15 @@ export default class Sala extends Phaser.Scene {
     this.avisoOrdenar = false;
     this.terminado = false;
 
-    this.dibujarEstante();
     letreroPasillo(this, nivel.pasillo);
     this.secciones = nivel.estante.map((s, i) => this.crearSeccion(s, i));
+    // Secciones sobrantes de la góndola: llenas de otros productos del pasillo (solo decoración).
+    const delPasillo = Object.keys(productos).filter((p) => productos[p].pasillo === nivel.pasillo);
+    for (let i = nivel.estante.length; i < ESTANTE.bases.length * 2; i++) {
+      this.crearSeccion({ p: delPasillo[i % delPasillo.length], llenos: 6, vacios: 0 }, i);
+    }
     for (const m of nivel.malPuestos) this.crearMalPuesto(m);
 
-    carro(this, CARRO.x, CARRO.y, CARRO.ancho);
     crearPersonaje(this, 1195, 460, estado.avatar, 0.27);
     this.enCarro = [];
     nivel.lista.flatMap((it) => Array(it.n).fill(it.p)).forEach((p, i) => this.crearItemCarro(p, i));
@@ -55,16 +61,6 @@ export default class Sala extends Phaser.Scene {
       this.guiarUbicar();
     } else {
       voz.decir('sala_intro').then((ok) => partirReloj(this, ok));
-    }
-  }
-
-  dibujarEstante() {
-    const { x0, ancho, bases } = ESTANTE;
-    const g = this.add.graphics();
-    g.fillStyle(0x5f6b78, 1).fillRect(x0 - 14, 70, 14, 460).fillRect(x0 + ancho, 70, 14, 460);
-    g.fillStyle(0xdfe6ec, 1).fillRect(x0, 70, ancho, 460);
-    for (const b of bases) {
-      g.fillStyle(0x8795a1, 1).fillRect(x0 - 14, b, ancho + 28, 14);
     }
   }
 
@@ -125,7 +121,7 @@ export default class Sala extends Phaser.Scene {
   crearItemCarro(p, i) {
     const porFila = 14;
     const x = CARRO.x - CARRO.ancho / 2 + 36 + (i % porFila) * 48;
-    const y = CARRO.y - 40 - Math.floor(i / porFila) * 46;
+    const y = CARRO.y - 26 - Math.floor(i / porFila) * 46;
     const it = this.add.image(x, y, 'prod_' + p).setDisplaySize(50, 50);
     it.p = p;
     this.hacerArrastrable(it);

@@ -88,3 +88,13 @@ export function carro(scene, x, y, ancho = 300) {
   c.add(g);
   return c;
 }
+
+// Fondo renderizado en Blender (tools/gen_escenarios.py) con la barra superior del juego.
+export function fondoRender(scene, clave, titulo, colorBarra = COLOR.marca) {
+  scene.add.image(0, 0, clave).setOrigin(0).setDisplaySize(ANCHO, ALTO);
+  const g = scene.add.graphics();
+  g.fillStyle(colorBarra, 1).fillRect(0, 0, ANCHO, 56);
+  g.fillStyle(COLOR.marcaAcento, 1).fillRect(0, 56, ANCHO, 6);
+  scene.add.text(ANCHO / 2, 28, titulo, estiloTexto(28, '#ffffff')).setOrigin(0.5);
+  return g;
+}

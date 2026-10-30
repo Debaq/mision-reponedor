@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
-import { COLOR, estiloTexto } from '../lib/estilo.js';
-import { fondoBodega, carro } from '../lib/fondos.js';
+import { fondoRender } from '../lib/fondos.js';
 import { Indicador, marca, sacudir } from '../lib/ui.js';
 import { ListaPanel } from '../lib/listaPanel.js';
 import { crearPersonaje } from '../lib/personaje.js';
@@ -10,10 +9,12 @@ import { sfx } from '../lib/sfx.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
 import niveles from '../data/niveles.json';
 import productos from '../data/productos.json';
+import ESCENARIOS from '../data/escenarios.json';
 
 const COLS = [370, 570, 770, 970];
 const FILAS = [150, 290, 430];
-const CARRO = { x: 700, y: 560, ancho: 640 };
+// Superficie del carro en el render (los productos se ponen encima).
+const CARRO = ESCENARIOS.bodega.carro;
 
 // Etapas 5 y 6 (parte 1): buscar en la bodega, seleccionar y verificar cantidades.
 export default class Bodega extends Phaser.Scene {
@@ -28,14 +29,13 @@ export default class Bodega extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(300);
-    fondoBodega(this);
+    fondoRender(this, 'esc_bodega', 'BODEGA', 0x3d4852);
     const lista = niveles[this.nivel].lista;
     this.panelLista = new ListaPanel(this, lista);
     this.ind = new Indicador(this);
     this.enCarro = [];
     this.terminado = false;
 
-    this.dibujarRack();
     // 12 cajas: las de la lista y otras al azar.
     const enLista = lista.map((it) => it.p);
     const otros = Phaser.Utils.Array.Shuffle(Object.keys(productos).filter((p) => !enLista.includes(p)));
@@ -43,7 +43,6 @@ export default class Bodega extends Phaser.Scene {
     this.cajas = {};
     ids.forEach((p, i) => this.crearCaja(p, COLS[i % 4], FILAS[Math.floor(i / 4)]));
 
-    this.carro = carro(this, CARRO.x, CARRO.y, CARRO.ancho);
     crearPersonaje(this, 1170, 470, estado.avatar, 0.27);
     const zonaCarro = this.add.zone(CARRO.x, CARRO.y - 20, CARRO.ancho, 70).setInteractive({ useHandCursor: true });
     zonaCarro.on('pointerup', () => this.tocarCarro());
@@ -52,23 +51,14 @@ export default class Bodega extends Phaser.Scene {
     else voz.decir('bodega_intro').then((ok) => partirReloj(this, ok));
   }
 
-  dibujarRack() {
-    const g = this.add.graphics();
-    for (const y of FILAS) {
-      g.fillStyle(0xdd6b20, 1).fillRect(260, y + 52, 820, 14);
-    }
-    g.fillStyle(0x2c5282, 1);
-    for (const x of [255, 470, 670, 870, 1072]) g.fillRect(x - 6, 76, 14, 430);
-  }
-
   crearCaja(p, x, y) {
     const c = this.add.container(x, y);
+    // La caja está en el render; aquí va la etiqueta con el dibujo del producto (y un producto asomado).
     const g = this.add.graphics();
-    g.fillStyle(COLOR.cartonOscuro, 1).fillRect(-80, -50, 160, 102);
-    g.fillStyle(COLOR.carton, 1).fillRect(-76, -46, 152, 94);
-    g.fillStyle(0xe0b880, 1).fillRect(-76, -46, 152, 14);
-    g.fillStyle(0xffffff, 1).fillRoundedRect(-42, -26, 84, 66, 8);
-    c.add([g, this.add.image(0, 7, 'prod_' + p).setDisplaySize(64, 64)]);
+    g.fillStyle(0x000000, 0.15).fillRoundedRect(-40, -18, 84, 66, 8);
+    g.fillStyle(0xffffff, 1).fillRoundedRect(-42, -22, 84, 66, 8);
+    g.lineStyle(2, 0xb8c4cf, 1).strokeRoundedRect(-42, -22, 84, 66, 8);
+    c.add([this.add.image(26, -52, 'prod_' + p).setDisplaySize(44, 44), g, this.add.image(0, 11, 'prod_' + p).setDisplaySize(60, 60)]);
     c.setSize(160, 102).setInteractive({ useHandCursor: true });
     c.on('pointerup', () => this.tocarCaja(p, c));
     this.cajas[p] = c;
@@ -109,9 +99,9 @@ export default class Bodega extends Phaser.Scene {
   }
 
   posCarro(i) {
-    const porFila = 11;
+    const porFila = 12;
     const fila = Math.floor(i / porFila);
-    return { x: CARRO.x - CARRO.ancho / 2 + 40 + (i % porFila) * 54, y: CARRO.y - 42 - fila * 46 };
+    return { x: CARRO.x - CARRO.ancho / 2 + 60 + (i % porFila) * 54, y: CARRO.y - 26 - fila * 46 };
   }
 
   devolver(u) {

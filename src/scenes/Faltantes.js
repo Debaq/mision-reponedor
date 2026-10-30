@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
-import { fondoBodega, fondoSala } from '../lib/fondos.js';
+import { fondoRender } from '../lib/fondos.js';
 import { boton, Indicador, letreroPasillo, marca, panel, sacudir } from '../lib/ui.js';
 import { gondola } from '../lib/gondola.js';
 import { crearPersonaje } from '../lib/personaje.js';
@@ -33,13 +33,13 @@ export default class Faltantes extends Phaser.Scene {
 
   sala() {
     this.cameras.main.fadeIn(300);
-    fondoSala(this);
+    fondoRender(this, 'esc_gondola3', 'SUPERMERCADO EL BARRIO');
     letreroPasillo(this, 'bebidas');
     crearPersonaje(this, 1195, 460, estado.avatar, 0.27);
     this.ind = new Indicador(this);
     this.crearPanel();
 
-    const secciones = gondola(this, PRODUCTOS.map((p) => ({ p, faltan: this.faltan.includes(p) ? Phaser.Math.Between(2, 3) : 0 })), [365, 650, 935]);
+    const secciones = gondola(this, PRODUCTOS.map((p) => ({ p, faltan: this.faltan.includes(p) ? Phaser.Math.Between(2, 3) : 0 })));
     for (const sec of secciones) {
       const z = this.add.zone(sec.x, (sec.arriba + sec.abajo) / 2, sec.x1 - sec.x0, sec.abajo - sec.arriba).setInteractive({ useHandCursor: true });
       z.on('pointerup', () => this.tocarSeccion(sec));
@@ -101,33 +101,29 @@ export default class Faltantes extends Phaser.Scene {
 
   bodega() {
     this.cameras.main.fadeIn(300);
-    fondoBodega(this);
+    fondoRender(this, 'esc_bodega', 'BODEGA', 0x3d4852);
     crearPersonaje(this, 1170, 470, estado.avatar, 0.27);
     this.ind = new Indicador(this);
     this.crearPanel();
 
-    const g = this.add.graphics();
-    g.fillStyle(0xdd6b20, 1).fillRect(300, 352, 820, 14);
-    g.fillStyle(0x2c5282, 1);
-    for (const x of [295, 1110]) g.fillRect(x - 6, 150, 14, 360);
+    // Las cajas tocables son las de la fila del medio del rack renderizado.
     const cajas = Phaser.Utils.Array.Shuffle([...this.faltan, ...Phaser.Utils.Array.Shuffle([...OTROS]).slice(0, 2)]);
-    cajas.forEach((p, i) => this.crearCaja(p, 400 + i * 200, 300));
+    cajas.forEach((p, i) => this.crearCaja(p, 370 + i * 200, 290));
     voz.decir('faltan_bodega');
   }
 
   crearCaja(p, x, y) {
     const vacia = p === this.sinStock;
     const c = this.add.container(x, y);
+    // La caja está en el render: arriba se ve si tiene productos (o el fondo oscuro si está vacía)
+    // y al frente va la etiqueta con el dibujo.
     const g = this.add.graphics();
-    g.fillStyle(COLOR.cartonOscuro, 1).fillRect(-80, -50, 160, 102);
-    g.fillStyle(vacia ? 0x6b4f2e : COLOR.carton, 1).fillRect(-76, -46, 152, 94);
-    // Solapas abiertas
-    g.fillStyle(0xe0b880, 1).fillTriangle(-76, -46, -20, -46, -60, -78).fillTriangle(76, -46, 20, -46, 60, -78);
+    if (vacia) g.fillStyle(0x4a3520, 1).fillRect(-38, -52, 76, 14);
+    g.fillStyle(0xffffff, 1).fillRoundedRect(-36, -18, 72, 54, 8);
+    g.lineStyle(2, 0xb8c4cf, 1).strokeRoundedRect(-36, -18, 72, 54, 8);
     c.add(g);
-    // Etiqueta con el dibujo en el frente; si está vacía, adentro no se ve nada.
-    c.add(this.add.graphics().fillStyle(0xffffff, 1).fillRoundedRect(-32, 4, 64, 40, 6));
-    c.add(this.add.image(0, 24, 'prod_' + p).setDisplaySize(34, 34));
-    if (!vacia) [-44, 0, 44].forEach((dx) => c.add(this.add.image(dx, -26, 'prod_' + p).setDisplaySize(48, 48)));
+    if (!vacia) [-24, 0, 24].forEach((dx) => c.add(this.add.image(dx, -58, 'prod_' + p).setDisplaySize(42, 42)));
+    c.add(this.add.image(0, 9, 'prod_' + p).setDisplaySize(46, 46).setAlpha(vacia ? 0.5 : 1));
     c.setSize(160, 130).setInteractive({ useHandCursor: true });
     c.on('pointerup', () => this.tocarCaja(p, c, vacia));
   }

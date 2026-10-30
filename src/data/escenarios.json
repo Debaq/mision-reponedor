@@ -1,0 +1,17 @@
+{
+ "_info": "Generado por tools/gen_escenarios.py (npm run escenarios). Coordenadas del juego (1280x720).",
+ "bodega": {
+  "carro": {
+   "x": 715,
+   "y": 550,
+   "ancho": 750
+  }
+ },
+ "sala": {
+  "carro": {
+   "x": 640,
+   "y": 554,
+   "ancho": 791
+  }
+ }
+}

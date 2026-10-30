@@ -85,6 +85,16 @@ El mapa del supermercado es un render isométrico modelado en `tools/gen_mapa.py
 npm run mapa
 ```
 
+## Bodega y estanterías (Blender)
+
+Los fondos de la bodega (rack azul con cajas y carro), la estantería de la sala (góndola con riel de etiquetas y carro) y la góndola de 3 secciones de las tareas de Precios y Faltantes se renderizan en `tools/gen_escenarios.py`. La cámara mira de frente al mueble con 1 m = 200 px, así las cajas y repisas del render calzan con las posiciones que usan las escenas; la posición del carro se guarda en `src/data/escenarios.json`:
+
+```bash
+npm run escenarios
+```
+
+Las funciones comunes de Blender están en `tools/bl_util.py`.
+
 ## Productos nuevos (Blender)
 
 Los productos de Kenney son de comida. Los de limpieza, higiene y el agua se modelan con formas simples en `tools/gen_productos.py` y se renderizan con Blender en el mismo estilo:

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
-import { fondoSala } from '../lib/fondos.js';
+import { fondoRender } from '../lib/fondos.js';
 import { Indicador, letreroPasillo, marca, sacudir } from '../lib/ui.js';
 import { etiquetaPrecio, gondola } from '../lib/gondola.js';
 import { crearPersonaje } from '../lib/personaje.js';
@@ -26,7 +26,7 @@ export default class Precios extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(300);
-    fondoSala(this);
+    fondoRender(this, 'esc_gondola3', 'SUPERMERCADO EL BARRIO');
     letreroPasillo(this, 'limpieza');
     crearPersonaje(this, 1195, 460, estado.avatar, 0.27);
     this.ind = new Indicador(this);
@@ -39,10 +39,10 @@ export default class Precios extends Phaser.Scene {
     }
 
     // Bandeja con las etiquetas nuevas, en otro orden.
-    this.add.graphics().fillStyle(0x8b5e3c, 1).fillRoundedRect(300, BANDEJA_Y - 40, 520, 80, 12);
+    this.add.graphics().fillStyle(0x8b5e3c, 1).fillRoundedRect(390, BANDEJA_Y - 40, 520, 80, 12);
     this.quedan = PRECIOS.length;
     Phaser.Utils.Array.Shuffle([...PRECIOS]).forEach((pr, i) => {
-      const e = etiquetaPrecio(this, 400 + i * 160, BANDEJA_Y, pr.p, pr.ahora, true);
+      const e = etiquetaPrecio(this, 490 + i * 160, BANDEJA_Y, pr.p, pr.ahora, true);
       e.p = pr.p;
       this.arrastrable(e, (sec) => this.soltarEtiqueta(e, sec));
     });
@@ -105,7 +105,7 @@ export default class Precios extends Phaser.Scene {
 
   // Cartel rojo de OFERTA con el dibujo del producto: se cuelga arriba de su sección.
   oferta() {
-    const c = this.add.container(560, BANDEJA_Y - 10);
+    const c = this.add.container(650, BANDEJA_Y - 10);
     const g = this.add.graphics();
     g.fillStyle(COLOR.rojo, 1).fillRoundedRect(-90, -50, 180, 100, 12);
     g.lineStyle(4, 0xffffff, 1).strokeRoundedRect(-84, -44, 168, 88, 10);
