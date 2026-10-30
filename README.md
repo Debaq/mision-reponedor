@@ -34,9 +34,9 @@ No hace falta que nadie fuerce la recarga:
 1. Crear personaje: nombre, hombre / mujer / no binario, piel, pelo y ropa. Se valida la vestimenta: pantalón largo y chaleco.
 2. Aviso de contratación en el celular.
 3. Conversación con el supervisor (habilidades sociales, con respuestas buenas y malas).
-4. Lista de reposición: imagen del producto + cantidad, leída en voz alta.
+4. Lista de reposición: imagen del producto + cantidad, leída en voz alta. Luego el mapa del supermercado: ir a la bodega y, con el carro, elegir el pasillo correcto (1 Alimentos, 2 Bebidas, 3 Limpieza, 4 Higiene).
 5. Tutorial guiado: identificar, buscar en la bodega, seleccionar y contar, trasladar, ubicar en la estantería, ordenar.
-6. Práctica sin ayuda con una lista nueva.
+6. Práctica sin ayuda con una lista nueva, en el pasillo de higiene.
 7. Órdenes del supervisor: encarga tres tareas en un orden al azar (derrame, basura, vencidos) y hay que elegirlas en ese orden; cada una tiene tiempo límite. Después, orientar a una clienta.
 8. Fin del turno, con estrellas, puntos y errores por etapa.
 
@@ -51,7 +51,7 @@ El progreso se guarda en el navegador (`localStorage`) por nombre de jugador: me
 ## Editar textos y voces
 
 - Guion: `src/data/voces.json`. Las versiones `id_f` (mujer) e `id_n` (no binario, lenguaje neutro) reemplazan a `id` según el personaje.
-- Productos: `src/data/productos.json`. Listas y estanterías de cada nivel: `src/data/niveles.json`.
+- Productos (con su pasillo): `src/data/productos.json`. Pasillos: `src/data/pasillos.json`. Listas, pasillo y estanterías de cada nivel: `src/data/niveles.json`.
 - Después de editar, regenerar los audios (requiere [uv](https://docs.astral.sh/uv/)):
 
 ```bash
@@ -59,6 +59,17 @@ npm run voces
 ```
 
 Solo se regeneran las líneas que cambiaron.
+
+## Productos nuevos (Blender)
+
+Los productos de Kenney son de comida. Los de limpieza, higiene y el agua se modelan con formas simples en `tools/gen_productos.py` y se renderizan con Blender en el mismo estilo:
+
+```bash
+npm run productos            # todos
+npm run productos -- cloro   # solo algunos
+```
+
+Requiere Blender y uv. Deja PNG de 128 px en `public/assets/productos/`.
 
 ## Identidad visual
 

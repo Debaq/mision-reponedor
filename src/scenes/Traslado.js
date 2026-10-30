@@ -6,6 +6,7 @@ import { estado } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { siguiente } from '../lib/flujo.js';
 import niveles from '../data/niveles.json';
+import pasillos from '../data/pasillos.json';
 
 // Trasladar productos: el reponedor empuja el carro de la bodega a la sala de ventas.
 export default class Traslado extends Phaser.Scene {
@@ -28,7 +29,9 @@ export default class Traslado extends Phaser.Scene {
     g.fillStyle(0x5f6b78, 1).fillRect(ANCHO / 2 - 90, 180, 180, 380);
     g.fillStyle(0x9aa5b1, 1).fillRect(ANCHO / 2 - 80, 190, 160, 370);
     this.add.text(320, 110, 'BODEGA', estiloTexto(44, '#ffffff')).setOrigin(0.5);
-    this.add.text(960, 110, 'SALA DE VENTAS', estiloTexto(44, '#553c9a')).setOrigin(0.5);
+    const pas = pasillos[niveles[this.nivel].pasillo];
+    this.add.text(960, 110, `PASILLO ${pas.n}`, estiloTexto(44, '#ffffff', { backgroundColor: pas.color, padding: { x: 18, y: 6 } })).setOrigin(0.5);
+    this.add.text(960, 168, pas.nombre.toUpperCase(), estiloTexto(32, pas.color)).setOrigin(0.5);
 
     const grupo = this.add.container(-200, 0);
     const c = carro(this, 260, 540, 300);

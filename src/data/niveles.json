@@ -1,26 +1,26 @@
 {
   "tutorial": {
-    "lista": [ { "p": "atun", "n": 3 }, { "p": "leche", "n": 2 } ],
+    "pasillo": "alimentos",
+    "lista": [ {"p": "atun", "n": 3}, {"p": "leche", "n": 2} ],
     "estante": [
-      { "p": "atun",   "llenos": 2, "vacios": 3, "chuecos": [0] },
-      { "p": "leche",  "llenos": 2, "vacios": 2, "chuecos": [1] },
-      { "p": "aceite", "llenos": 5, "vacios": 0 },
-      { "p": "miel",   "llenos": 4, "vacios": 0 },
-      { "p": "queso",  "llenos": 4, "vacios": 0 },
-      { "p": "jugo",   "llenos": 5, "vacios": 0 }
+      {"p": "atun", "llenos": 2, "vacios": 3, "chuecos": [0]},
+      {"p": "leche", "llenos": 2, "vacios": 2, "chuecos": [1]},
+      {"p": "aceite", "llenos": 5, "vacios": 0},
+      {"p": "miel", "llenos": 4, "vacios": 0},
+      {"p": "queso", "llenos": 4, "vacios": 0},
+      {"p": "pan", "llenos": 5, "vacios": 0}
     ],
     "malPuestos": []
   },
   "practica": {
-    "lista": [ { "p": "aceite", "n": 4 }, { "p": "bebida", "n": 3 }, { "p": "tomate", "n": 5 }, { "p": "chocolate", "n": 2 } ],
+    "pasillo": "higiene",
+    "lista": [ {"p": "papel", "n": 4}, {"p": "shampoo", "n": 3}, {"p": "jabon", "n": 5} ],
     "estante": [
-      { "p": "aceite",    "llenos": 1, "vacios": 4, "chuecos": [0] },
-      { "p": "bebida",    "llenos": 2, "vacios": 3 },
-      { "p": "tomate",    "llenos": 0, "vacios": 5 },
-      { "p": "chocolate", "llenos": 3, "vacios": 2, "chuecos": [1] },
-      { "p": "ketchup",   "llenos": 3, "vacios": 1 },
-      { "p": "mani",      "llenos": 4, "vacios": 0, "chuecos": [2] }
+      {"p": "papel", "llenos": 1, "vacios": 4, "chuecos": [0]},
+      {"p": "shampoo", "llenos": 2, "vacios": 3},
+      {"p": "jabon", "llenos": 0, "vacios": 5},
+      {"p": "pasta", "llenos": 3, "vacios": 1, "chuecos": [2]}
     ],
-    "malPuestos": [ { "p": "ketchup", "en": "bebida" } ]
+    "malPuestos": [ {"p": "pasta", "en": "jabon"} ]
   }
 }

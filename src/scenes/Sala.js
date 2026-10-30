@@ -9,6 +9,7 @@ import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { siguiente } from '../lib/flujo.js';
 import niveles from '../data/niveles.json';
+import pasillos from '../data/pasillos.json';
 
 const ESTANTE = { x0: 250, ancho: 860, bases: [190, 330, 470] };
 const SECCION_ANCHO = 420;
@@ -39,6 +40,7 @@ export default class Sala extends Phaser.Scene {
     this.terminado = false;
 
     this.dibujarEstante();
+    this.letreroPasillo(nivel.pasillo);
     this.secciones = nivel.estante.map((s, i) => this.crearSeccion(s, i));
     for (const m of nivel.malPuestos) this.crearMalPuesto(m);
 
@@ -65,6 +67,20 @@ export default class Sala extends Phaser.Scene {
     for (const b of bases) {
       g.fillStyle(0x8795a1, 1).fillRect(x0 - 14, b, ancho + 28, 14);
     }
+  }
+
+  // Letrero colgante del pasillo, arriba a la derecha (toca para escucharlo).
+  letreroPasillo(id) {
+    const p = pasillos[id];
+    const c = this.add.container(1197, 150);
+    const g = this.add.graphics();
+    g.lineStyle(4, 0x5f6b78, 1).lineBetween(-36, -84, -36, -50).lineBetween(36, -84, 36, -50);
+    g.fillStyle(parseInt(p.color.slice(1), 16), 1).fillRoundedRect(-62, -50, 124, 110, 14);
+    g.fillStyle(0xffffff, 1).fillCircle(0, -14, 26);
+    c.add([g, this.add.text(0, -14, String(p.n), estiloTexto(34)).setOrigin(0.5),
+      this.add.text(0, 36, p.nombre.toUpperCase(), estiloTexto(17, '#ffffff')).setOrigin(0.5)]);
+    c.setSize(124, 110).setInteractive({ useHandCursor: true });
+    c.on('pointerup', () => voz.decir('zona_' + id));
   }
 
   crearSeccion(s, i) {

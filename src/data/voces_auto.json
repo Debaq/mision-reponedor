@@ -47,6 +47,38 @@
   "voz": "guia",
   "texto": "Queso."
  },
+ "prod_agua": {
+  "voz": "guia",
+  "texto": "Agua."
+ },
+ "prod_detergente": {
+  "voz": "guia",
+  "texto": "Detergente."
+ },
+ "prod_cloro": {
+  "voz": "guia",
+  "texto": "Cloro."
+ },
+ "prod_lavaloza": {
+  "voz": "guia",
+  "texto": "Lavaloza."
+ },
+ "prod_papel": {
+  "voz": "guia",
+  "texto": "Papel higiénico."
+ },
+ "prod_shampoo": {
+  "voz": "guia",
+  "texto": "Shampoo."
+ },
+ "prod_jabon": {
+  "voz": "guia",
+  "texto": "Jabón."
+ },
+ "prod_pasta": {
+  "voz": "guia",
+  "texto": "Pasta de dientes."
+ },
  "num_1": {
   "voz": "guia",
   "texto": "Uno."
@@ -95,21 +127,17 @@
   "voz": "guia",
   "texto": "Dos cajas de leche."
  },
- "lista_aceite_4": {
+ "lista_papel_4": {
   "voz": "guia",
-  "texto": "Cuatro botellas de aceite."
+  "texto": "Cuatro paquetes de papel higiénico."
  },
- "lista_bebida_3": {
+ "lista_shampoo_3": {
   "voz": "guia",
-  "texto": "Tres botellas de bebida."
+  "texto": "Tres botellas de shampoo."
  },
- "lista_tomate_5": {
+ "lista_jabon_5": {
   "voz": "guia",
-  "texto": "Cinco latas de salsa de tomate."
- },
- "lista_chocolate_2": {
-  "voz": "guia",
-  "texto": "Dos chocolates."
+  "texto": "Cinco jabones."
  },
  "r1_mal1_f": {
   "voz": "jugadora",
@@ -145,11 +173,11 @@
  },
  "rc_bien_f": {
   "voz": "jugadora",
-  "texto": "Claro. El aceite está en el pasillo dos. Venga, la acompaño."
+  "texto": "Claro. El aceite está en el pasillo uno, el de alimentos. Venga, la acompaño."
  },
  "rc_bien_n": {
   "voz": "jugadore",
-  "texto": "Claro. El aceite está en el pasillo dos. Venga, la acompaño."
+  "texto": "Claro. El aceite está en el pasillo uno, el de alimentos. Venga, la acompaño."
  },
  "rc_nose_f": {
   "voz": "jugadora",
@@ -159,12 +187,12 @@
   "voz": "jugadore",
   "texto": "No sé. Pregúntele a otro."
  },
- "rc_p3_f": {
+ "rc_p2_f": {
   "voz": "jugadora",
-  "texto": "Está en el pasillo tres."
+  "texto": "Está en el pasillo dos."
  },
- "rc_p3_n": {
+ "rc_p2_n": {
   "voz": "jugadore",
-  "texto": "Está en el pasillo tres."
+  "texto": "Está en el pasillo dos."
  }
 }

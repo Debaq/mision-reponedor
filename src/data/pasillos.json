@@ -1,0 +1,42 @@
+{
+  "alimentos": {
+    "n": 1,
+    "nombre": "Alimentos",
+    "color": "#dd6b20",
+    "muestra": [
+      "aceite",
+      "atun",
+      "leche"
+    ]
+  },
+  "bebidas": {
+    "n": 2,
+    "nombre": "Bebidas",
+    "color": "#3182ce",
+    "muestra": [
+      "bebida",
+      "jugo",
+      "agua"
+    ]
+  },
+  "limpieza": {
+    "n": 3,
+    "nombre": "Limpieza",
+    "color": "#319795",
+    "muestra": [
+      "detergente",
+      "cloro",
+      "lavaloza"
+    ]
+  },
+  "higiene": {
+    "n": 4,
+    "nombre": "Higiene",
+    "color": "#d53f8c",
+    "muestra": [
+      "papel",
+      "shampoo",
+      "jabon"
+    ]
+  }
+}

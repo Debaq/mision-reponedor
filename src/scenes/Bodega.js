@@ -36,7 +36,10 @@ export default class Bodega extends Phaser.Scene {
     this.terminado = false;
 
     this.dibujarRack();
-    const ids = Phaser.Utils.Array.Shuffle(Object.keys(productos));
+    // 12 cajas: las de la lista y otras al azar.
+    const enLista = lista.map((it) => it.p);
+    const otros = Phaser.Utils.Array.Shuffle(Object.keys(productos).filter((p) => !enLista.includes(p)));
+    const ids = Phaser.Utils.Array.Shuffle([...enLista, ...otros.slice(0, COLS.length * FILAS.length - enLista.length)]);
     this.cajas = {};
     ids.forEach((p, i) => this.crearCaja(p, COLS[i % 4], FILAS[Math.floor(i / 4)]));
 

@@ -8,6 +8,7 @@ import Avatar from './scenes/Avatar.js';
 import Contrato from './scenes/Contrato.js';
 import Supervisor from './scenes/Supervisor.js';
 import Lista from './scenes/Lista.js';
+import Mapa from './scenes/Mapa.js';
 import Bodega from './scenes/Bodega.js';
 import Traslado from './scenes/Traslado.js';
 import Sala from './scenes/Sala.js';
@@ -29,7 +30,7 @@ function iniciar() {
     backgroundColor: '#1f2d3a',
     dom: { createContainer: true },
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-    scene: [Boot, Inicio, Etapas, Avatar, Contrato, Supervisor, Lista, Bodega, Traslado, Sala,
+    scene: [Boot, Inicio, Etapas, Avatar, Contrato, Supervisor, Lista, Mapa, Bodega, Traslado, Sala,
       Ordenes, Derrame, Basura, Vencidos, Cliente, Fin, Hud],
   });
   pausarEnVertical(juego);

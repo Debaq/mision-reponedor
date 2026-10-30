@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "voces": "uv run --with edge-tts python tools/gen_voces.py"
+    "voces": "uv run --with edge-tts python tools/gen_voces.py",
+    "productos": "uv run --with pillow python tools/productos.py"
   },
   "dependencies": {
     "phaser": "^3.90.0"

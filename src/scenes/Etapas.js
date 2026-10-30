@@ -12,11 +12,13 @@ export default class Etapas extends Phaser.Scene {
   create() {
     this.add.text(ANCHO / 2, 50, 'Elegir etapa (docente)', estiloTexto(40, '#ffffff')).setOrigin(0.5);
     const conTitulo = FLUJO.map((p, i) => ({ ...p, i })).filter((p) => p.titulo);
+    const porColumna = Math.ceil(conTitulo.length / 2);
+    const paso = Math.min(76, 540 / porColumna);
     conTitulo.forEach((p, n) => {
-      const col = n < 7 ? 0 : 1;
-      const fila = n < 7 ? n : n - 7;
-      boton(this, 340 + col * 600, 130 + fila * 76, {
-        texto: p.titulo, ancho: 560, alto: 64, tam: 22, color: COLOR.azul,
+      const col = Math.floor(n / porColumna);
+      const fila = n % porColumna;
+      boton(this, 340 + col * 600, 120 + fila * paso, {
+        texto: p.titulo, ancho: 560, alto: paso - 10, tam: 22, color: COLOR.azul,
         onClick: () => irA(this, p.i),
       });
     });

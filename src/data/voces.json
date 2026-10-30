@@ -422,27 +422,31 @@
   },
   "cartel_1": {
     "voz": "guia",
-    "texto": "Pasillo uno: lácteos. Leche y queso."
+    "texto": "Pasillo uno: alimentos. Aceite, atún, leche y más."
   },
   "cartel_2": {
     "voz": "guia",
-    "texto": "Pasillo dos: abarrotes. Aceite, atún y salsa de tomate."
+    "texto": "Pasillo dos: bebidas. Bebidas, jugos y agua."
   },
   "cartel_3": {
     "voz": "guia",
-    "texto": "Pasillo tres: bebidas y jugos."
+    "texto": "Pasillo tres: limpieza. Detergente, cloro y lavaloza."
+  },
+  "cartel_4": {
+    "voz": "guia",
+    "texto": "Pasillo cuatro: higiene. Papel higiénico, shampoo y jabón."
   },
   "rc_bien": {
     "voz": "jugador",
-    "texto": "Claro. El aceite está en el pasillo dos. Venga, la acompaño."
+    "texto": "Claro. El aceite está en el pasillo uno, el de alimentos. Venga, la acompaño."
   },
   "rc_nose": {
     "voz": "jugador",
     "texto": "No sé. Pregúntele a otro."
   },
-  "rc_p3": {
+  "rc_p2": {
     "voz": "jugador",
-    "texto": "Está en el pasillo tres."
+    "texto": "Está en el pasillo dos."
   },
   "cliente_gracias": {
     "voz": "cliente",
@@ -456,9 +460,9 @@
     "voz": "guia",
     "texto": "Siempre ayudamos con amabilidad a quienes vienen a comprar. Si no sabes, mira los carteles o pregunta al supervisor. Intenta otra vez."
   },
-  "guia_cliente_p3": {
+  "guia_cliente_p2": {
     "voz": "guia",
-    "texto": "Revisa los carteles. En el pasillo tres están las bebidas. El aceite está con los abarrotes. Intenta otra vez."
+    "texto": "Revisa los carteles. En el pasillo dos están las bebidas. El aceite está con los alimentos, en el pasillo uno. Intenta otra vez."
   },
   "fin_jefe": {
     "voz": "jefe",
@@ -547,5 +551,37 @@
   "tiempo_fin": {
     "voz": "jefe",
     "texto": "Se acabó el tiempo. Termina la tarea igual. La próxima vez, un poco más rápido."
+  },
+  "mapa_bodega": {
+    "voz": "guia",
+    "texto": "Este es el mapa del supermercado. Primero hay que ir a la bodega a buscar los productos. Toca la bodega."
+  },
+  "mapa_pasillo": {
+    "voz": "guia",
+    "texto": "Ahora lleva el carro a la sala de ventas. Mira los productos de tu lista, a la izquierda, y toca el pasillo donde van."
+  },
+  "mapa_mal": {
+    "voz": "guia",
+    "texto": "Ahí no es. Mira los dibujos y prueba otra vez."
+  },
+  "zona_bodega": {
+    "voz": "guia",
+    "texto": "Bodega."
+  },
+  "zona_alimentos": {
+    "voz": "guia",
+    "texto": "Pasillo uno: alimentos."
+  },
+  "zona_bebidas": {
+    "voz": "guia",
+    "texto": "Pasillo dos: bebidas."
+  },
+  "zona_limpieza": {
+    "voz": "guia",
+    "texto": "Pasillo tres: limpieza."
+  },
+  "zona_higiene": {
+    "voz": "guia",
+    "texto": "Pasillo cuatro: higiene personal."
   }
 }
