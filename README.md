@@ -14,6 +14,21 @@ npm run build      # genera dist/ (sitio estático: GitHub Pages, itch.io, Netli
 
 En la pantalla de inicio, el botón **Etapas** permite al docente saltar a cualquier parte del juego.
 
+## Publicar una actualización
+
+Cada build lleva una versión automática: `versión de package.json + commit de git` (por ejemplo `0.1.0+7bc38a4`). Se ve abajo a la izquierda en la pantalla de inicio.
+
+1. Hacer commit de los cambios (el hash del commit forma parte de la versión).
+2. Opcional: `npm version patch` para subir el número (0.1.0 → 0.1.1).
+3. `npm run build` y subir la carpeta `dist/` completa.
+
+No hace falta que nadie fuerce la recarga:
+
+- Al abrir, el juego consulta `version.json` sin caché. Si hay una versión más nueva, recarga solo.
+- Imágenes y audios se piden con `?v=<versión>`, así que se descargan de nuevo cuando cambian.
+- El código JS ya lleva un hash en el nombre, gracias a Vite.
+- `public/_headers` le indica a Netlify y Cloudflare Pages que no guarden en caché `index.html` ni `version.json`.
+
 ## Etapas (según el documento)
 
 1. Crear personaje: nombre, hombre / mujer / no binario, piel, pelo y ropa. Se valida la vestimenta: pantalón largo y chaleco.

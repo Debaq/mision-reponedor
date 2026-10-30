@@ -6,6 +6,8 @@ import { voz } from '../lib/voz.js';
 import { irA } from '../lib/flujo.js';
 import { crearPersonaje } from '../lib/personaje.js';
 import { AVATAR_INICIAL } from '../lib/estado.js';
+import { VERSION } from '../lib/version.js';
+import { pantallaCompleta } from '../lib/movil.js';
 
 export default class Inicio extends Phaser.Scene {
   constructor() {
@@ -28,12 +30,15 @@ export default class Inicio extends Phaser.Scene {
     const jugar = boton(this, ANCHO / 2 + 80, 500, {
       icono: 'ui_right', texto: 'COMENZAR', ancho: 380, alto: 120, tam: 44,
       onClick: async () => {
+        pantallaCompleta(this);
         jugar.setActivo(false);
         await voz.decir('inicio_bienvenida');
         irA(this, 0);
       },
     });
     this.tweens.add({ targets: jugar, scale: 1.06, duration: 700, yoyo: true, repeat: -1 });
+
+    this.add.text(16, ALTO - 12, 'v' + VERSION, estiloTexto(14, '#ffffff', { fontStyle: 'normal' })).setOrigin(0, 1).setAlpha(0.6);
 
     boton(this, ANCHO - 120, ALTO - 60, {
       icono: 'ui_information', texto: 'Etapas', ancho: 190, alto: 70, tam: 24, color: COLOR.gris,

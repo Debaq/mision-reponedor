@@ -70,7 +70,7 @@ export default class Avatar extends Phaser.Scene {
   }
 
   crearFila(x, y, [clave, linea, etiqueta, mostrar]) {
-    panel(this, x, y, 340, 70, 0xffffff, 14);
+    panel(this, x, y, 350, 74, 0xffffff, 14);
     // Etiqueta: al tocarla se escucha.
     const lbl = this.add.text(x - 30, y - 16, etiqueta, estiloTexto(19, '#4a5568')).setOrigin(0.5).setInteractive({ useHandCursor: true });
     lbl.on('pointerup', () => voz.decir(linea));
@@ -91,9 +91,10 @@ export default class Avatar extends Phaser.Scene {
       actualizarPersonaje(this, this.muneco, this.cfg);
       this.refrescarFila(clave);
     };
-    boton(this, x - 132, y, { icono: 'ui_left', ancho: 64, alto: 56, color: COLOR.azul, onClick: () => cambiar(-1) });
-    boton(this, x + 92, y, { icono: 'ui_right', ancho: 64, alto: 56, color: COLOR.azul, onClick: () => cambiar(1) });
-    this.add.image(x + 145, y, 'ui_audioOn').setDisplaySize(30, 30).setTint(0x2b6cb0)
+    // Flechas grandes: en celular deben quedar de ~40 px para tocarlas fácil.
+    boton(this, x - 132, y, { icono: 'ui_left', ancho: 74, alto: 66, color: COLOR.azul, onClick: () => cambiar(-1) });
+    boton(this, x + 94, y, { icono: 'ui_right', ancho: 74, alto: 66, color: COLOR.azul, onClick: () => cambiar(1) });
+    this.add.image(x + 152, y, 'ui_audioOn').setDisplaySize(28, 28).setTint(0x2b6cb0)
       .setInteractive({ useHandCursor: true }).on('pointerup', () => voz.decir(linea));
   }
 

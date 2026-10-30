@@ -3,6 +3,7 @@ import { ANCHO, ALTO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { LINEAS, voz } from '../lib/voz.js';
 import { SFX } from '../lib/sfx.js';
 import productos from '../data/productos.json';
+import { conVersion as v } from '../lib/version.js';
 
 const ICONOS = ['audioOn', 'checkmark', 'cross', 'home', 'information', 'left', 'next', 'phone', 'question',
   'return', 'right', 'shoppingCart', 'star', 'trashcan', 'warning'];
@@ -25,14 +26,14 @@ export default class Boot extends Phaser.Scene {
     this.load.setPath('assets/');
     for (const [clave, archivo] of [['piel', 'skin'], ['cara', 'face'], ['pelo', 'hair'], ['polera', 'shirts'],
       ['pantalon', 'pants'], ['zapatos', 'shoes']]) {
-      this.load.atlasXML(clave, `personaje/sheet_${archivo}.png`, `personaje/sheet_${archivo}.xml`);
+      this.load.atlasXML(clave, v(`personaje/sheet_${archivo}.png`), v(`personaje/sheet_${archivo}.xml`));
     }
-    this.load.image('chaleco', 'personaje/chaleco.png');
-    for (const id of Object.keys(productos)) this.load.image('prod_' + id, `productos/${id}.png`);
-    for (const id of ['basura_lata', 'basura_envoltorio', 'basura_manzana', 'basura_vaso']) this.load.image(id, `productos/${id}.png`);
-    for (const i of ICONOS) this.load.image('ui_' + i, `ui/${i}.png`);
-    for (const s of Object.values(SFX)) this.load.audio('sfx_' + s, `sfx/${s}.mp3`);
-    for (const id of Object.keys(LINEAS)) this.load.audio('v_' + id, `audio/voces/${id}.mp3`);
+    this.load.image('chaleco', v('personaje/chaleco.png'));
+    for (const id of Object.keys(productos)) this.load.image('prod_' + id, v(`productos/${id}.png`));
+    for (const id of ['basura_lata', 'basura_envoltorio', 'basura_manzana', 'basura_vaso']) this.load.image(id, v(`productos/${id}.png`));
+    for (const i of ICONOS) this.load.image('ui_' + i, v(`ui/${i}.png`));
+    for (const s of Object.values(SFX)) this.load.audio('sfx_' + s, v(`sfx/${s}.mp3`));
+    for (const id of Object.keys(LINEAS)) this.load.audio('v_' + id, v(`audio/voces/${id}.mp3`));
   }
 
   create() {
