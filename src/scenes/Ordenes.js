@@ -3,22 +3,25 @@ import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoSala } from '../lib/fondos.js';
 import { boton, marca, panel, sacudir } from '../lib/ui.js';
 import { basurero, herramienta } from '../lib/objetos.js';
+import { etiquetaPrecio } from '../lib/gondola.js';
 import { crearPersonaje, SUPERVISOR } from '../lib/personaje.js';
 import { estado } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
-import { indiceDe, irA, siguiente } from '../lib/flujo.js';
+import { FLUJO, indiceDe, irA, siguiente } from '../lib/flujo.js';
 
 const TAREAS = {
   derrame: { escena: 'Derrame', nombre: 'Derrame' },
   basura: { escena: 'Basura', nombre: 'Basura' },
   vencidos: { escena: 'Vencidos', nombre: 'Vencidos' },
+  precios: { escena: 'Precios', nombre: 'Precios' },
+  faltantes: { escena: 'Faltantes', nombre: 'Faltantes' },
 };
-const PUESTOS = [450, 700, 950];
+const PUESTOS = { 2: [575, 825], 3: [450, 700, 950] };
 const Y_TARJETA = 320;
 
-// Instrucciones consecutivas: el supervisor encarga tres tareas en un orden (al azar en cada partida)
-// y el jugador debe elegirlas en ese orden. Después de cada tarea se vuelve a este tablero.
+// Instrucciones consecutivas: el supervisor encarga dos o tres tareas (datos.tareas) en un orden
+// al azar y el jugador debe elegirlas en ese orden. Después de cada tarea se vuelve a este tablero.
 export default class Ordenes extends Phaser.Scene {
   constructor() {
     super('Ordenes');
@@ -43,12 +46,14 @@ export default class Ordenes extends Phaser.Scene {
       onClick: () => this.elegible && this.explicar(false),
     });
 
-    if (!data.volver || !estado.ordenes) {
-      estado.ordenes = { lista: Phaser.Utils.Array.Shuffle(Object.keys(TAREAS)), hechas: 0, errores: 0 };
+    const bloque = FLUJO[estado.paso].id;
+    if (!data.volver || estado.ordenes?.bloque !== bloque) {
+      estado.ordenes = { bloque, lista: Phaser.Utils.Array.Shuffle([...data.tareas]), hechas: 0, errores: 0 };
     }
+    this.puestos = PUESTOS[data.tareas.length];
     this.erroresEleccion = 0;
     this.tarjetas = {};
-    for (const id of Object.keys(TAREAS)) this.tarjetas[id] = this.crearTarjeta(id);
+    for (const id of data.tareas) this.tarjetas[id] = this.crearTarjeta(id);
 
     const o = estado.ordenes;
     if (o.hechas === 0 && !data.volver) {
@@ -64,7 +69,7 @@ export default class Ordenes extends Phaser.Scene {
   }
 
   crearTarjeta(id) {
-    const c = this.add.container(PUESTOS[0], Y_TARJETA);
+    const c = this.add.container(this.puestos[0], Y_TARJETA);
     const g = this.add.graphics();
     g.fillStyle(0x000000, 0.25).fillRoundedRect(-104, -124, 208, 260, 18);
     g.fillStyle(0xffffff, 1).fillRoundedRect(-104, -130, 208, 260, 18);
@@ -100,6 +105,17 @@ export default class Ordenes extends Phaser.Scene {
       d.add([basurero(this, 20, 10).setScale(0.75),
         this.add.image(-52, 46, 'basura_lata').setDisplaySize(44, 44).setAngle(-30),
         this.add.image(-48, -10, 'basura_envoltorio').setDisplaySize(40, 40)]);
+    } else if (id === 'precios') {
+      const oferta = this.add.graphics();
+      oferta.fillStyle(COLOR.rojo, 1).fillRoundedRect(-70, -70, 140, 50, 10);
+      d.add([oferta, this.add.text(0, -45, 'OFERTA', estiloTexto(22, '#ffffff')).setOrigin(0.5),
+        etiquetaPrecio(this, 0, 20, 'cloro', '$990', true).setScale(1.2)]);
+    } else if (id === 'faltantes') {
+      const g = this.add.graphics();
+      g.fillStyle(0xdfe6ec, 1).fillRect(-80, -60, 160, 110);
+      g.fillStyle(0x8795a1, 1).fillRect(-86, -6, 172, 8).fillRect(-86, 50, 172, 8);
+      g.lineStyle(3, COLOR.rojo, 1).strokeCircle(40, -30, 26).strokeCircle(40, 26, 26);
+      d.add([g, ...[-50, -10].flatMap((x) => [this.add.image(x, -30, 'prod_jugo').setDisplaySize(40, 40), this.add.image(x, 26, 'prod_jugo').setDisplaySize(40, 40)])]);
     } else {
       const g = this.add.graphics();
       g.fillStyle(0xffffff, 1).fillRoundedRect(8, -62, 76, 80, 10);
@@ -115,14 +131,14 @@ export default class Ordenes extends Phaser.Scene {
   // Coloca las tarjetas: en orden con su número (explicación) o mezcladas (para elegir).
   ubicar(mezclar, animar = true) {
     const o = estado.ordenes;
-    let puestos = [0, 1, 2];
+    let puestos = o.lista.map((_, i) => i);
     if (mezclar) {
       // Que el orden en pantalla no coincida con el pedido (si no, se adivina de izquierda a derecha).
       do Phaser.Utils.Array.Shuffle(puestos); while (puestos.every((p, i) => p === i));
     }
     o.lista.forEach((id, i) => {
       const t = this.tarjetas[id];
-      const x = PUESTOS[puestos[i]];
+      const x = this.puestos[puestos[i]];
       if (animar) this.tweens.add({ targets: t, x, duration: 500, ease: 'Sine.easeInOut' });
       else t.x = x;
       const hecha = i < o.hechas;
@@ -138,7 +154,7 @@ export default class Ordenes extends Phaser.Scene {
     this.repetir.setActivo(false);
     this.ubicar(false);
     const o = estado.ordenes;
-    if (primera && !(await voz.decir('orden_intro'))) return;
+    if (primera && !(await voz.decir(o.lista.length === 2 ? 'orden_intro_2' : 'orden_intro'))) return;
     for (let i = 0; i < o.lista.length; i++) {
       const t = this.tarjetas[o.lista[i]];
       this.tweens.add({ targets: t, scale: 1.1, duration: 250, yoyo: true, repeat: 1 });
@@ -192,7 +208,7 @@ export default class Ordenes extends Phaser.Scene {
   async terminar() {
     this.repetir.setVisible(false);
     sfx(this, 'logro');
-    if (!(await voz.decir('orden_listo'))) return;
+    if (!(await voz.decir(estado.ordenes.lista.length === 2 ? 'orden_listo_2' : 'orden_listo'))) return;
     estado.erroresPaso = estado.ordenes.errores;
     estado.ordenes = null;
     siguiente(this);

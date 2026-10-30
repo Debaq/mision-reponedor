@@ -583,5 +583,85 @@
   "zona_higiene": {
     "voz": "guia",
     "texto": "Pasillo cuatro: higiene personal."
+  },
+  "orden_intro_2": {
+    "voz": "jefe",
+    "texto": "Ahora te voy a dar dos tareas más. Escucha bien el orden."
+  },
+  "orden_listo_2": {
+    "voz": "jefe",
+    "texto": "¡Hiciste las dos tareas, y en orden! Muy bien."
+  },
+  "tarea_precios": {
+    "voz": "jefe",
+    "texto": "Cambia los precios del pasillo de limpieza."
+  },
+  "tarea_faltantes": {
+    "voz": "jefe",
+    "texto": "Revisa qué falta en el pasillo de bebidas."
+  },
+  "precios_jefe": {
+    "voz": "jefe",
+    "texto": "Cambiaron los precios del pasillo de limpieza. Hay que poner las etiquetas nuevas."
+  },
+  "precios_instr": {
+    "voz": "guia",
+    "texto": "Arrastra cada etiqueta amarilla hasta el producto que tiene el mismo dibujo. La etiqueta nueva tapa la vieja."
+  },
+  "precios_mal": {
+    "voz": "guia",
+    "texto": "Esa etiqueta no va ahí. Mira el dibujo de la etiqueta y busca el mismo producto."
+  },
+  "precios_oferta": {
+    "voz": "jefe",
+    "texto": "¡Bien! Ahora el cloro está en oferta. Cuelga el cartel rojo arriba del cloro."
+  },
+  "oferta_mal": {
+    "voz": "guia",
+    "texto": "La oferta no es de ese producto. Mira el dibujo del cartel."
+  },
+  "precios_fin": {
+    "voz": "jefe",
+    "texto": "¡Perfecto! Ahora los clientes ven los precios correctos."
+  },
+  "faltan_jefe": {
+    "voz": "jefe",
+    "texto": "Revisa el pasillo de bebidas. Quiero saber qué productos faltan."
+  },
+  "faltan_instr": {
+    "voz": "guia",
+    "texto": "Mira la estantería. Toca los productos que tienen espacios vacíos."
+  },
+  "faltan_lleno": {
+    "voz": "guia",
+    "texto": "Ahí no falta nada, está completo. Busca los espacios vacíos."
+  },
+  "faltan_listo": {
+    "voz": "guia",
+    "texto": "Ya anotaste lo que falta. Ahora vamos a la bodega a ver si queda."
+  },
+  "faltan_bodega": {
+    "voz": "guia",
+    "texto": "Toca la caja de cada producto de tu lista para ver si queda."
+  },
+  "faltan_hay": {
+    "voz": "guia",
+    "texto": "Sí queda. Después se repone."
+  },
+  "faltan_nohay": {
+    "voz": "guia",
+    "texto": "Esa caja está vacía, no queda nada. Toca el botón para avisarle al jefe."
+  },
+  "faltan_aviso": {
+    "voz": "jefe",
+    "texto": "Gracias por avisarme. Voy a pedir más al proveedor."
+  },
+  "faltan_no_lista": {
+    "voz": "guia",
+    "texto": "Ese producto no falta en la sala. Busca los de tu lista."
+  },
+  "faltan_fin": {
+    "voz": "jefe",
+    "texto": "¡Muy bien! Así sabemos qué hay que pedir."
   }
 }

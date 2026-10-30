@@ -17,6 +17,8 @@ import Derrame from './scenes/Derrame.js';
 import Basura from './scenes/Basura.js';
 import Vencidos from './scenes/Vencidos.js';
 import Cliente from './scenes/Cliente.js';
+import Precios from './scenes/Precios.js';
+import Faltantes from './scenes/Faltantes.js';
 import Fin from './scenes/Fin.js';
 import { revisarVersion, VERSION } from './lib/version.js';
 import { pausarEnVertical } from './lib/movil.js';
@@ -31,7 +33,7 @@ function iniciar() {
     dom: { createContainer: true },
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [Boot, Inicio, Etapas, Avatar, Contrato, Supervisor, Lista, Mapa, Bodega, Traslado, Sala,
-      Ordenes, Derrame, Basura, Vencidos, Cliente, Fin, Hud],
+      Ordenes, Derrame, Basura, Vencidos, Cliente, Precios, Faltantes, Fin, Hud],
   });
   pausarEnVertical(juego);
   // Para depurar desde la consola del navegador (solo en desarrollo).

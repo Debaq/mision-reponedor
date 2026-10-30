@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { COLOR, estiloTexto } from './estilo.js';
 import { sfx } from './sfx.js';
 import { voz } from './voz.js';
+import pasillos from '../data/pasillos.json';
 
 // Rectángulo redondeado con sombra.
 export function panel(scene, x, y, w, h, color = COLOR.papel, radio = 18, sombra = true) {
@@ -139,4 +140,19 @@ export function dibujarReloj(g, x, y, r, color = COLOR.oscuro) {
   g.lineStyle(Math.max(2, r / 5), color, 1).strokeCircle(x, y, r);
   g.lineStyle(Math.max(2, r / 6), color, 1).lineBetween(x, y, x, y - r * 0.6).lineBetween(x, y, x + r * 0.45, y + r * 0.1);
   return g;
+}
+
+// Letrero colgante del pasillo (arriba a la derecha por defecto). Al tocarlo dice su nombre.
+export function letreroPasillo(scene, id, x = 1197, y = 150) {
+  const p = pasillos[id];
+  const c = scene.add.container(x, y);
+  const g = scene.add.graphics();
+  g.lineStyle(4, 0x5f6b78, 1).lineBetween(-36, -84, -36, -50).lineBetween(36, -84, 36, -50);
+  g.fillStyle(parseInt(p.color.slice(1), 16), 1).fillRoundedRect(-62, -50, 124, 110, 14);
+  g.fillStyle(0xffffff, 1).fillCircle(0, -14, 26);
+  c.add([g, scene.add.text(0, -14, String(p.n), estiloTexto(34)).setOrigin(0.5),
+    scene.add.text(0, 36, p.nombre.toUpperCase(), estiloTexto(17, '#ffffff')).setOrigin(0.5)]);
+  c.setSize(124, 110).setInteractive({ useHandCursor: true });
+  c.on('pointerup', () => voz.decir('zona_' + id));
+  return c;
 }

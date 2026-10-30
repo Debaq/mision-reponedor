@@ -4,7 +4,7 @@ import { voz } from './voz.js';
 
 // Orden de las etapas del juego (secuencia del documento).
 // Las etapas con `id` dan estrellas y puntos al terminar; `nombre` es el que aparece en el resumen final.
-// `enOrden`: tarea que el supervisor encarga desde la escena Órdenes (al terminar se vuelve al tablero).
+// `enOrden`: id de la etapa Órdenes que encarga esta tarea (al terminarla se vuelve a ese tablero).
 // `datos.tiempo`: segundos para hacer la tarea (el jefe lo anuncia y aparece el reloj).
 export const FLUJO = [
   { escena: 'Avatar', titulo: '1. Crear personaje', id: 'avatar', nombre: 'Vestimenta' },
@@ -22,11 +22,14 @@ export const FLUJO = [
   { escena: 'Mapa', datos: { nivel: 'practica', destino: 'pasillo' }, titulo: '6. Práctica: mapa', id: 'mapa', nombre: 'Mapa' },
   { escena: 'Traslado', datos: { nivel: 'practica' } },
   { escena: 'Sala', datos: { nivel: 'practica' }, titulo: '6. Práctica: estantería', id: 'sala_practica', nombre: 'Estante · práctica' },
-  { escena: 'Ordenes', titulo: '7. Órdenes del supervisor', id: 'ordenes', nombre: 'Orden de tareas' },
-  { escena: 'Derrame', datos: { tiempo: 60 }, titulo: '7. Tarea: limpiar derrame', id: 'derrame', nombre: 'Derrame', enOrden: true },
-  { escena: 'Basura', datos: { tiempo: 45 }, titulo: '7. Tarea: recoger basura', id: 'basura', nombre: 'Basura', enOrden: true },
-  { escena: 'Vencidos', datos: { tiempo: 90 }, titulo: '7. Tarea: productos vencidos', id: 'vencidos', nombre: 'Vencidos', enOrden: true },
+  { escena: 'Ordenes', datos: { tareas: ['derrame', 'basura', 'vencidos'] }, titulo: '7. Órdenes del supervisor (1)', id: 'ordenes', nombre: 'Órdenes 1' },
+  { escena: 'Derrame', datos: { tiempo: 60 }, titulo: '7. Tarea: limpiar derrame', id: 'derrame', nombre: 'Derrame', enOrden: 'ordenes' },
+  { escena: 'Basura', datos: { tiempo: 45 }, titulo: '7. Tarea: recoger basura', id: 'basura', nombre: 'Basura', enOrden: 'ordenes' },
+  { escena: 'Vencidos', datos: { tiempo: 90 }, titulo: '7. Tarea: productos vencidos', id: 'vencidos', nombre: 'Vencidos', enOrden: 'ordenes' },
   { escena: 'Cliente', titulo: '7. Tarea: orientar a un cliente', id: 'cliente', nombre: 'Atención cliente' },
+  { escena: 'Ordenes', datos: { tareas: ['precios', 'faltantes'] }, titulo: '8. Órdenes del supervisor (2)', id: 'ordenes_2', nombre: 'Órdenes 2' },
+  { escena: 'Precios', datos: { tiempo: 60 }, titulo: '8. Tarea: precios y ofertas', id: 'precios', nombre: 'Precios', enOrden: 'ordenes_2' },
+  { escena: 'Faltantes', datos: { tiempo: 90 }, titulo: '8. Tarea: revisar faltantes', id: 'faltantes', nombre: 'Faltantes', enOrden: 'ordenes_2' },
   { escena: 'Fin', titulo: 'Fin del turno' },
 ];
 
@@ -56,11 +59,11 @@ export function irA(scene, indice, extra = {}) {
 // Etapa que viene después de la actual.
 function proxima() {
   const paso = FLUJO[estado.paso];
-  // Tarea encargada desde Órdenes: volver al tablero.
-  if (paso.enOrden && estado.ordenes) return { indice: indiceDe('Ordenes'), extra: { volver: true } };
+  // Tarea encargada desde Órdenes: volver a su tablero.
+  if (paso.enOrden && estado.ordenes) return { indice: FLUJO.findIndex((p) => p.id === paso.enOrden), extra: { volver: true } };
   let i = estado.paso + 1;
-  // Desde Órdenes (ya terminadas): saltar las tareas, que se hicieron desde el tablero.
-  if (paso.escena === 'Ordenes') while (FLUJO[i].enOrden) i++;
+  // Desde Órdenes (ya terminadas): saltar sus tareas, que se hicieron desde el tablero.
+  if (paso.escena === 'Ordenes') while (FLUJO[i].enOrden === paso.id) i++;
   return { indice: Math.min(i, FLUJO.length - 1) };
 }
 

@@ -38,7 +38,8 @@ No hace falta que nadie fuerce la recarga:
 5. Tutorial guiado: identificar, buscar en la bodega, seleccionar y contar, trasladar, ubicar en la estantería, ordenar.
 6. Práctica sin ayuda con una lista nueva, en el pasillo de higiene.
 7. Órdenes del supervisor: encarga tres tareas en un orden al azar (derrame, basura, vencidos) y hay que elegirlas en ese orden; cada una tiene tiempo límite. Después, orientar a una clienta.
-8. Fin del turno, con estrellas, puntos y errores por etapa.
+8. Segundas órdenes (dos tareas): cambiar etiquetas de precio y colgar el cartel de oferta (pasillo de limpieza), y revisar faltantes en el pasillo de bebidas y verificar en la bodega si quedan (si no, avisar al jefe).
+9. Fin del turno, con estrellas, puntos y errores por etapa.
 
 ## Estrellas y puntos
 

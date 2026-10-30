@@ -42,10 +42,12 @@ export default class Fin extends Phaser.Scene {
     this.add.text(ANCHO / 2, 268, `★ ${t.estrellas} / ${jugadas.length * 3}     ${t.puntos} puntos${nuevoRecord ? '  ¡récord!' : ''}`,
       estiloTexto(24, '#553c9a')).setOrigin(0.5);
 
-    // Detalle por etapa (útil para el docente).
+    // Detalle por etapa (útil para el docente), en dos columnas.
+    const porColumna = Math.ceil(etapas.length / 2);
+    const alto = Math.min(36, 200 / (porColumna - 1));
     etapas.forEach((p, i) => {
-      const x = ANCHO / 2 - 340 + Math.floor(i / 6) * 360;
-      const y = 310 + (i % 6) * 36;
+      const x = ANCHO / 2 - 340 + Math.floor(i / porColumna) * 360;
+      const y = 302 + (i % porColumna) * alto;
       const r = estado.resultados[p.id];
       this.add.text(x, y, p.nombre, estiloTexto(18)).setOrigin(0, 0.5);
       if (!r) {
