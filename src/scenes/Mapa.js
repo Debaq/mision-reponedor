@@ -8,14 +8,13 @@ import { sfx } from '../lib/sfx.js';
 import { siguiente } from '../lib/flujo.js';
 import niveles from '../data/niveles.json';
 import pasillos from '../data/pasillos.json';
+import MAPA from '../data/mapa.json';
 
-const BODEGA = { x: 690, y: 135, ancho: 900, alto: 110 };
-const PASILLO = { y: 370, ancho: 200, alto: 270, x0: 330, paso: 240 };
-const ENTRADA = { x: 690, y: 560 };
 const color = (hex) => parseInt(hex.slice(1), 16);
+const NOMBRE_BODEGA = { n: null, nombre: 'Bodega', color: '#3d4852' };
 
-// Mapa del supermercado (vista desde arriba): el jugador toca adónde ir.
-// datos: { nivel, destino: 'bodega' | 'pasillo', guiado }
+// Mapa del supermercado (render isométrico hecho en Blender: tools/gen_mapa.py).
+// El jugador toca adónde ir. datos: { nivel, destino: 'bodega' | 'pasillo', guiado }
 export default class Mapa extends Phaser.Scene {
   constructor() {
     super('Mapa');
@@ -30,64 +29,52 @@ export default class Mapa extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(300);
     this.listo = false;
+    this.add.image(0, 0, 'mapa').setOrigin(0).setDisplaySize(ANCHO, 720);
     this.ind = new Indicador(this);
-    this.add.graphics().fillStyle(0xf4efe6, 1).fillRect(0, 0, ANCHO, 720);
     this.zonas = {};
-
-    this.crearBodega();
-    Object.entries(pasillos).forEach(([id, p], i) => this.crearPasillo(id, p, PASILLO.x0 + i * PASILLO.paso));
-
-    // Entrada (abajo)
-    const g = this.add.graphics();
-    g.fillStyle(0xd8d2c6, 1).fillRect(BODEGA.x - BODEGA.ancho / 2, 520, BODEGA.ancho, 70);
-    g.fillStyle(0x9fd3ef, 1).fillRect(ENTRADA.x - 90, 580, 180, 14);
-    this.add.text(ENTRADA.x + 150, 555, 'ENTRADA', estiloTexto(18, '#718096')).setOrigin(0.5);
-
+    this.crearZona('bodega', NOMBRE_BODEGA);
+    for (const [id, p] of Object.entries(pasillos)) this.crearZona(id, p);
     this.crearLista();
 
-    // El personaje parte en la entrada (va a la bodega) o en la bodega (lleva el carro).
-    const inicio = this.destino === 'bodega' ? ENTRADA : { x: BODEGA.x, y: BODEGA.y + 40 };
-    this.yo = crearPersonaje(this, inicio.x, inicio.y, estado.avatar, 0.13).setDepth(10);
-
+    // El personaje parte en la entrada (va a la bodega) o en la puerta de la bodega (lleva el carro).
+    const inicio = this.destino === 'bodega' ? MAPA.entrada.centro : MAPA.bodega.puerta;
+    this.yo = crearPersonaje(this, inicio[0], inicio[1] - 30, estado.avatar, 0.11).setDepth(6);
     this.intro();
   }
 
-  crearBodega() {
-    const { x, y, ancho, alto } = BODEGA;
-    panel(this, x, y, ancho, alto, 0x8a96a3, 14);
+  // Zona tocable (polígono calculado en Blender), con brillo al pasar y letrero con número y nombre.
+  crearZona(id, p) {
+    const z = MAPA[id];
+    const poli = new Phaser.Geom.Polygon(z.poligono.flat());
+    const brillo = this.add.graphics().setDepth(5);
+    const dibujar = (activo) => {
+      brillo.clear();
+      if (!activo) return;
+      brillo.fillStyle(0xffffff, 0.22).fillPoints(poli.points, true);
+      brillo.lineStyle(5, COLOR.amarillo, 1).strokePoints(poli.points, true);
+    };
+    const toque = this.add.zone(0, 0, ANCHO, 720).setOrigin(0).setInteractive(poli, Phaser.Geom.Polygon.Contains);
+    toque.input.cursor = 'pointer';
+    toque.on('pointerover', () => dibujar(true));
+    toque.on('pointerout', () => dibujar(false));
+    toque.on('pointerup', () => this.tocar(id, z));
+
+    // Letrero: píldora con número y nombre, sobre el letrero 3D.
+    const [lx, ly] = z.letrero;
+    const c = this.add.container(lx, ly).setDepth(8);
+    const ancho = 34 + p.nombre.length * 12 + (p.n ? 34 : 0);
     const g = this.add.graphics();
-    for (let i = 0; i < 6; i++) {
-      const cx = x - ancho / 2 + 90 + i * 150;
-      g.fillStyle(COLOR.cartonOscuro, 1).fillRect(cx - 36, y - 26, 72, 52);
-      g.fillStyle(COLOR.carton, 1).fillRect(cx - 33, y - 23, 66, 46);
+    g.fillStyle(0x000000, 0.25).fillRoundedRect(-ancho / 2 + 2, -19 + 4, ancho, 38, 19);
+    g.fillStyle(color(p.color), 1).fillRoundedRect(-ancho / 2, -19, ancho, 38, 19);
+    g.lineStyle(3, 0xffffff, 1).strokeRoundedRect(-ancho / 2, -19, ancho, 38, 19);
+    c.add(g);
+    let x = -ancho / 2 + 17;
+    if (p.n) {
+      c.add([this.add.circle(x + 6, 0, 14, 0xffffff), this.add.text(x + 6, 0, String(p.n), estiloTexto(20)).setOrigin(0.5)]);
+      x += 30;
     }
-    this.add.text(x, y - alto / 2 - 4, 'BODEGA', estiloTexto(24, '#ffffff', { backgroundColor: '#3d4852', padding: { x: 14, y: 4 } })).setOrigin(0.5);
-    this.zonas.bodega = this.crearZona('bodega', x, y, ancho, alto);
-  }
-
-  crearPasillo(id, p, x) {
-    const { y, ancho, alto } = PASILLO;
-    const g = this.add.graphics();
-    g.fillStyle(0xe7e1d6, 1).fillRect(x - ancho / 2, y - alto / 2, ancho, alto);
-    // Estanterías a los lados del pasillo
-    g.fillStyle(0x8795a1, 1).fillRect(x - ancho / 2, y - alto / 2 + 50, 30, alto - 60).fillRect(x + ancho / 2 - 30, y - alto / 2 + 50, 30, alto - 60);
-    // Letrero con número y nombre
-    g.fillStyle(color(p.color), 1).fillRoundedRect(x - ancho / 2, y - alto / 2, ancho, 48, 12);
-    g.fillStyle(0xffffff, 1).fillCircle(x - ancho / 2 + 26, y - alto / 2 + 24, 18);
-    this.add.text(x - ancho / 2 + 26, y - alto / 2 + 24, String(p.n), estiloTexto(24)).setOrigin(0.5);
-    this.add.text(x + 14, y - alto / 2 + 24, p.nombre.toUpperCase(), estiloTexto(19, '#ffffff')).setOrigin(0.5);
-    p.muestra.forEach((prod, k) => producto(this, x, y - 40 + k * 70, prod, 64));
-    this.zonas[id] = this.crearZona(id, x, y, ancho, alto);
-  }
-
-  crearZona(id, x, y, ancho, alto) {
-    const borde = this.add.graphics().setDepth(5);
-    const z = this.add.zone(x, y, ancho, alto).setInteractive({ useHandCursor: true });
-    z.on('pointerover', () => borde.clear().lineStyle(6, COLOR.amarillo, 1).strokeRoundedRect(x - ancho / 2, y - alto / 2, ancho, alto, 14));
-    z.on('pointerout', () => borde.clear());
-    z.on('pointerup', () => this.tocar(id, z));
-    z.centro = { x, y };
-    return z;
+    c.add(this.add.text(x, 0, p.nombre.toUpperCase(), estiloTexto(19, '#ffffff')).setOrigin(0, 0.5));
+    this.zonas[id] = z;
   }
 
   // Al llevar el carro: recordatorio de los productos de la lista, para buscar el pasillo con esos dibujos.
@@ -95,9 +82,9 @@ export default class Mapa extends Phaser.Scene {
     if (this.destino === 'bodega') return;
     const lista = this.nivel.lista;
     const alto = 60 + lista.length * 80;
-    panel(this, 100, 220 + alto / 2, 150, alto, COLOR.papel, 16);
-    this.add.image(100, 248, 'ui_shoppingCart').setDisplaySize(40, 40).setTint(COLOR.marca);
-    lista.forEach((it, i) => producto(this, 100, 310 + i * 80, it.p, 66));
+    panel(this, 1205, 200 + alto / 2, 130, alto, COLOR.papel, 16).setDepth(20);
+    this.add.image(1205, 228, 'ui_shoppingCart').setDisplaySize(40, 40).setTint(COLOR.marca).setDepth(21);
+    lista.forEach((it, i) => producto(this, 1205, 290 + i * 80, it.p, 66).setDepth(21));
   }
 
   async intro() {
@@ -107,8 +94,8 @@ export default class Mapa extends Phaser.Scene {
   }
 
   apuntar() {
-    const z = this.zonas[this.destino];
-    this.ind.apuntar(z.centro.x, z.centro.y, this.destino === 'bodega' ? 90 : 120);
+    const [x, y] = this.zonas[this.destino].centro;
+    this.ind.apuntar(x, y, this.destino === 'bodega' ? 90 : 80);
   }
 
   async tocar(id, z) {
@@ -124,14 +111,14 @@ export default class Mapa extends Phaser.Scene {
     }
     this.listo = true;
     this.ind.ocultar();
-    marca(this, z.centro.x, z.centro.y - 60, true);
+    const [x, y] = z.centro;
+    marca(this, x, y - 70, true);
     sfx(this, 'bien');
     voz.decir('zona_' + id);
     // Caminar hasta el lugar elegido.
-    const destino = id === 'bodega' ? { x: BODEGA.x, y: BODEGA.y + 40 } : { x: z.centro.x, y: z.centro.y + 60 };
-    this.tweens.add({ targets: this.yo, x: destino.x, y: destino.y, duration: 1200, ease: 'Sine.easeInOut' });
+    this.tweens.add({ targets: this.yo, x, y: y - 30, duration: 1300, ease: 'Sine.easeInOut' });
     this.tweens.add({ targets: this.yo, angle: { from: -4, to: 4 }, duration: 150, yoyo: true, repeat: 3 });
-    await new Promise((r) => this.time.delayedCall(1500, r));
+    await new Promise((r) => this.time.delayedCall(1600, r));
     siguiente(this);
   }
 }

@@ -77,6 +77,14 @@ npm run voces
 
 Solo se regeneran las líneas que cambiaron.
 
+## Mapa (Blender)
+
+El mapa del supermercado es un render isométrico modelado en `tools/gen_mapa.py` (bodega, cuatro pasillos con su color, cajas, entrada y clientes), siguiendo la imagen de referencia del documento. El script también calcula dónde queda cada zona en pantalla y lo guarda en `src/data/mapa.json`:
+
+```bash
+npm run mapa
+```
+
 ## Productos nuevos (Blender)
 
 Los productos de Kenney son de comida. Los de limpieza, higiene y el agua se modelan con formas simples en `tools/gen_productos.py` y se renderizan con Blender en el mismo estilo:

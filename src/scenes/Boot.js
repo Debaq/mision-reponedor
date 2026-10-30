@@ -28,6 +28,7 @@ export default class Boot extends Phaser.Scene {
       ['pantalon', 'pants'], ['zapatos', 'shoes']]) {
       this.load.atlasXML(clave, v(`personaje/sheet_${archivo}.png`), v(`personaje/sheet_${archivo}.xml`));
     }
+    this.load.image('mapa', v('mapa/mapa.jpg'));
     this.load.image('chaleco', v('personaje/chaleco.png'));
     for (const ch of ['estrella', 'experto', 'plata', 'oro']) this.load.image('chaleco_' + ch, v(`personaje/chaleco_${ch}.png`));
     for (const id of Object.keys(productos)) this.load.image('prod_' + id, v(`productos/${id}.png`));

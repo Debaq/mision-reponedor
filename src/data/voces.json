@@ -558,7 +558,7 @@
   },
   "mapa_pasillo": {
     "voz": "guia",
-    "texto": "Ahora lleva el carro a la sala de ventas. Mira los productos de tu lista, a la izquierda, y toca el pasillo donde van."
+    "texto": "Ahora lleva el carro a la sala de ventas. Mira los productos de tu lista, a la derecha, y toca el pasillo donde van."
   },
   "mapa_mal": {
     "voz": "guia",
