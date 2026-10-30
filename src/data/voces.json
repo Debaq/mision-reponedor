@@ -202,7 +202,7 @@
   },
   "lista_intro": {
     "voz": "guia",
-    "texto": "Esta es tu lista de reposición. Toca cada producto para escuchar cuántos necesitas. Cuando termines, toca la flecha verde."
+    "texto": "Esta es tu lista de reposición. Toca cada producto para escuchar cuántos necesitas."
   },
   "tut_intro": {
     "voz": "guia",
@@ -707,5 +707,9 @@
   "vestir_t2": {
     "voz": "guia",
     "texto": "Empieza un nuevo turno. Ponte la ropa de trabajo."
+  },
+  "lista_lista": {
+    "voz": "guia",
+    "texto": "¡Listo! Ya revisaste toda la lista. Toca el botón verde para seguir."
   }
 }

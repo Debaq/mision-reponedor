@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoSala } from '../lib/fondos.js';
-import { flechaSiguiente, Indicador, panel } from '../lib/ui.js';
+import { boton, Indicador, panel } from '../lib/ui.js';
 import { crearPersonaje, SUPERVISOR } from '../lib/personaje.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -73,7 +73,7 @@ export default class Lista extends Phaser.Scene {
     voz.secuencia(intro).then((ok) => ok && this.guiar());
   }
 
-  // Apunta a la siguiente fila sin escuchar; al terminar muestra la flecha.
+  // Apunta a la siguiente tarjeta sin escuchar; al terminar muestra el botón para seguir, bajo las tarjetas.
   guiar() {
     const pendiente = this.filas.findIndex((_, i) => !this.escuchadas.has(i));
     if (pendiente >= 0) {
@@ -81,10 +81,19 @@ export default class Lista extends Phaser.Scene {
       this.ind.apuntar(f.x, f.y, 110);
       return;
     }
-    this.ind.ocultar();
-    if (!this.flecha) {
-      this.flecha = flechaSiguiente(this, () => siguiente(this));
-      this.flecha.latir();
-    }
+    if (this.flecha) return;
+    this.flecha = boton(this, 480, 574, {
+      icono: 'ui_right', texto: 'Seguir', ancho: 280, alto: 72, tam: 30, color: COLOR.verde,
+      onClick: () => siguiente(this),
+    }).setDepth(50);
+    this.flecha.latir();
+    // Aviso cuando termine de leerse el último producto.
+    const avisar = () => {
+      if (!this.flecha.active) return;
+      this.ind.apuntar(480, 574, 70);
+      voz.decir('lista_lista');
+    };
+    if (voz.hablando()) voz.once('fin', () => this.time.delayedCall(300, avisar));
+    else avisar();
   }
 }
