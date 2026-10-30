@@ -312,10 +312,6 @@
     "voz": "jefe",
     "texto": "¡Muy buen trabajo! La sala quedó impecable."
   },
-  "extra_intro": {
-    "voz": "guia",
-    "texto": "Durante el turno, el supervisor te puede pedir otras tareas. Escucha bien."
-  },
   "extra_derrame_jefe": {
     "voz": "jefe",
     "texto": "¡Atención! Un cliente botó una bebida en el pasillo. Por favor, límpialo antes de que alguien se resbale."
@@ -483,5 +479,73 @@
   "premio_1": {
     "voz": "guia",
     "texto": "Tarea lista. Una estrella. La próxima vez, con más calma."
+  },
+  "orden_intro": {
+    "voz": "jefe",
+    "texto": "Ahora te voy a dar tres tareas. Escucha bien, porque tienes que hacerlas en orden."
+  },
+  "ord_1": {
+    "voz": "jefe",
+    "texto": "Primero:"
+  },
+  "ord_2": {
+    "voz": "jefe",
+    "texto": "Segundo:"
+  },
+  "ord_3": {
+    "voz": "jefe",
+    "texto": "Tercero:"
+  },
+  "tarea_derrame": {
+    "voz": "jefe",
+    "texto": "Limpia la bebida derramada."
+  },
+  "tarea_basura": {
+    "voz": "jefe",
+    "texto": "Recoge la basura del pasillo."
+  },
+  "tarea_vencidos": {
+    "voz": "jefe",
+    "texto": "Revisa las fechas de la leche."
+  },
+  "orden_elige": {
+    "voz": "guia",
+    "texto": "Toca la tarea que tienes que hacer primero. Si no te acuerdas, toca el botón Repetir."
+  },
+  "orden_sigue": {
+    "voz": "guia",
+    "texto": "¿Qué tarea sigue? Tócala. Si no te acuerdas, toca el botón Repetir."
+  },
+  "orden_hecha": {
+    "voz": "guia",
+    "texto": "Esa tarea ya está lista."
+  },
+  "orden_mal": {
+    "voz": "jefe",
+    "texto": "No, esa todavía no. Recuerda el orden que te di."
+  },
+  "orden_listo": {
+    "voz": "jefe",
+    "texto": "¡Hiciste las tres tareas, y en orden! Muy bien."
+  },
+  "tiempo_45": {
+    "voz": "jefe",
+    "texto": "Tienes cuarenta y cinco segundos. ¡Mira el reloj de arriba!"
+  },
+  "tiempo_60": {
+    "voz": "jefe",
+    "texto": "Tienes un minuto. ¡Mira el reloj de arriba!"
+  },
+  "tiempo_90": {
+    "voz": "jefe",
+    "texto": "Tienes un minuto y medio. ¡Mira el reloj de arriba!"
+  },
+  "tiempo_poco": {
+    "voz": "guia",
+    "texto": "¡Queda poco tiempo!"
+  },
+  "tiempo_fin": {
+    "voz": "jefe",
+    "texto": "Se acabó el tiempo. Termina la tarea igual. La próxima vez, un poco más rápido."
   }
 }

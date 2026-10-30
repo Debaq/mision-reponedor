@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ANCHO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoEntrada } from '../lib/fondos.js';
-import { boton, panel } from '../lib/ui.js';
+import { boton, dibujarReloj, panel } from '../lib/ui.js';
 import { crearPersonaje, SUPERVISOR } from '../lib/personaje.js';
 import { estado, nombreJugador, totales } from '../lib/estado.js';
 import { guardarPartida, perfil } from '../lib/perfil.js';
@@ -44,20 +44,21 @@ export default class Fin extends Phaser.Scene {
 
     // Detalle por etapa (útil para el docente).
     etapas.forEach((p, i) => {
-      const x = ANCHO / 2 - 340 + Math.floor(i / 5) * 360;
-      const y = 318 + (i % 5) * 40;
+      const x = ANCHO / 2 - 340 + Math.floor(i / 6) * 360;
+      const y = 310 + (i % 6) * 36;
       const r = estado.resultados[p.id];
-      this.add.text(x, y, p.nombre, estiloTexto(19)).setOrigin(0, 0.5);
+      this.add.text(x, y, p.nombre, estiloTexto(18)).setOrigin(0, 0.5);
       if (!r) {
-        this.add.text(x + 320, y, '—', estiloTexto(19, '#a0aec0')).setOrigin(1, 0.5);
+        this.add.text(x + 340, y, '—', estiloTexto(18, '#a0aec0')).setOrigin(1, 0.5);
         return;
       }
       for (let k = 0; k < 3; k++) {
-        this.add.image(x + 200 + k * 26, y, 'ui_star').setDisplaySize(24, 24).setTint(k < r.estrellas ? COLOR.amarillo : 0xcbd5e0);
+        this.add.image(x + 208 + k * 24, y, 'ui_star').setDisplaySize(22, 22).setTint(k < r.estrellas ? COLOR.amarillo : 0xcbd5e0);
       }
-      this.add.text(x + 320, y, r.errores ? `${r.errores} ✗` : '✓', estiloTexto(19, r.errores ? '#c05621' : '#2f855a')).setOrigin(1, 0.5);
+      this.add.text(x + 340, y, r.errores ? `${r.errores} ✗` : '✓', estiloTexto(18, r.errores ? '#c05621' : '#2f855a')).setOrigin(1, 0.5);
+      if (r.tarde) dibujarReloj(this.add.graphics(), x + 284, y, 9, COLOR.rojo);
     });
-    this.add.text(ANCHO / 2, 528, `Estrellas: 0 errores = 3 · 1 o 2 errores = 2 · más = 1      ✗ = intentos con error`,
+    this.add.text(ANCHO / 2, 528, `0 errores = 3★ · 1 o 2 = 2★ · más = 1★ · reloj rojo = fuera de tiempo (−1★) · ✗ = errores`,
       estiloTexto(15, '#718096', { fontStyle: 'normal' })).setOrigin(0.5);
 
     voz.secuencia(['fin_jefe', 'fin_guia']);

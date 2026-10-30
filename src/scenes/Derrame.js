@@ -7,7 +7,7 @@ import { crearPersonaje } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
-import { siguiente } from '../lib/flujo.js';
+import { partirReloj, siguiente } from '../lib/flujo.js';
 
 const CHARCO = { x: 640, y: 500, rx: 150, ry: 50 };
 
@@ -40,7 +40,8 @@ export default class Derrame extends Phaser.Scene {
   }
 
   async inicio() {
-    if (!(await voz.secuencia(['extra_intro', 'extra_derrame_jefe']))) return;
+    if (!(await voz.decir('extra_derrame_jefe'))) return;
+    if (!(await partirReloj(this))) return;
     this.elegirHerramienta();
   }
 

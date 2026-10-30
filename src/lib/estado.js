@@ -18,7 +18,9 @@ export const estado = {
   avatar: { ...AVATAR_INICIAL },
   paso: 0,
   erroresPaso: 0, // errores en la etapa actual (se reinicia al cambiar de etapa)
-  resultados: {}, // id de etapa → { errores, estrellas, puntos }
+  tarde: false, // se acabó el tiempo en la etapa actual
+  resultados: {}, // id de etapa → { errores, tarde, estrellas, puntos }
+  ordenes: null, // tareas encadenadas del supervisor: { lista, hechas, errores }
 };
 
 // Nunca 0 estrellas: terminar la tarea siempre tiene premio.
@@ -35,13 +37,16 @@ export function sumarError() {
 export function nuevaPartida() {
   estado.erroresPaso = 0;
   estado.resultados = {};
+  estado.ordenes = null;
 }
 
 // Cierra la etapa actual: calcula estrellas y puntos según los errores.
+// Terminar fuera de tiempo resta una estrella (mínimo 1).
 export function registrarResultado(id) {
   const errores = estado.erroresPaso;
-  const estrellas = estrellasPor(errores);
-  const r = { errores, estrellas, puntos: PUNTOS[estrellas] };
+  const tarde = estado.tarde;
+  const estrellas = Math.max(1, estrellasPor(errores) - (tarde ? 1 : 0));
+  const r = { errores, tarde, estrellas, puntos: PUNTOS[estrellas] };
   estado.resultados[id] = r;
   return r;
 }

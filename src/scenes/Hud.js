@@ -2,14 +2,15 @@ import Phaser from 'phaser';
 import { ANCHO, ALTO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
-import { totales } from '../lib/estado.js';
+import { estado, totales } from '../lib/estado.js';
+import { dibujarReloj } from '../lib/ui.js';
 
 const COLOR_VOZ = { guia: COLOR.azul, jugador: COLOR.verde, jugadora: COLOR.verde, jugadore: COLOR.verde, jefe: 0x6b46c1, cliente: 0xb7791f };
 const VOZ_PREMIO = { 3: 'premio_3', 2: 'premio_2', 1: 'premio_1' };
 const NOMBRE_VOZ = { guia: 'Guía', jugador: 'Tú', jugadora: 'Tú', jugadore: 'Tú', jefe: 'Don Jorge', cliente: 'Clienta' };
 
 // Escena superpuesta: subtítulo de la voz actual + botón para repetir,
-// marcador de estrellas y puntos, y premio al terminar cada etapa.
+// marcador de estrellas y puntos, reloj de las tareas con tiempo y premio al terminar cada etapa.
 export default class Hud extends Phaser.Scene {
   constructor() {
     super({ key: 'Hud', active: false });
@@ -42,6 +43,7 @@ export default class Hud extends Phaser.Scene {
     voz.on('fin', () => this.ondas && this.ondas.pause());
     this.ondas = this.tweens.add({ targets: this.parlante, scale: 1.1, duration: 300, yoyo: true, repeat: -1, paused: true });
     this.crearMarcador();
+    this.crearReloj();
   }
 
   // Arriba a la derecha: estrellas y puntos de la partida.
@@ -58,6 +60,63 @@ export default class Hud extends Phaser.Scene {
     this.txtPuntos = this.add.text(ANCHO - 28, y, '0', estiloTexto(24, '#f6c343')).setOrigin(1, 0.5);
     this.marcador = this.add.container(0, 0, [g, this.iconoEstrella, this.txtEstrellas, this.iconoPuntos, this.txtPuntos]);
     this.marcador.setVisible(false);
+  }
+
+  // Reloj de la tarea: barra que se vacía (verde → amarillo → rojo), arriba a la izquierda.
+  crearReloj() {
+    const y = 34;
+    const x0 = 12;
+    this.relojFondo = this.add.graphics();
+    this.relojFondo.fillStyle(0x000000, 0.55).fillRoundedRect(x0, y - 23, 244, 46, 23);
+    dibujarReloj(this.relojFondo, x0 + 24, y, 15);
+    this.relojBarra = this.add.graphics();
+    this.relojCaja = { x: x0 + 48, y: y - 10, ancho: 180, alto: 20 };
+    this.reloj = this.add.container(0, 0, [this.relojFondo, this.relojBarra]).setVisible(false);
+  }
+
+  dibujarBarra(fraccion) {
+    const { x, y, ancho, alto } = this.relojCaja;
+    const color = fraccion > 0.5 ? COLOR.verdeClaro : fraccion > 0.2 ? COLOR.amarillo : COLOR.rojo;
+    this.relojBarra.clear();
+    this.relojBarra.fillStyle(0xffffff, 0.25).fillRoundedRect(x, y, ancho, alto, alto / 2);
+    if (fraccion > 0) this.relojBarra.fillStyle(color, 1).fillRoundedRect(x, y, Math.max(alto, ancho * fraccion), alto, alto / 2);
+  }
+
+  iniciarReloj(segundos) {
+    this.detenerReloj();
+    estado.tarde = false;
+    const fin = this.time.now + segundos * 1000;
+    let ultimoSeg = Infinity;
+    this.dibujarBarra(1);
+    this.reloj.setVisible(true).setAlpha(1);
+    this.relojEvento = this.time.addEvent({
+      delay: 100, loop: true,
+      callback: () => {
+        const resta = (fin - this.time.now) / 1000;
+        this.dibujarBarra(Math.max(0, resta / segundos));
+        const seg = Math.ceil(resta);
+        // Últimos 10 segundos: tic por segundo y aviso.
+        if (seg <= 10 && seg < ultimoSeg && seg > 0) {
+          sfx(this, 'tick', 0.4);
+          if (seg === 10 && !voz.hablando()) voz.decir('tiempo_poco');
+          this.tweens.add({ targets: this.reloj, alpha: 0.5, duration: 150, yoyo: true });
+        }
+        ultimoSeg = seg;
+        if (resta > 0) return;
+        // Se acabó: la tarea sigue, pero vale una estrella menos.
+        this.relojEvento.remove();
+        this.relojEvento = null;
+        estado.tarde = true;
+        sfx(this, 'error');
+        if (!voz.hablando()) voz.decir('tiempo_fin');
+      },
+    });
+  }
+
+  detenerReloj() {
+    this.relojEvento?.remove();
+    this.relojEvento = null;
+    this.reloj?.setVisible(false);
   }
 
   mostrarMarcador(visible) {

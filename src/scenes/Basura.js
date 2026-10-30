@@ -6,7 +6,7 @@ import { crearPersonaje } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
-import { siguiente } from '../lib/flujo.js';
+import { partirReloj, siguiente } from '../lib/flujo.js';
 
 const BASURA = ['basura_lata', 'basura_envoltorio', 'basura_manzana', 'basura_vaso', 'basura_lata'];
 const NO_BASURA = ['atun', 'chocolate'];
@@ -44,7 +44,13 @@ export default class Basura extends Phaser.Scene {
       });
     this.input.on('drag', (p, obj, x, y) => obj.setPosition(x, y));
 
-    voz.secuencia(['extra_basura_jefe', 'basura_instr']).then((ok) => ok && this.quedan && this.ind.apuntar(TACHO.x, TACHO.y, 90));
+    this.instrucciones();
+  }
+
+  async instrucciones() {
+    const ok = await voz.secuencia(['extra_basura_jefe', 'basura_instr']);
+    if (!(await partirReloj(this, ok)) || !ok) return;
+    if (this.quedan) this.ind.apuntar(TACHO.x, TACHO.y, 90);
   }
 
   async soltar(it) {

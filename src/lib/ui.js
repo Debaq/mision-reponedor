@@ -132,3 +132,11 @@ export function aleatorio(arr) {
 }
 
 export const FELICITAR = ['fb_bien1', 'fb_bien2', 'fb_bien3'];
+
+// Ícono de reloj dibujado (esfera y punteros) sobre un Graphics.
+export function dibujarReloj(g, x, y, r, color = COLOR.oscuro) {
+  g.fillStyle(0xffffff, 1).fillCircle(x, y, r);
+  g.lineStyle(Math.max(2, r / 5), color, 1).strokeCircle(x, y, r);
+  g.lineStyle(Math.max(2, r / 6), color, 1).lineBetween(x, y, x, y - r * 0.6).lineBetween(x, y, x + r * 0.45, y + r * 0.1);
+  return g;
+}

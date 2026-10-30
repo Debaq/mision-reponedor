@@ -7,7 +7,7 @@ import { crearPersonaje } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
-import { siguiente } from '../lib/flujo.js';
+import { partirReloj, siguiente } from '../lib/flujo.js';
 
 // Hoy: 15 de noviembre. Fechas DDMM; vencida si es anterior a hoy.
 const HOY = { d: 15, m: 11 };
@@ -68,7 +68,7 @@ export default class Vencidos extends Phaser.Scene {
       c.on('dragend', () => this.soltar(c));
     });
 
-    voz.secuencia(['extra_vencidos_jefe', 'vencidos_instr']);
+    voz.secuencia(['extra_vencidos_jefe', 'vencidos_instr']).then((ok) => partirReloj(this, ok));
   }
 
   async soltar(c) {

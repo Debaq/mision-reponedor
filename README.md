@@ -37,12 +37,14 @@ No hace falta que nadie fuerce la recarga:
 4. Lista de reposición: imagen del producto + cantidad, leída en voz alta.
 5. Tutorial guiado: identificar, buscar en la bodega, seleccionar y contar, trasladar, ubicar en la estantería, ordenar.
 6. Práctica sin ayuda con una lista nueva.
-7. Tareas extra: limpiar un derrame, recoger basura, retirar productos vencidos y orientar a una clienta.
+7. Órdenes del supervisor: encarga tres tareas en un orden al azar (derrame, basura, vencidos) y hay que elegirlas en ese orden; cada una tiene tiempo límite. Después, orientar a una clienta.
 8. Fin del turno, con estrellas, puntos y errores por etapa.
 
 ## Estrellas y puntos
 
 Cada etapa con decisiones (marcadas con `id` en `src/lib/flujo.js`) da estrellas al terminar: 0 errores = 3, 1 o 2 errores = 2, más = 1 (nunca 0). Puntos: 100 / 70 / 40. El marcador está arriba a la derecha.
+
+Tiempo límite: las etapas con `datos.tiempo` en `src/lib/flujo.js` (en segundos) muestran un reloj arriba a la izquierda. Si se acaba, la tarea sigue pero vale una estrella menos. Cada tiempo necesita su voz `tiempo_<segundos>` en el guion.
 
 El progreso se guarda en el navegador (`localStorage`) por nombre de jugador: mejores estrellas por etapa, récord de puntos y partidas jugadas (`src/lib/perfil.js`). Se usará para desbloquear ropa y secciones.
 
