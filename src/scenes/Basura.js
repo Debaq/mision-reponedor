@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { fondoSala, estanteDeco } from '../lib/fondos.js';
+import { fondoRender } from '../lib/fondos.js';
 import { Indicador, marca, sacudir } from '../lib/ui.js';
 import { basurero } from '../lib/objetos.js';
 import { crearPersonaje } from '../lib/personaje.js';
@@ -20,9 +20,7 @@ export default class Basura extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(300);
-    fondoSala(this, { pisoY: 400 });
-    estanteDeco(this, 80, 90, 520, 3, 100, 50);
-    estanteDeco(this, 680, 90, 520, 3, 100, 50);
+    fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
     crearPersonaje(this, 1210, 470, estado.avatar, 0.27);
     basurero(this, TACHO.x, TACHO.y);
     this.ind = new Indicador(this);

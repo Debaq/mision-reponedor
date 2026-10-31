@@ -1,6 +1,7 @@
 """Fondos 3D de la bodega y de la estantería (sala de ventas), renderizados con Blender.
 
-Uso:  npm run escenarios   (equivale a: blender -b -P tools/gen_escenarios.py)
+Uso:  npm run escenarios               (todas)
+      npm run escenarios -- tienda sala   (solo algunas: bodega, sala, gondola3, tienda, habitacion)
 
 La cámara mira de frente al rack / la góndola, de modo que en ese plano 1 metro = 200 px del juego
 y el piso (z = 0) queda en y = 560. Así las cajas y repisas del render calzan con las posiciones
@@ -236,10 +237,152 @@ def gondola3():
     guardar('gondola3')
 
 
+def camara_libre(pos, mira, lente=28):
+    from mathutils import Vector
+    bpy.ops.object.camera_add(location=pos)
+    cam = bpy.context.object
+    cam.data.lens = lente
+    cam.rotation_euler = (Vector(mira) - Vector(pos)).to_track_quat('-Z', 'Y').to_euler()
+    bpy.context.scene.camera = cam
+    return cam
+
+
+def persona(x, y, polera, pelo='#2d3748', piel='#e0ac69'):
+    """Persona low-poly de fondo (cajera, clientes)."""
+    from bl_util import mat as _mat
+    caja(x - 0.09, y, 0, 0.14, 0.16, 0.8, '#2d3748')
+    caja(x + 0.09, y, 0, 0.14, 0.16, 0.8, '#2d3748')
+    caja(x, y, 0.8, 0.44, 0.26, 0.6, polera)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.17, location=(x, y, 1.57))
+    bpy.context.object.data.materials.append(_mat(piel, 0.7))
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.18, location=(x, y + 0.03, 1.64))
+    o = bpy.context.object
+    o.scale = (1, 1, 0.65)
+    o.data.materials.append(_mat(pelo, 0.8))
+
+
+def tienda():
+    """Interior del supermercado a la altura de los ojos (fondo de conversaciones y tareas)."""
+    escena(W, H, fondo='#e8eef2', sol_rot=(55, 0, 25), sol=1.4, ambiente=0.6)
+    random.seed(11)
+    piso_ajedrez(-12, -6, 12, 30, '#f3e9d8', '#e6d8bf', 1.0)
+    caja(0, 30, 0, 24, 0.3, 6, '#eef3f6')                       # muro del fondo
+    caja(0, 29.8, 3.2, 24, 0.05, 0.5, '#553c9a')
+    caja(0, 29.78, 3.1, 24, 0.05, 0.1, '#38b2ac')
+    caja(0, 12, 5.0, 24, 40, 0.1, '#f7fafc')                     # cielo
+    colores = ['#e53e3e', '#3182ce', '#ecc94b', '#48bb78', '#ed8936', '#d53f8c', '#319795', '#805ad5', '#f7fafc']
+    # Pasillos: góndolas a lo largo de y, a ambos lados y al fondo
+    for gx_ in (-7.5, -4.2, 4.2, 7.5):
+        for tramo in (6, 16):
+            caja(gx_, tramo + 4, 0, 1.0, 8, 0.25, '#a0aec0')
+            caja(gx_, tramo + 4, 0, 0.08, 8, 1.9, '#cbd5e0')
+            caja(gx_, tramo + 4, 1.9, 1.0, 8, 0.2, '#553c9a')
+            for z in (0.25, 0.75, 1.25):
+                caja(gx_, tramo + 4, z, 1.0, 8, 0.04, '#f7fafc')
+                for lado in (-1, 1):
+                    y = tramo + 0.2
+                    color = random.choice(colores)
+                    while y < tramo + 7.8:
+                        if random.random() < 0.3:
+                            color = random.choice(colores)
+                        caja(gx_ + lado * 0.28, y, z + 0.04, 0.3, 0.26, random.choice((0.3, 0.38, 0.42)), color)
+                        y += 0.3
+    # Letreros colgantes de los pasillos, con los colores del juego
+    for gx_, color in ((-5.85, '#dd6b20'), (5.85, '#3182ce'), (-5.85 - 3.3, '#319795'), (5.85 + 3.3, '#d53f8c')):
+        caja(gx_, 9, 3.4, 1.6, 0.08, 0.6, color, rough=0.5)
+        for dx in (-0.6, 0.6):
+            caja(gx_ + dx, 9, 4.0, 0.02, 0.02, 1.0, '#4a5568')
+    # Caja registradora con cajera (a la izquierda, al fondo del espacio central)
+    caja(-1.6, 14, 0, 2.6, 0.9, 0.95, '#f7fafc')
+    caja(-1.6, 14, 0.95, 2.2, 0.6, 0.04, '#2d3748')
+    caja(-0.6, 14.3, 0.95, 0.4, 0.3, 0.4, '#4a5568')
+    caja(-0.6, 14.2, 1.35, 0.42, 0.05, 0.3, '#90cdf4')
+    persona(-1.4, 14.8, '#553c9a', '#1a202c', '#c68642')
+    persona(1.8, 18.5, '#e53e3e', '#744210', '#f1c27d')
+    persona(2.6, 21.0, '#48bb78', '#2d3748', '#8d5524')
+    # Exhibidor de fruta en el centro, al fondo
+    caja(1.2, 23, 0, 3.0, 1.6, 0.8, '#8b5e3c')
+    for k in range(18):
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=5, radius=0.2,
+                                             location=(0.0 + (k % 6) * 0.48, 22.5 + (k // 6) * 0.45, 0.95))
+        bpy.context.object.data.materials.append(mat(random.choice(('#e53e3e', '#ed8936', '#48bb78', '#ecc94b')), 0.7))
+    # Lámparas colgantes
+    for ly in (6, 11, 16, 21):
+        for lx in (-2.5, 2.5):
+            caja(lx, ly, 3.9, 0.02, 0.02, 1.1, '#4a5568')
+            bpy.ops.mesh.primitive_cone_add(vertices=16, radius1=0.45, radius2=0.12, depth=0.4, location=(lx, ly, 3.75))
+            bpy.context.object.data.materials.append(mat('#553c9a', 0.6))
+            bpy.ops.object.light_add(type='POINT', location=(lx, ly, 3.5))
+            bpy.context.object.data.energy = 150
+    camara_libre((0, -3.5, 1.9), (0, 12, 1.1), lente=26)
+    guardar('tienda')
+
+
+def habitacion():
+    """Pieza del personaje (crear personaje y aviso de contratación), como la referencia del documento."""
+    escena(W, H, fondo='#f6e7d0', sol_rot=(60, -20, -40), sol=1.6, ambiente=0.6)
+    random.seed(13)
+    piso_ajedrez(-6, -4, 6, 6, '#c8925a', '#bd8650', 0.5)
+    for k in range(24):                                          # tablas del piso
+        caja(-6 + k * 0.5, 1, 0.002, 0.02, 10, 0.002, '#a87543')
+    caja(0.6, 4.6, 0, 11, 0.2, 3.4, '#5cc6c0')                   # muro del fondo turquesa
+    caja(-4.6, 0, 0, 0.2, 10, 3.4, '#4fb5af')                    # muro izquierdo
+    caja(5.6, 0, 0, 0.2, 10, 3.4, '#4fb5af')                     # muro derecho
+    caja(0.5, 0, 3.4, 10.6, 10, 0.1, '#f7fafc')                  # techo
+    bpy.ops.object.light_add(type='AREA', location=(0.5, 1.0, 3.2))
+    bpy.context.object.data.energy = 250
+    bpy.context.object.data.size = 4
+    caja(0.6, 4.48, 0, 11, 0.05, 0.15, '#f7fafc')                # guardapolvo
+    # Ventana con cortinas
+    caja(-1.2, 4.47, 1.2, 1.6, 0.04, 1.3, '#bfe7f7', rough=0.2)
+    caja(-1.2, 4.45, 1.2, 1.7, 0.06, 0.08, '#f7fafc')
+    caja(-1.2, 4.45, 2.42, 1.7, 0.06, 0.08, '#f7fafc')
+    caja(-1.2, 4.45, 1.2, 0.06, 0.06, 1.3, '#f7fafc')
+    for cx in (-2.2, -0.2):
+        caja(cx, 4.4, 0.9, 0.45, 0.08, 1.8, '#f6ad55')
+    # Clóset de madera
+    caja(1.6, 4.1, 0, 1.6, 0.7, 2.4, '#9c6b3f')
+    caja(1.6, 3.74, 0.1, 0.03, 0.02, 2.2, '#7a5230')
+    for dx in (-0.12, 0.12):
+        caja(1.6 + dx, 3.73, 1.1, 0.04, 0.04, 0.25, '#e2e8f0')
+    # Cama a la derecha
+    caja(3.6, 2.6, 0, 2.0, 3.2, 0.45, '#8b5e3c')
+    caja(3.6, 2.6, 0.45, 1.9, 3.1, 0.22, '#f7fafc')
+    caja(3.6, 2.2, 0.67, 1.9, 2.2, 0.06, '#553c9a')
+    caja(3.6, 3.85, 0.67, 1.2, 0.5, 0.18, '#f7fafc')
+    caja(3.6, 4.3, 0, 2.0, 0.12, 1.1, '#7a5230')
+    # Velador con lámpara
+    caja(2.2, 4.1, 0, 0.6, 0.5, 0.6, '#9c6b3f')
+    cil(2.2, 4.1, 0.6, 0.08, 0.35, '#e2e8f0')
+    bpy.ops.mesh.primitive_cone_add(vertices=16, radius1=0.25, radius2=0.15, depth=0.3, location=(2.2, 4.1, 1.08))
+    bpy.context.object.data.materials.append(mat('#f6e05e', 0.5))
+    bpy.ops.object.light_add(type='POINT', location=(2.2, 4.0, 1.0))
+    bpy.context.object.data.energy = 60
+    # Alfombra, póster y planta
+    caja(0.6, 1.0, 0.004, 3.0, 2.0, 0.01, '#805ad5')
+    caja(0.6, 1.0, 0.012, 2.6, 1.6, 0.006, '#b794f4')
+    caja(-4.48, 2.2, 1.4, 0.03, 0.9, 1.1, '#ed8936')
+    caja(-4.47, 2.2, 1.55, 0.03, 0.6, 0.6, '#f7fafc')
+    cil(-3.8, 3.8, 0, 0.25, 0.45, '#c05621')
+    for k in range(6):
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=5, radius=0.28,
+                                             location=(-3.8 + random.uniform(-0.2, 0.2), 3.8 + random.uniform(-0.2, 0.2), 0.7 + k * 0.12))
+        bpy.context.object.data.materials.append(mat('#38a169', 0.8))
+    camara_libre((0.4, -5.2, 1.7), (0.4, 3.0, 1.0), lente=24)
+    guardar('habitacion')
+
+
 OUT.mkdir(parents=True, exist_ok=True)
-datos = {'_info': 'Generado por tools/gen_escenarios.py (npm run escenarios). Coordenadas del juego (1280x720).'}
-datos['bodega'] = bodega()
-datos['sala'] = sala()
-gondola3()
-(RAIZ / 'src' / 'data' / 'escenarios.json').write_text(json.dumps(datos, ensure_ascii=False, indent=1))
+args = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
+ESCENAS = {'bodega': bodega, 'sala': sala, 'gondola3': gondola3, 'tienda': tienda, 'habitacion': habitacion}
+archivo = RAIZ / 'src' / 'data' / 'escenarios.json'
+datos = json.loads(archivo.read_text()) if archivo.exists() else {}
+datos['_info'] = 'Generado por tools/gen_escenarios.py (npm run escenarios). Coordenadas del juego (1280x720).'
+for nombre, f in ESCENAS.items():
+    if args and nombre not in args:
+        continue
+    r = f()
+    if r:
+        datos[nombre] = r
+archivo.write_text(json.dumps(datos, ensure_ascii=False, indent=1))
 print('escenarios listos', datos)

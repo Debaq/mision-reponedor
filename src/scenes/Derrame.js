@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
-import { fondoSala, estanteDeco } from '../lib/fondos.js';
+import { fondoRender } from '../lib/fondos.js';
 import { Indicador, marca, sacudir } from '../lib/ui.js';
 import { herramienta, letreroPisoMojado, tarjeta } from '../lib/objetos.js';
 import { crearPersonaje } from '../lib/personaje.js';
@@ -19,9 +19,7 @@ export default class Derrame extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(300);
-    fondoSala(this, { pisoY: 400 });
-    estanteDeco(this, 80, 90, 520, 3, 100, 50);
-    estanteDeco(this, 680, 90, 520, 3, 100, 50);
+    fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
     crearPersonaje(this, 1150, 470, estado.avatar, 0.3);
     this.ind = new Indicador(this);
 

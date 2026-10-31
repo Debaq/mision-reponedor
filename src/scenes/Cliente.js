@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
-import { fondoSala } from '../lib/fondos.js';
+import { fondoRender } from '../lib/fondos.js';
 import { marca } from '../lib/ui.js';
 import { crearPersonaje, CLIENTA } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
@@ -20,7 +20,7 @@ export default class Cliente extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(300);
-    fondoSala(this, { pisoY: 470 });
+    fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
     this.carteles = CARTELES.map((c, i) => this.crearCartel(c, 250 + i * 260, 115));
     this.clienta = crearPersonaje(this, 150, 420, CLIENTA, 0.45);
     this.yo = crearPersonaje(this, 1130, 420, estado.avatar, 0.45);

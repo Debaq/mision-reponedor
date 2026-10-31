@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
-import { fondoSala } from '../lib/fondos.js';
+import { fondoRender } from '../lib/fondos.js';
 import { boton, marca, panel, sacudir } from '../lib/ui.js';
 import { basurero, herramienta } from '../lib/objetos.js';
 import { etiquetaPrecio } from '../lib/gondola.js';
@@ -30,7 +30,7 @@ export default class Ordenes extends Phaser.Scene {
 
   create(data) {
     this.cameras.main.fadeIn(300);
-    fondoSala(this, { pisoY: 520 });
+    fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
     this.jefe = crearPersonaje(this, 160, 440, SUPERVISOR, 0.42);
     this.alHablar = (id, texto, quien) => {
       if (quien === 'jefe') this.tweens.add({ targets: this.jefe, y: 430, duration: 160, yoyo: true, repeat: 2 });

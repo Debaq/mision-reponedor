@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
-import { fondoSala, estanteDeco } from '../lib/fondos.js';
+import { fondoRender } from '../lib/fondos.js';
 import { boton, marca } from '../lib/ui.js';
 import { crearPersonaje, SUPERVISOR } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
@@ -67,8 +67,7 @@ export default class Supervisor extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(300);
-    fondoSala(this);
-    estanteDeco(this, 420, 150, 440, 4, 100, 54);
+    fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
     this.jefe = crearPersonaje(this, 1060, 400, SUPERVISOR, 0.52);
     this.yo = crearPersonaje(this, 210, 400, estado.avatar, 0.52);
     this.add.text(1060, 590, 'Don Jorge', estiloTexto(24, '#ffffff', { backgroundColor: '#6b46c1', padding: { x: 10, y: 4 } })).setOrigin(0.5);

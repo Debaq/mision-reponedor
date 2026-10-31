@@ -131,12 +131,20 @@ function armar(scene, c) {
     const brazo = grupo(cuerpo, 45 * lado, -88, P.brazos).setAngle(P.giroBrazo * lado);
     img(brazo, 'piel', piel('arm'), 0, 0, lado < 0 ? 1 : 0, 0, lado < 0);
     img(brazo, 'polera', frame.manga(k.poleraColor, k.manga), -1 * lado, -3, lado < 0 ? 1 : 0, 0, lado < 0);
+    // Portapapeles en la mano derecha (el supervisor).
+    if (k.portapapeles && lado > 0) brazo.add(portapapeles(scene, 150, 118));
     img(brazo, 'piel', piel('hand'), 155 * lado, 148, 0.5, 0.5, lado < 0).setScale(P.mano);
     brazo.angulo = brazo.angle;
     return brazo;
   });
   img(cuerpo, 'pantalon', frame.pantalonArriba(k.pantalonColor), 0, 95);
   img(cuerpo, 'polera', frame.polera(k.poleraColor, k.poleraEstilo || (k.genero === 'mujer' ? 4 : 1)), 0, 0);
+  if (k.corbata) {
+    const t = scene.add.graphics();
+    t.fillStyle(0x2a4365, 1).fillTriangle(-11, -78, 11, -78, 0, -60).fillTriangle(-9, -62, 9, -62, 0, 40);
+    t.fillStyle(0x1a365d, 1).fillRect(-1, -60, 2, 98);
+    cuerpo.add(t);
+  }
   // Chaleco: 'basico' (o true, en los personajes fijos) o una variante desbloqueada.
   const chaleco = k.chaleco === true ? 'basico' : k.chaleco;
   if (chaleco && chaleco !== 'no') cuerpo.add(scene.add.image(0, 0, chaleco === 'basico' ? 'chaleco' : 'chaleco_' + chaleco));
@@ -150,6 +158,12 @@ function armar(scene, c) {
   const ojos = [-32, 29].map((x) => img(cabeza, 'cara', frame.ojo(cara.ojo, cara.tam), x, yCara + 48));
   img(cabeza, 'cara', frame.nariz(k.piel, cara.nariz), -3, yCara + 68);
   const boca = img(cabeza, 'cara', frame.boca(BOCAS.normal), 7, yCara + 94);
+  if (k.lentes) {
+    const l = scene.add.graphics();
+    l.lineStyle(6, 0x1a202c, 1).strokeRoundedRect(-58, yCara + 30, 50, 38, 10).strokeRoundedRect(4, yCara + 30, 50, 38, 10);
+    l.lineBetween(-8, yCara + 44, 4, yCara + 44);
+    cabeza.add(l);
+  }
   // El pelo se alinea por arriba, 28 px sobre la frente (cabeza: centro -180, alto 168).
   img(cabeza, 'pelo', frame.pelo(k.colorPelo, k.peinado), 0, -292 - CUELLO_Y, 0.5, 0);
 
@@ -266,10 +280,21 @@ function darVida(scene, c) {
   });
 }
 
+// Portapapeles con hoja y pinza (lo lleva el supervisor).
+function portapapeles(scene, x, y) {
+  const g = scene.add.graphics();
+  g.fillStyle(0x8b5e3c, 1).fillRoundedRect(-38, -50, 76, 100, 8);
+  g.fillStyle(0xffffff, 1).fillRect(-30, -38, 60, 80);
+  g.lineStyle(3, 0xa0aec0, 1);
+  for (let k = 0; k < 5; k++) g.lineBetween(-22, -24 + k * 14, 22, -24 + k * 14);
+  g.fillStyle(0x718096, 1).fillRoundedRect(-16, -58, 32, 16, 4);
+  return scene.add.container(x, y, [g]).setAngle(-12);
+}
+
 // Personajes fijos del juego.
 export const SUPERVISOR = {
-  genero: 'hombre', piel: 3, peinado: 'Man3', colorPelo: 'grey', cara: 1, poleraColor: 'navy', poleraEstilo: 5, manga: 'long',
-  pantalonColor: 'Grey', pantalonLargo: 'long', zapatos: 'black', chaleco: true,
+  genero: 'hombre', piel: 3, peinado: 'Man3', colorPelo: 'grey', cara: 1, poleraColor: 'white', poleraEstilo: 5, manga: 'long',
+  pantalonColor: 'Navy', pantalonLargo: 'long', zapatos: 'black', chaleco: true, lentes: true, corbata: true, portapapeles: true,
 };
 
 export const CLIENTA = {

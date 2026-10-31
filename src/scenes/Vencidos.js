@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
-import { fondoSala } from '../lib/fondos.js';
+import { fondoRender } from '../lib/fondos.js';
 import { Indicador, marca, panel } from '../lib/ui.js';
 import { canasto } from '../lib/objetos.js';
 import { crearPersonaje } from '../lib/personaje.js';
@@ -29,7 +29,7 @@ export default class Vencidos extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(300);
-    fondoSala(this);
+    fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
     crearPersonaje(this, 1190, 380, estado.avatar, 0.3);
     this.ind = new Indicador(this);
 
