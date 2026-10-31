@@ -8,6 +8,7 @@ import { sfx } from '../lib/sfx.js';
 import { FLUJO, siguiente } from '../lib/flujo.js';
 import { estrellasGuardadas } from '../lib/perfil.js';
 import { CHALECOS } from '../lib/premios.js';
+import { sombraPuntos } from '../lib/sombras.js';
 
 // Categorías del editor: voz, nombre, parte que se ve en la miniatura e ícono de la pestaña.
 // Ícono: capa del atlas del personaje y su color.
@@ -112,7 +113,7 @@ export default class Avatar extends Phaser.Scene {
       const flecha = (dx, dy) => [[0, 76], [167, 76], [185, 100], [167, 124], [0, 124], [18, 100]].map(([px, py]) => ({ x: x + px + dx, y: py + dy }));
       const color = i + 1 === actual ? 0xed8936 : i + 1 < actual ? 0x48bb78 : 0x2b6cb0;
       const g = this.add.graphics();
-      g.fillStyle(0x000000, 0.2).fillPoints(flecha(3, 4), true);
+      sombraPuntos(g, flecha(2, 6), 0.24, 10);
       g.fillStyle(color, 1).fillPoints(flecha(0, 0), true);
       this.add.text(x + 96, 100, `${i + 1}. ${t}`, estiloTexto(17, '#ffffff')).setOrigin(0.5);
     });

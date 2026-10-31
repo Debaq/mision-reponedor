@@ -70,6 +70,20 @@ export function sombraCirculo(g, x, y, r, alfa = 0.2, difuso = 12) {
   return g;
 }
 
+// Igual, para un polígono: cada capa estira la figura `e` px por lado desde su centro.
+export function sombraPuntos(g, puntos, alfa = 0.2, difuso = 12) {
+  const xs = puntos.map((p) => p.x);
+  const ys = puntos.map((p) => p.y);
+  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+  const [cx, cy, mw, mh] = [(x0 + x1) / 2, (y0 + y1) / 2, (x1 - x0) / 2, (y1 - y0) / 2];
+  g.fillStyle(0x000000, alfaCapa(alfa));
+  for (let i = 0; i < CAPAS; i++) {
+    const e = crece(difuso, i);
+    g.fillPoints(puntos.map((p) => ({ x: cx + ((p.x - cx) * (mw + e)) / mw, y: cy + ((p.y - cy) * (mh + e)) / mh })), true);
+  }
+  return g;
+}
+
 // Sombra difusa bajo algo apoyado en el piso, centrada en (x, y).
 export function sombra(scene, x, y, ancho, alto, alfa = 0.3) {
   return scene.add.image(x, y, 'sombra').setDisplaySize(ancho, alto).setAlpha(alfa);
