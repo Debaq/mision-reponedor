@@ -33,6 +33,8 @@ export default class Inicio extends Phaser.Scene {
     const jugar = boton(this, ANCHO / 2 + 80, 500, {
       icono: 'ui_right', texto: 'COMENZAR', ancho: 380, alto: 120, tam: 44,
       onClick: async () => {
+        // Asegura que el audio quede activo (el navegador solo lo permite tras un toque).
+        this.sound.context?.resume?.();
         pantallaCompleta(this);
         jugar.setActivo(false);
         await voz.decir('inicio_bienvenida');

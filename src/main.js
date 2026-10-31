@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ANCHO, ALTO, ANCHO_MAX } from './lib/estilo.js';
+import { ANCHO, ALTO } from './lib/estilo.js';
 import { Centrado } from './lib/pantalla.js';
 import Boot from './scenes/Boot.js';
 import Hud from './scenes/Hud.js';
@@ -32,9 +32,10 @@ function iniciar() {
     width: ANCHO,
     height: ALTO,
     backgroundColor: '#1f2d3a',
-    // EXPAND: en pantallas más anchas que 16:9 el juego se ensancha (hasta ANCHO_MAX) en vez de dejar
-    // franjas; en pantallas más altas (tablets 4:3) queda como antes, con franjas arriba y abajo.
-    scale: { mode: Phaser.Scale.EXPAND, autoCenter: Phaser.Scale.CENTER_BOTH, max: { width: ANCHO_MAX, height: ALTO } },
+    // EXPAND: el juego llena la pantalla. En pantallas más anchas que 16:9 se ve más a los lados (los
+    // fondos llegan hasta ANCHO_MAX); en más altas (tablets 4:3), franjas arriba y abajo. El contenido
+    // queda al centro (plugin Centrado). Sin tope de tamaño: un tope también achica el juego en pantalla.
+    scale: { mode: Phaser.Scale.EXPAND, autoCenter: Phaser.Scale.CENTER_BOTH },
     plugins: { scene: [{ key: 'Centrado', plugin: Centrado, mapping: 'centrado' }] },
     scene: [Boot, Inicio, Etapas, Avatar, Turnos, Contrato, Supervisor, Lista, Mapa, Bodega, Traslado, Sala,
       Ordenes, Derrame, Basura, Vencidos, Cliente, Precios, Faltantes, Fin, Hud],
@@ -45,5 +46,12 @@ function iniciar() {
 }
 
 console.info('Misión Reponedor', VERSION);
+// iPhone: el audio web queda mudo con el interruptor de silencio. Como sesión de "reproducción" (igual que
+// una app de música) suena igual (iOS 17 o más nuevo; en otros navegadores no existe y no pasa nada).
+try {
+  if (navigator.audioSession) navigator.audioSession.type = 'playback';
+} catch {
+  // navegador sin sesiones de audio
+}
 // Si hay una versión nueva publicada, recarga antes de arrancar el juego.
 revisarVersion().then((recargando) => recargando || iniciar());
