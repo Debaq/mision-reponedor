@@ -24,6 +24,12 @@ VOCES = {
     'cliente': ('es-MX-DaliaNeural', '+0%'),
 }
 NUM = ['', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez']
+# Días del mes, como se dicen en una fecha ("primero de diciembre").
+DIAS = ['', 'primero', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce',
+        'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve', 'veinte', 'veintiuno',
+        'veintidós', 'veintitrés', 'veinticuatro', 'veinticinco', 'veintiséis', 'veintisiete', 'veintiocho',
+        'veintinueve', 'treinta', 'treinta y uno']
+MESES = {11: ('noviembre', 30), 12: ('diciembre', 31)}
 
 
 def lineas_auto():
@@ -39,6 +45,12 @@ def lineas_auto():
             p, n = prods[item['p']], item['n']
             txt = f"{p['uno'].capitalize()} {p['sing']}." if n == 1 else f"{NUM[n].capitalize()} {p['plur']}."
             auto[f"lista_{item['p']}_{n}"] = {'voz': 'guia', 'texto': txt}
+    # Leche vencida (escena Vencidos): fechas de las cajas y el día de hoy (del 6 al 24 de noviembre).
+    for m, (mes, dias) in MESES.items():
+        for d in range(1, dias + 1):
+            auto[f'fecha_{d:02d}{m}'] = {'voz': 'guia', 'texto': f'Vence el {DIAS[d]} de {mes}.'}
+    for d in range(6, 25):
+        auto[f'hoy_{d:02d}11'] = {'voz': 'guia', 'texto': f'Hoy es {DIAS[d]} de noviembre.'}
     return auto
 
 

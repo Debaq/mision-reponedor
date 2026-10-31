@@ -22,6 +22,7 @@ export const estado = {
   resultados: {}, // id de etapa → { errores, tarde, estrellas, puntos }
   ordenes: null, // tareas encadenadas del supervisor: { bloque, lista, hechas, errores }
   lugar: null, // dónde quedó el personaje en el mapa (nodo de MAPA.caminos): de ahí parte la próxima vez
+  diaTurno1: null, // día del calendario en la tarea de vencidos del turno 1 (el turno 2 es el día siguiente)
   estrellasInicio: null, // estrellas guardadas al empezar la partida (para avisar lo que se desbloqueó)
 };
 

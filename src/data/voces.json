@@ -316,6 +316,14 @@
     "voz": "jefe",
     "texto": "¡Atención! Un cliente botó una bebida en el pasillo. Por favor, límpialo antes de que alguien se resbale."
   },
+  "derrame_botella": {
+    "voz": "guia",
+    "texto": "Primero recoge la botella del piso y bótala al basurero. Arrástrala hasta el basurero."
+  },
+  "derrame_botella_bien": {
+    "voz": "guia",
+    "texto": "¡Bien! La botella va a la basura. Ahora hay que limpiar el líquido."
+  },
   "derrame_elige": {
     "voz": "guia",
     "texto": "¿Qué necesitas para limpiar el líquido? Toca la herramienta correcta."
@@ -370,7 +378,7 @@
   },
   "vencidos_instr": {
     "voz": "guia",
-    "texto": "Hoy es quince de noviembre. Toca cada caja de leche para escuchar su fecha. Si la fecha ya pasó, arrástrala al canasto rojo de vencidos."
+    "texto": "Toca cada caja de leche para escuchar su fecha. Si la fecha ya pasó, arrástrala al canasto rojo de vencidos."
   },
   "vencidos_mal": {
     "voz": "guia",
@@ -387,30 +395,6 @@
   "vencidos_fin": {
     "voz": "jefe",
     "texto": "Muy bien. Nunca debemos vender productos vencidos."
-  },
-  "fecha_0511": {
-    "voz": "guia",
-    "texto": "Vence el cinco de noviembre."
-  },
-  "fecha_1011": {
-    "voz": "guia",
-    "texto": "Vence el diez de noviembre."
-  },
-  "fecha_1411": {
-    "voz": "guia",
-    "texto": "Vence el catorce de noviembre."
-  },
-  "fecha_2011": {
-    "voz": "guia",
-    "texto": "Vence el veinte de noviembre."
-  },
-  "fecha_2811": {
-    "voz": "guia",
-    "texto": "Vence el veintiocho de noviembre."
-  },
-  "fecha_0212": {
-    "voz": "guia",
-    "texto": "Vence el dos de diciembre."
   },
   "cliente_pregunta": {
     "voz": "cliente",

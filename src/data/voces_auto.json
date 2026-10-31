@@ -151,6 +151,326 @@
   "voz": "guia",
   "texto": "Cinco botellas de lavaloza."
  },
+ "fecha_0111": {
+  "voz": "guia",
+  "texto": "Vence el primero de noviembre."
+ },
+ "fecha_0211": {
+  "voz": "guia",
+  "texto": "Vence el dos de noviembre."
+ },
+ "fecha_0311": {
+  "voz": "guia",
+  "texto": "Vence el tres de noviembre."
+ },
+ "fecha_0411": {
+  "voz": "guia",
+  "texto": "Vence el cuatro de noviembre."
+ },
+ "fecha_0511": {
+  "voz": "guia",
+  "texto": "Vence el cinco de noviembre."
+ },
+ "fecha_0611": {
+  "voz": "guia",
+  "texto": "Vence el seis de noviembre."
+ },
+ "fecha_0711": {
+  "voz": "guia",
+  "texto": "Vence el siete de noviembre."
+ },
+ "fecha_0811": {
+  "voz": "guia",
+  "texto": "Vence el ocho de noviembre."
+ },
+ "fecha_0911": {
+  "voz": "guia",
+  "texto": "Vence el nueve de noviembre."
+ },
+ "fecha_1011": {
+  "voz": "guia",
+  "texto": "Vence el diez de noviembre."
+ },
+ "fecha_1111": {
+  "voz": "guia",
+  "texto": "Vence el once de noviembre."
+ },
+ "fecha_1211": {
+  "voz": "guia",
+  "texto": "Vence el doce de noviembre."
+ },
+ "fecha_1311": {
+  "voz": "guia",
+  "texto": "Vence el trece de noviembre."
+ },
+ "fecha_1411": {
+  "voz": "guia",
+  "texto": "Vence el catorce de noviembre."
+ },
+ "fecha_1511": {
+  "voz": "guia",
+  "texto": "Vence el quince de noviembre."
+ },
+ "fecha_1611": {
+  "voz": "guia",
+  "texto": "Vence el dieciséis de noviembre."
+ },
+ "fecha_1711": {
+  "voz": "guia",
+  "texto": "Vence el diecisiete de noviembre."
+ },
+ "fecha_1811": {
+  "voz": "guia",
+  "texto": "Vence el dieciocho de noviembre."
+ },
+ "fecha_1911": {
+  "voz": "guia",
+  "texto": "Vence el diecinueve de noviembre."
+ },
+ "fecha_2011": {
+  "voz": "guia",
+  "texto": "Vence el veinte de noviembre."
+ },
+ "fecha_2111": {
+  "voz": "guia",
+  "texto": "Vence el veintiuno de noviembre."
+ },
+ "fecha_2211": {
+  "voz": "guia",
+  "texto": "Vence el veintidós de noviembre."
+ },
+ "fecha_2311": {
+  "voz": "guia",
+  "texto": "Vence el veintitrés de noviembre."
+ },
+ "fecha_2411": {
+  "voz": "guia",
+  "texto": "Vence el veinticuatro de noviembre."
+ },
+ "fecha_2511": {
+  "voz": "guia",
+  "texto": "Vence el veinticinco de noviembre."
+ },
+ "fecha_2611": {
+  "voz": "guia",
+  "texto": "Vence el veintiséis de noviembre."
+ },
+ "fecha_2711": {
+  "voz": "guia",
+  "texto": "Vence el veintisiete de noviembre."
+ },
+ "fecha_2811": {
+  "voz": "guia",
+  "texto": "Vence el veintiocho de noviembre."
+ },
+ "fecha_2911": {
+  "voz": "guia",
+  "texto": "Vence el veintinueve de noviembre."
+ },
+ "fecha_3011": {
+  "voz": "guia",
+  "texto": "Vence el treinta de noviembre."
+ },
+ "fecha_0112": {
+  "voz": "guia",
+  "texto": "Vence el primero de diciembre."
+ },
+ "fecha_0212": {
+  "voz": "guia",
+  "texto": "Vence el dos de diciembre."
+ },
+ "fecha_0312": {
+  "voz": "guia",
+  "texto": "Vence el tres de diciembre."
+ },
+ "fecha_0412": {
+  "voz": "guia",
+  "texto": "Vence el cuatro de diciembre."
+ },
+ "fecha_0512": {
+  "voz": "guia",
+  "texto": "Vence el cinco de diciembre."
+ },
+ "fecha_0612": {
+  "voz": "guia",
+  "texto": "Vence el seis de diciembre."
+ },
+ "fecha_0712": {
+  "voz": "guia",
+  "texto": "Vence el siete de diciembre."
+ },
+ "fecha_0812": {
+  "voz": "guia",
+  "texto": "Vence el ocho de diciembre."
+ },
+ "fecha_0912": {
+  "voz": "guia",
+  "texto": "Vence el nueve de diciembre."
+ },
+ "fecha_1012": {
+  "voz": "guia",
+  "texto": "Vence el diez de diciembre."
+ },
+ "fecha_1112": {
+  "voz": "guia",
+  "texto": "Vence el once de diciembre."
+ },
+ "fecha_1212": {
+  "voz": "guia",
+  "texto": "Vence el doce de diciembre."
+ },
+ "fecha_1312": {
+  "voz": "guia",
+  "texto": "Vence el trece de diciembre."
+ },
+ "fecha_1412": {
+  "voz": "guia",
+  "texto": "Vence el catorce de diciembre."
+ },
+ "fecha_1512": {
+  "voz": "guia",
+  "texto": "Vence el quince de diciembre."
+ },
+ "fecha_1612": {
+  "voz": "guia",
+  "texto": "Vence el dieciséis de diciembre."
+ },
+ "fecha_1712": {
+  "voz": "guia",
+  "texto": "Vence el diecisiete de diciembre."
+ },
+ "fecha_1812": {
+  "voz": "guia",
+  "texto": "Vence el dieciocho de diciembre."
+ },
+ "fecha_1912": {
+  "voz": "guia",
+  "texto": "Vence el diecinueve de diciembre."
+ },
+ "fecha_2012": {
+  "voz": "guia",
+  "texto": "Vence el veinte de diciembre."
+ },
+ "fecha_2112": {
+  "voz": "guia",
+  "texto": "Vence el veintiuno de diciembre."
+ },
+ "fecha_2212": {
+  "voz": "guia",
+  "texto": "Vence el veintidós de diciembre."
+ },
+ "fecha_2312": {
+  "voz": "guia",
+  "texto": "Vence el veintitrés de diciembre."
+ },
+ "fecha_2412": {
+  "voz": "guia",
+  "texto": "Vence el veinticuatro de diciembre."
+ },
+ "fecha_2512": {
+  "voz": "guia",
+  "texto": "Vence el veinticinco de diciembre."
+ },
+ "fecha_2612": {
+  "voz": "guia",
+  "texto": "Vence el veintiséis de diciembre."
+ },
+ "fecha_2712": {
+  "voz": "guia",
+  "texto": "Vence el veintisiete de diciembre."
+ },
+ "fecha_2812": {
+  "voz": "guia",
+  "texto": "Vence el veintiocho de diciembre."
+ },
+ "fecha_2912": {
+  "voz": "guia",
+  "texto": "Vence el veintinueve de diciembre."
+ },
+ "fecha_3012": {
+  "voz": "guia",
+  "texto": "Vence el treinta de diciembre."
+ },
+ "fecha_3112": {
+  "voz": "guia",
+  "texto": "Vence el treinta y uno de diciembre."
+ },
+ "hoy_0611": {
+  "voz": "guia",
+  "texto": "Hoy es seis de noviembre."
+ },
+ "hoy_0711": {
+  "voz": "guia",
+  "texto": "Hoy es siete de noviembre."
+ },
+ "hoy_0811": {
+  "voz": "guia",
+  "texto": "Hoy es ocho de noviembre."
+ },
+ "hoy_0911": {
+  "voz": "guia",
+  "texto": "Hoy es nueve de noviembre."
+ },
+ "hoy_1011": {
+  "voz": "guia",
+  "texto": "Hoy es diez de noviembre."
+ },
+ "hoy_1111": {
+  "voz": "guia",
+  "texto": "Hoy es once de noviembre."
+ },
+ "hoy_1211": {
+  "voz": "guia",
+  "texto": "Hoy es doce de noviembre."
+ },
+ "hoy_1311": {
+  "voz": "guia",
+  "texto": "Hoy es trece de noviembre."
+ },
+ "hoy_1411": {
+  "voz": "guia",
+  "texto": "Hoy es catorce de noviembre."
+ },
+ "hoy_1511": {
+  "voz": "guia",
+  "texto": "Hoy es quince de noviembre."
+ },
+ "hoy_1611": {
+  "voz": "guia",
+  "texto": "Hoy es dieciséis de noviembre."
+ },
+ "hoy_1711": {
+  "voz": "guia",
+  "texto": "Hoy es diecisiete de noviembre."
+ },
+ "hoy_1811": {
+  "voz": "guia",
+  "texto": "Hoy es dieciocho de noviembre."
+ },
+ "hoy_1911": {
+  "voz": "guia",
+  "texto": "Hoy es diecinueve de noviembre."
+ },
+ "hoy_2011": {
+  "voz": "guia",
+  "texto": "Hoy es veinte de noviembre."
+ },
+ "hoy_2111": {
+  "voz": "guia",
+  "texto": "Hoy es veintiuno de noviembre."
+ },
+ "hoy_2211": {
+  "voz": "guia",
+  "texto": "Hoy es veintidós de noviembre."
+ },
+ "hoy_2311": {
+  "voz": "guia",
+  "texto": "Hoy es veintitrés de noviembre."
+ },
+ "hoy_2411": {
+  "voz": "guia",
+  "texto": "Hoy es veinticuatro de noviembre."
+ },
  "r1_mal1_f": {
   "voz": "jugadora",
   "texto": "Sí. ¿Qué hay que hacer?"

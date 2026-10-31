@@ -45,6 +45,7 @@ export function letreroPisoMojado(scene, x, y) {
 
 export function basurero(scene, x, y) {
   const c = scene.add.container(x, y);
+  c.add(sombra(scene, 4, 84, 160, 30, 0.35));
   const g = scene.add.graphics();
   g.fillStyle(0x2f4f4f, 1).fillRoundedRect(-62, -78, 124, 20, 8);
   g.fillStyle(0x3d6b6b, 1).fillRoundedRect(-54, -58, 108, 140, { tl: 0, tr: 0, bl: 14, br: 14 });

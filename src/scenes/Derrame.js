@@ -2,16 +2,18 @@ import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoRender } from '../lib/fondos.js';
 import { Indicador, marca, sacudir } from '../lib/ui.js';
-import { charco, herramienta, letreroPisoMojado, tarjeta } from '../lib/objetos.js';
+import { basurero, charco, herramienta, letreroPisoMojado, tarjeta } from '../lib/objetos.js';
 import { crearPersonaje, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
+import { levantar } from '../lib/sombras.js';
 
 const CHARCO = { x: 640, y: 500, rx: 150, ry: 50 };
+const BASURERO = { x: 170, y: 480 };
 
-// Tarea adicional: limpiar una bebida derramada y señalizar.
+// Tarea adicional: botar la botella al basurero, limpiar la bebida derramada y señalizar.
 export default class Derrame extends Phaser.Scene {
   constructor() {
     super('Derrame');
@@ -25,7 +27,8 @@ export default class Derrame extends Phaser.Scene {
 
     // Charco de bebida (se va desvaneciendo al limpiar) y la botella caída, con la boca hacia el charco.
     this.charco = charco(this, CHARCO.x, CHARCO.y, 400);
-    this.add.image(CHARCO.x + 240, CHARCO.y - 26, 'prod_bebida').setDisplaySize(70, 70).setAngle(-100);
+    this.basurero = basurero(this, BASURERO.x, BASURERO.y);
+    this.botella = this.add.image(CHARCO.x + 240, CHARCO.y - 26, 'prod_bebida').setDisplaySize(70, 70).setAngle(-100);
     this.limpieza = 0;
 
     this.inicio();
@@ -34,7 +37,41 @@ export default class Derrame extends Phaser.Scene {
   async inicio() {
     if (!(await voz.decir('extra_derrame_jefe'))) return;
     if (!(await partirReloj(this))) return;
-    this.elegirHerramienta();
+    this.botarBotella();
+  }
+
+  // Primero la botella vacía al basurero (si no, se sigue derramando y estorba al limpiar).
+  botarBotella() {
+    const b = this.botella;
+    const origen = { x: b.x, y: b.y };
+    b.setInteractive({ useHandCursor: true, draggable: true });
+    b.on('dragstart', () => {
+      sfx(this, 'tomar', 0.4);
+      b.setDepth(60);
+      this.tweens.add({ targets: b, angle: 0, duration: 150 });
+      this.ind.apuntar(BASURERO.x, BASURERO.y - 40, 90);
+    });
+    levantar(b);
+    b.on('drag', (p, x, y) => b.setPosition(x, y));
+    b.on('dragend', async () => {
+      const enBasurero = Math.abs(b.x - BASURERO.x) < 90 && Math.abs(b.y - BASURERO.y) < 120;
+      if (!enBasurero) {
+        this.tweens.add({ targets: b, x: origen.x, y: origen.y, angle: -100, duration: 250 });
+        b.setDepth(0);
+        this.ind.apuntar(origen.x, origen.y, 50);
+        return;
+      }
+      b.disableInteractive();
+      this.ind.ocultar();
+      sfx(this, 'soltar');
+      this.tweens.add({ targets: b, x: BASURERO.x, y: BASURERO.y - 60, scale: 0, duration: 250, onComplete: () => b.destroy() });
+      marca(this, BASURERO.x, BASURERO.y - 150, true);
+      sfx(this, 'bien');
+      if (!(await voz.decir('derrame_botella_bien'))) return;
+      this.elegirHerramienta();
+    });
+    this.ind.apuntar(origen.x, origen.y, 50);
+    voz.decir('derrame_botella');
   }
 
   elegirHerramienta() {

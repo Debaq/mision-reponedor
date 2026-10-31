@@ -8,18 +8,34 @@ import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { levantar } from '../lib/sombras.js';
-import { partirReloj, siguiente } from '../lib/flujo.js';
+import { FLUJO, partirReloj, siguiente } from '../lib/flujo.js';
 
-// Hoy: 15 de noviembre. Fechas DDMM; vencida si es anterior a hoy.
-const HOY = { d: 15, m: 11 };
-const FECHAS = ['0511', '2011', '1011', '0212', '1411', '2811'];
 const MESES = { 11: 'NOV', 12: 'DIC' };
 const CANASTO = { x: 1060, y: 520 };
+const ddmm = (d, m) => String(d).padStart(2, '0') + m;
 
-const vencida = (f) => {
+// Cada vez es otro día: hoy, entre el 6 y el 24 de noviembre (en el turno 2, el día siguiente al del
+// turno 1 si se jugó), y seis fechas DDMM: 2 o 3 vencidas (antes de hoy), una que vence mañana (para
+// mirar con atención) y el resto más adelante en noviembre o en diciembre. Cada fecha tiene su voz
+// (fecha_DDMM y hoy_DDMM, generadas en tools/gen_voces.py).
+function fechasDelDia() {
+  const { Between } = Phaser.Math;
+  const turno = FLUJO[estado.paso]?.turno;
+  const hoy = { d: turno === 2 && estado.diaTurno1 ? Math.min(24, estado.diaTurno1 + 1) : Between(6, 23), m: 11 };
+  if (turno === 1) estado.diaTurno1 = hoy.d;
+  const fechas = new Set();
+  const vencidas = Between(2, 3);
+  while (fechas.size < vencidas) fechas.add(ddmm(Between(Math.max(1, hoy.d - 12), hoy.d - 1), 11));
+  fechas.add(ddmm(hoy.d + 1, 11));
+  while (fechas.size < 6) fechas.add(Math.random() < 0.4 ? ddmm(Between(1, 20), 12) : ddmm(Between(hoy.d + 2, 30), 11));
+  return { hoy, fechas: [...fechas] };
+}
+
+// Vencida si la fecha es anterior a hoy.
+const vencida = (f, hoy) => {
   const d = +f.slice(0, 2);
   const m = +f.slice(2);
-  return m < HOY.m || (m === HOY.m && d < HOY.d);
+  return m < hoy.m || (m === hoy.m && d < hoy.d);
 };
 
 // Tarea adicional: revisar fechas de vencimiento y retirar los productos vencidos.
@@ -33,13 +49,15 @@ export default class Vencidos extends Phaser.Scene {
     fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
     crearPersonaje(this, 1190, enPiso(), estado.avatar, ESCALA);
     this.ind = new Indicador(this);
+    const { hoy, fechas } = fechasDelDia();
+    this.hoy = hoy;
 
     // Calendario "HOY"
     panel(this, 150, 230, 210, 230, 0xffffff, 18);
     this.add.graphics().fillStyle(COLOR.rojo, 1).fillRoundedRect(45, 115, 210, 56, { tl: 18, tr: 18, bl: 0, br: 0 });
     this.add.text(150, 143, 'HOY', estiloTexto(32, '#ffffff')).setOrigin(0.5);
-    this.add.text(150, 235, String(HOY.d), estiloTexto(90)).setOrigin(0.5);
-    this.add.text(150, 310, MESES[HOY.m], estiloTexto(34, '#c53030')).setOrigin(0.5);
+    this.add.text(150, 235, String(this.hoy.d), estiloTexto(90)).setOrigin(0.5);
+    this.add.text(150, 310, MESES[this.hoy.m], estiloTexto(34, '#c53030')).setOrigin(0.5);
 
     // Estantería con leches
     const g = this.add.graphics();
@@ -48,9 +66,9 @@ export default class Vencidos extends Phaser.Scene {
     g.fillStyle(0x5f6b78, 1).fillRect(286, 150, 14, 306).fillRect(960, 150, 14, 306);
 
     canasto(this, CANASTO.x, CANASTO.y, 'VENCIDOS');
-    this.quedan = FECHAS.filter(vencida).length;
+    this.quedan = fechas.filter((f) => vencida(f, hoy)).length;
 
-    Phaser.Utils.Array.Shuffle([...FECHAS]).forEach((f, i) => {
+    Phaser.Utils.Array.Shuffle(fechas).forEach((f, i) => {
       const x = 360 + i * 108;
       const c = this.add.container(x, 360);
       c.add(this.add.image(0, 0, 'prod_leche').setDisplaySize(120, 120));
@@ -70,7 +88,7 @@ export default class Vencidos extends Phaser.Scene {
       c.on('dragend', () => this.soltar(c));
     });
 
-    voz.secuencia(['extra_vencidos_jefe', 'vencidos_instr']).then((ok) => partirReloj(this, ok));
+    voz.secuencia(['extra_vencidos_jefe', 'hoy_' + ddmm(hoy.d, hoy.m), 'vencidos_instr']).then((ok) => partirReloj(this, ok));
   }
 
   async soltar(c) {
@@ -80,7 +98,7 @@ export default class Vencidos extends Phaser.Scene {
       c.setDepth(0);
       return;
     }
-    if (!vencida(c.fecha)) {
+    if (!vencida(c.fecha, this.hoy)) {
       sfx(this, 'error');
       sumarError();
       voz.decir('vencidos_mal');
