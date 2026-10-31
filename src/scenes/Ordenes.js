@@ -4,7 +4,7 @@ import { fondoRender } from '../lib/fondos.js';
 import { boton, marca, panel, sacudir } from '../lib/ui.js';
 import { basurero, herramienta } from '../lib/objetos.js';
 import { etiquetaPrecio } from '../lib/gondola.js';
-import { crearPersonaje, SUPERVISOR } from '../lib/personaje.js';
+import { crearPersonaje, SUPERVISOR, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -31,9 +31,9 @@ export default class Ordenes extends Phaser.Scene {
   create(data) {
     this.cameras.main.fadeIn(300);
     fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
-    this.jefe = crearPersonaje(this, 160, 440, SUPERVISOR, 0.42);
+    this.jefe = crearPersonaje(this, 160, enPiso(), SUPERVISOR, ESCALA);
     this.alHablar = (id, texto, quien) => {
-      if (quien === 'jefe') this.tweens.add({ targets: this.jefe, y: 430, duration: 160, yoyo: true, repeat: 2 });
+      if (quien === 'jefe') this.tweens.add({ targets: this.jefe, y: this.jefe.y - 8, duration: 160, yoyo: true, repeat: 2 });
     };
     voz.on('linea', this.alHablar);
     this.events.once('shutdown', () => voz.off('linea', this.alHablar));
@@ -42,7 +42,7 @@ export default class Ordenes extends Phaser.Scene {
     panel(this, 700, 330, 820, 400, 0x2d3e4e, 22);
     panel(this, 700, 330, 796, 376, 0x3b5266, 18, false);
 
-    this.repetir = boton(this, 160, 190, {
+    this.repetir = boton(this, 160, 128, {
       icono: 'ui_audioOn', texto: 'Repetir', ancho: 220, alto: 76, tam: 26, color: COLOR.marca,
       onClick: () => this.elegible && this.explicar(false),
     });

@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ANCHO, ALTO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { flechaSiguiente, Indicador } from '../lib/ui.js';
-import { crearPersonaje } from '../lib/personaje.js';
+import { crearPersonaje, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado, nombreJugador, segunGenero } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -19,7 +19,7 @@ export default class Contrato extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(300);
     this.add.image(0, 0, 'esc_habitacion').setOrigin(0).setDisplaySize(ANCHO, ALTO);
-    this.yo = crearPersonaje(this, 330, 405, estado.avatar, 0.5);
+    this.yo = crearPersonaje(this, 330, enPiso(), estado.avatar, ESCALA);
     this.crearCelular();
     this.time.delayedCall(800, () => this.llegaMensaje());
   }

@@ -4,7 +4,7 @@ import { fondoEntrada } from '../lib/fondos.js';
 import { boton } from '../lib/ui.js';
 import { voz } from '../lib/voz.js';
 import { irA } from '../lib/flujo.js';
-import { crearPersonaje } from '../lib/personaje.js';
+import { crearPersonaje, enPiso, ESCALA } from '../lib/personaje.js';
 import { AVATAR_INICIAL, nuevaPartida } from '../lib/estado.js';
 import { VERSION } from '../lib/version.js';
 import { pantallaCompleta } from '../lib/movil.js';
@@ -22,7 +22,7 @@ export default class Inicio extends Phaser.Scene {
     nuevaPartida();
     fondoEntrada(this);
     this.add.graphics().fillStyle(0x000000, 0.35).fillRect(0, 0, ANCHO, ALTO);
-    crearPersonaje(this, 230, 470, AVATAR_INICIAL, 0.55);
+    crearPersonaje(this, 230, enPiso(640), AVATAR_INICIAL, ESCALA);
 
     const titulo = this.add.text(ANCHO / 2 + 80, 290, 'MISIÓN\nREPONEDOR', estiloTexto(92, '#ffffff', {
       align: 'center', stroke: '#1f2d3a', strokeThickness: 12, lineSpacing: -10,

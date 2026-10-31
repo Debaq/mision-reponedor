@@ -3,7 +3,7 @@ import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoRender } from '../lib/fondos.js';
 import { Indicador, letreroPasillo, marca, sacudir } from '../lib/ui.js';
 import { etiquetaPrecio, gondola } from '../lib/gondola.js';
-import { crearPersonaje } from '../lib/personaje.js';
+import { crearPersonaje, enPiso, ESCALA, PISO_FRONTAL_Y } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -28,7 +28,7 @@ export default class Precios extends Phaser.Scene {
     this.cameras.main.fadeIn(300);
     fondoRender(this, 'esc_gondola3', 'SUPERMERCADO EL BARRIO');
     letreroPasillo(this, 'limpieza');
-    crearPersonaje(this, 1195, 460, estado.avatar, 0.27);
+    crearPersonaje(this, 1200, enPiso(PISO_FRONTAL_Y), estado.avatar, ESCALA);
     this.ind = new Indicador(this);
 
     this.secciones = gondola(this, PRECIOS.map((x) => ({ p: x.p })));

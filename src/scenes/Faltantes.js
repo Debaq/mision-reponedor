@@ -3,7 +3,7 @@ import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoRender } from '../lib/fondos.js';
 import { boton, Indicador, letreroPasillo, marca, panel, sacudir } from '../lib/ui.js';
 import { gondola } from '../lib/gondola.js';
-import { crearPersonaje } from '../lib/personaje.js';
+import { crearPersonaje, enPiso, ESCALA, PISO_FRONTAL_Y } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -35,7 +35,7 @@ export default class Faltantes extends Phaser.Scene {
     this.cameras.main.fadeIn(300);
     fondoRender(this, 'esc_gondola3', 'SUPERMERCADO EL BARRIO');
     letreroPasillo(this, 'bebidas');
-    crearPersonaje(this, 1195, 460, estado.avatar, 0.27);
+    crearPersonaje(this, 1200, enPiso(PISO_FRONTAL_Y), estado.avatar, ESCALA);
     this.ind = new Indicador(this);
     this.crearPanel();
 
@@ -102,7 +102,7 @@ export default class Faltantes extends Phaser.Scene {
   bodega() {
     this.cameras.main.fadeIn(300);
     fondoRender(this, 'esc_bodega', 'BODEGA', 0x3d4852);
-    crearPersonaje(this, 1170, 470, estado.avatar, 0.27);
+    crearPersonaje(this, 1185, enPiso(PISO_FRONTAL_Y), estado.avatar, ESCALA);
     this.ind = new Indicador(this);
     this.crearPanel();
 

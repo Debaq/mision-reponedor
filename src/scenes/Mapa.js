@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ANCHO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { Indicador, marca, panel, producto, sacudir } from '../lib/ui.js';
-import { crearPersonaje } from '../lib/personaje.js';
+import { caminar, crearPersonaje } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -116,8 +116,8 @@ export default class Mapa extends Phaser.Scene {
     sfx(this, 'bien');
     voz.decir('zona_' + id);
     // Caminar hasta el lugar elegido.
-    this.tweens.add({ targets: this.yo, x, y: y - 30, duration: 1300, ease: 'Sine.easeInOut' });
-    this.tweens.add({ targets: this.yo, angle: { from: -4, to: 4 }, duration: 150, yoyo: true, repeat: 3 });
+    caminar(this.yo, true);
+    this.tweens.add({ targets: this.yo, x, y: y - 30, duration: 1300, ease: 'Sine.easeInOut', onComplete: () => caminar(this.yo, false) });
     await new Promise((r) => this.time.delayedCall(1600, r));
     siguiente(this);
   }

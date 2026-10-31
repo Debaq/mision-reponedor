@@ -3,7 +3,7 @@ import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoRender } from '../lib/fondos.js';
 import { Indicador, marca, panel } from '../lib/ui.js';
 import { canasto } from '../lib/objetos.js';
-import { crearPersonaje } from '../lib/personaje.js';
+import { crearPersonaje, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -30,7 +30,7 @@ export default class Vencidos extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(300);
     fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
-    crearPersonaje(this, 1190, 380, estado.avatar, 0.3);
+    crearPersonaje(this, 1190, enPiso(), estado.avatar, ESCALA);
     this.ind = new Indicador(this);
 
     // Calendario "HOY"

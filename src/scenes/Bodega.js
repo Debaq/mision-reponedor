@@ -3,7 +3,7 @@ import { COLOR } from '../lib/estilo.js';
 import { fondoRender } from '../lib/fondos.js';
 import { boton, Indicador, marca, sacudir } from '../lib/ui.js';
 import { ListaPanel } from '../lib/listaPanel.js';
-import { crearPersonaje } from '../lib/personaje.js';
+import { crearPersonaje, enPiso, ESCALA, PISO_FRONTAL_Y } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -45,7 +45,7 @@ export default class Bodega extends Phaser.Scene {
     this.cajas = {};
     ids.forEach((p, i) => this.crearCaja(p, COLS[i % 4], FILAS[Math.floor(i / 4)]));
 
-    crearPersonaje(this, 1170, 470, estado.avatar, 0.27);
+    crearPersonaje(this, 1185, enPiso(PISO_FRONTAL_Y), estado.avatar, ESCALA);
     // Flecha verde en el mango del carro: salir de la bodega (lejos de los productos, que al tocarlos vuelven a su caja).
     this.salir = boton(this, MANGO_X, MANGO_Y - 20, {
       icono: 'ui_right', ancho: 100, alto: 100, color: COLOR.verde, onClick: () => this.tocarCarro(),

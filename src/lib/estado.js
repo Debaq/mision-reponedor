@@ -2,7 +2,7 @@
 export const AVATAR_INICIAL = {
   genero: 'hombre',
   piel: 2,
-  peinado: 'Man1',
+  peinado: 'corto',
   colorPelo: 'brown2',
   cara: 1,
   poleraColor: 'white',

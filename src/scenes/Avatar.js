@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ANCHO, ALTO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { boton, flechaSiguiente, panel, sacudir } from '../lib/ui.js';
-import { crearPersonaje, actualizarPersonaje, opcionesDe, PEINADOS, CENTRO_PARTE } from '../lib/personaje.js';
+import { crearPersonaje, actualizarPersonaje, opcionesDe, PEINADOS, CENTRO_PARTE, enPiso, ESCALA, imagenCapa } from '../lib/personaje.js';
 import { estado, nombreJugador, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -10,18 +10,19 @@ import { estrellasGuardadas } from '../lib/perfil.js';
 import { CHALECOS } from '../lib/premios.js';
 
 // Categorías del editor: voz, nombre, parte que se ve en la miniatura e ícono de la pestaña.
+// Ícono: capa del atlas del personaje y su color.
 const CATEGORIAS = {
-  genero: { voz: 'avatar_genero', nombre: 'Soy', parte: 'cabeza', icono: ['pelo', 'brown2Woman2.png'] },
-  piel: { voz: 'avatar_piel', nombre: 'Piel', parte: 'cabeza', icono: ['piel', 'tint4_head.png'] },
-  peinado: { voz: 'avatar_peinado', nombre: 'Peinado', parte: 'cabeza', icono: ['pelo', 'blackMan3.png'] },
-  colorPelo: { voz: 'avatar_colorpelo', nombre: 'Color pelo', parte: 'cabeza', icono: ['pelo', 'redWoman4.png'] },
-  cara: { voz: 'avatar_cara', nombre: 'Cara', parte: 'cabeza', icono: ['cara', 'eyeBrown_large.png'] },
-  poleraColor: { voz: 'avatar_polera', nombre: 'Polera', parte: 'torso', icono: ['polera', 'blueShirt1.png'] },
-  manga: { voz: 'avatar_polera', nombre: 'Manga', parte: 'torso', icono: ['polera', 'blueArm_long.png'] },
-  pantalonColor: { voz: 'avatar_pantalon', nombre: 'Pantalón', parte: 'piernas', icono: ['pantalon', 'pantsNavy_long.png'] },
-  pantalonLargo: { voz: 'avatar_pantalon', nombre: 'Largo', parte: 'piernas', icono: ['pantalon', 'pantsNavy_shorter.png'] },
-  zapatos: { voz: 'avatar_zapatos', nombre: 'Zapatos', parte: 'pies', icono: ['zapatos', 'blackShoe1.png'] },
-  chaleco: { voz: 'avatar_chaleco', nombre: 'Chaleco', parte: 'torso', icono: ['chaleco', null] },
+  genero: { voz: 'avatar_genero', nombre: 'Soy', parte: 'cabeza', icono: ['pelo_largo', 0x6b4423] },
+  piel: { voz: 'avatar_piel', nombre: 'Piel', parte: 'cabeza', icono: ['piel', 0xc68642] },
+  peinado: { voz: 'avatar_peinado', nombre: 'Peinado', parte: 'cabeza', icono: ['pelo_corto', 0x2b2b2b] },
+  colorPelo: { voz: 'avatar_colorpelo', nombre: 'Color pelo', parte: 'cabeza', icono: ['pelo_rulos', 0xc0502e] },
+  cara: { voz: 'avatar_cara', nombre: 'Cara', parte: 'cabeza', icono: ['ojos'] },
+  poleraColor: { voz: 'avatar_polera', nombre: 'Polera', parte: 'torso', icono: ['polera_corta', 0x3498db] },
+  manga: { voz: 'avatar_polera', nombre: 'Manga', parte: 'torso', icono: ['polera_larga', 0x3498db] },
+  pantalonColor: { voz: 'avatar_pantalon', nombre: 'Pantalón', parte: 'piernas', icono: ['pantalon_largo', 0x2c3e66] },
+  pantalonLargo: { voz: 'avatar_pantalon', nombre: 'Largo', parte: 'piernas', icono: ['pantalon_corto', 0x2c3e66] },
+  zapatos: { voz: 'avatar_zapatos', nombre: 'Zapatos', parte: 'pies', icono: ['zapatos', 0x3a3f3a] },
+  chaleco: { voz: 'avatar_chaleco', nombre: 'Chaleco', parte: 'torso', icono: ['chaleco_basico'] },
 };
 const MODOS = {
   personaje: ['genero', 'piel', 'peinado', 'colorPelo', 'cara', 'poleraColor', 'pantalonColor'],
@@ -31,7 +32,7 @@ const MODOS = {
 const CALLE = { chaleco: 'no', pantalonLargo: 'shorter', poleraColor: 'red', pantalonColor: 'LightBlue', manga: 'short' };
 const NOMBRE_GENERO = { hombre: 'Hombre', mujer: 'Mujer', nobinario: 'No binario' };
 // Escala de la miniatura según la parte del cuerpo que muestra.
-const ESCALA_PARTE = { cabeza: 0.42, torso: 0.27, piernas: 0.32, pies: 0.5 };
+const ESCALA_PARTE = { cabeza: 0.62, torso: 0.48, piernas: 0.33, pies: 0.9 };
 
 const PANEL = { x: 30, y: 72, ancho: 640, alto: 530 };
 const GRILLA = { x0: 125, y0: 296, cols: 4, paso: 150, tam: 132 };
@@ -64,7 +65,7 @@ export default class Avatar extends Phaser.Scene {
     this.pestanas = {};
 
     this.crearPasos(trabajo ? 3 : 1);
-    this.muneco = crearPersonaje(this, 960, 418, this.cfg, 0.55);
+    this.muneco = crearPersonaje(this, 960, enPiso(), this.cfg, ESCALA);
 
     // Panel con pestañas, grilla y páginas
     panel(this, PANEL.x + PANEL.ancho / 2, PANEL.y + PANEL.alto / 2, PANEL.ancho, PANEL.alto, 0xffffff, 22);
@@ -121,9 +122,8 @@ export default class Avatar extends Phaser.Scene {
   crearPestana(cat, x, y) {
     const c = this.add.container(x, y);
     const fondo = this.add.graphics();
-    const [atlas, f] = CATEGORIAS[cat].icono;
-    const img = f ? this.add.image(0, -8, atlas, f) : this.add.image(0, -8, atlas);
-    img.setScale(Math.min(46 / img.width, 46 / img.height));
+    const [capa, tinte] = CATEGORIAS[cat].icono;
+    const img = imagenCapa(this, 0, -8, capa, 50, tinte);
     c.add([fondo, img, this.add.text(0, 30, CATEGORIAS[cat].nombre, estiloTexto(13, '#2d3748')).setOrigin(0.5)]);
     c.setSize(78, 84).setInteractive({ useHandCursor: true });
     c.on('pointerup', () => this.elegirCategoria(cat, true));
@@ -227,7 +227,7 @@ export default class Avatar extends Phaser.Scene {
     }
     if (bloqueada) voz.decir('avatar_bloqueado');
     actualizarPersonaje(this, this.muneco, this.cfg);
-    this.tweens.add({ targets: this.muneco, scale: 0.58, duration: 120, yoyo: true });
+    this.tweens.add({ targets: this.muneco, scale: ESCALA * 1.05, duration: 120, yoyo: true });
     this.mostrarTarjetas();
   }
 
@@ -247,7 +247,7 @@ export default class Avatar extends Phaser.Scene {
     estado.estrellasInicio = estrellasGuardadas(nombre);
     this.listo.setActivo(false);
     sfx(this, 'logro');
-    this.tweens.add({ targets: this.muneco, scale: 0.6, duration: 250, yoyo: true });
+    this.tweens.add({ targets: this.muneco, scale: ESCALA * 1.08, duration: 250, yoyo: true });
     await voz.decir('personaje_listo');
     siguiente(this);
   }
@@ -272,7 +272,7 @@ export default class Avatar extends Phaser.Scene {
     estado.avatar = { ...this.cfg };
     this.listo.setActivo(false);
     sfx(this, 'logro');
-    this.tweens.add({ targets: this.muneco, scale: 0.6, duration: 250, yoyo: true });
+    this.tweens.add({ targets: this.muneco, scale: ESCALA * 1.08, duration: 250, yoyo: true });
     await voz.decir('avatar_bien');
     siguiente(this);
   }

@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoRender } from '../lib/fondos.js';
 import { boton, Indicador, panel } from '../lib/ui.js';
-import { crearPersonaje, SUPERVISOR } from '../lib/personaje.js';
+import { crearPersonaje, SUPERVISOR, enPiso, ESCALA } from '../lib/personaje.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { siguiente } from '../lib/flujo.js';
@@ -22,7 +22,7 @@ export default class Lista extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(300);
     fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
-    crearPersonaje(this, 1080, 400, SUPERVISOR, 0.5);
+    crearPersonaje(this, 1100, enPiso(), SUPERVISOR, ESCALA);
     const lista = niveles[this.nivel].lista;
 
     // Checklist de reposición: tarjetas con dibujo, nombre, cantidad y casilla (como la referencia del documento).

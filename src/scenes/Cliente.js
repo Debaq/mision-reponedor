@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoRender } from '../lib/fondos.js';
 import { marca } from '../lib/ui.js';
-import { crearPersonaje, CLIENTA } from '../lib/personaje.js';
+import { crearPersonaje, CLIENTA, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -22,8 +22,8 @@ export default class Cliente extends Phaser.Scene {
     this.cameras.main.fadeIn(300);
     fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
     this.carteles = CARTELES.map((c, i) => this.crearCartel(c, 250 + i * 260, 115));
-    this.clienta = crearPersonaje(this, 150, 420, CLIENTA, 0.45);
-    this.yo = crearPersonaje(this, 1130, 420, estado.avatar, 0.45);
+    this.clienta = crearPersonaje(this, 160, enPiso(), CLIENTA, ESCALA);
+    this.yo = crearPersonaje(this, 1120, enPiso(), estado.avatar, ESCALA);
     this.alHablar = (id, texto, quien) => {
       const p = quien === 'cliente' ? this.clienta : quien === 'jugador' ? this.yo : null;
       if (p) this.tweens.add({ targets: p, y: p.y - 10, duration: 160, yoyo: true, repeat: 2 });

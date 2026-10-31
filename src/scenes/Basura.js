@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { fondoRender } from '../lib/fondos.js';
 import { Indicador, marca, sacudir } from '../lib/ui.js';
 import { basurero, carroReposicion } from '../lib/objetos.js';
-import { crearPersonaje } from '../lib/personaje.js';
+import { crearPersonaje, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -23,7 +23,7 @@ export default class Basura extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(300);
     fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
-    crearPersonaje(this, 1210, 470, estado.avatar, 0.27);
+    crearPersonaje(this, 1215, enPiso(), estado.avatar, ESCALA);
     basurero(this, TACHO.x, TACHO.y);
     carroReposicion(this, CARRO.x, CARRO.y);
     this.ind = new Indicador(this);

@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ANCHO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { carro } from '../lib/fondos.js';
-import { crearPersonaje } from '../lib/personaje.js';
+import { caminar, crearPersonaje, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { siguiente } from '../lib/flujo.js';
@@ -39,9 +39,9 @@ export default class Traslado extends Phaser.Scene {
     items.slice(0, 20).forEach((p, i) => {
       c.add(this.add.image(-125 + (i % 7) * 40, -36 - Math.floor(i / 7) * 36, 'prod_' + p).setDisplaySize(44, 44));
     });
-    const yo = crearPersonaje(this, 470, 450, estado.avatar, 0.3);
+    const yo = crearPersonaje(this, 470, enPiso(), estado.avatar, ESCALA);
     grupo.add([c, yo]);
-    this.tweens.add({ targets: yo, y: 444, duration: 220, yoyo: true, repeat: -1 });
+    caminar(yo, true);
 
     voz.decir('traslado');
     this.tweens.add({

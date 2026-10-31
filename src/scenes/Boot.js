@@ -24,14 +24,9 @@ export default class Boot extends Phaser.Scene {
     this.load.on('complete', () => txt.destroy());
 
     this.load.setPath('assets/');
-    for (const [clave, archivo] of [['piel', 'skin'], ['cara', 'face'], ['pelo', 'hair'], ['polera', 'shirts'],
-      ['pantalon', 'pants'], ['zapatos', 'shoes']]) {
-      this.load.atlasXML(clave, v(`personaje/sheet_${archivo}.png`), v(`personaje/sheet_${archivo}.xml`));
-    }
+    this.load.atlas('p3d', v('personaje3d/personaje.png'), v('personaje3d/personaje.json'));
     this.load.image('mapa', v('mapa/mapa.jpg'));
     for (const e of ['bodega', 'sala', 'gondola3', 'tienda', 'habitacion', 'fachada']) this.load.image('esc_' + e, v(`escenarios/${e}.jpg`));
-    this.load.image('chaleco', v('personaje/chaleco.png'));
-    for (const ch of ['estrella', 'experto', 'plata', 'oro']) this.load.image('chaleco_' + ch, v(`personaje/chaleco_${ch}.png`));
     for (const id of Object.keys(productos)) this.load.image('prod_' + id, v(`productos/${id}.png`));
     for (const id of ['basura_lata', 'basura_envoltorio', 'basura_manzana', 'basura_vaso']) this.load.image(id, v(`productos/${id}.png`));
     for (const i of ICONOS) this.load.image('ui_' + i, v(`ui/${i}.png`));

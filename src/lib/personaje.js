@@ -1,7 +1,8 @@
-// Personaje armado con piezas de Kenney "Modular Characters" (CC0), con proporciones adultas,
-// cara por piezas (cejas, ojos, nariz, boca) y vida: respira, parpadea, mueve la boca cuando habla
-// y reacciona a los aciertos y errores del jugador (eventos 'reaccion' que emite sfx()).
-// Coordenadas en píxeles del sprite original, relativas al centro del torso.
+// Personaje 3D renderizado en Blender (tools/gen_personaje.py) y armado por capas: piel, zapatos,
+// pantalón, polera, chaleco, cara (ojos, iris, párpados, cejas, boca), pelo y accesorios.
+// Las capas vienen en blanco y se colorean con tint; cada pose es un juego de capas del atlas 'p3d'.
+// Tiene vida: respira, parpadea, gesticula y mueve la boca cuando habla su voz, y el personaje del
+// jugador celebra los aciertos y se pone triste con los errores (eventos 'reaccion' que emite sfx()).
 import { voz } from './voz.js';
 
 export const OPCIONES = {
@@ -17,208 +18,188 @@ export const OPCIONES = {
   chaleco: ['no', 'basico', 'estrella', 'experto', 'plata', 'oro'],
 };
 
-const CORTOS = ['Man1', 'Man2', 'Man3', 'Man4', 'Man5', 'Man6', 'Man7'];
-const LARGOS = ['Woman1', 'Woman2', 'Woman3', 'Woman4', 'Woman5', 'Woman6'];
-
 // Todos los peinados están disponibles para todos; el género solo cambia cuáles aparecen primero.
 export const PEINADOS = {
-  hombre: [...CORTOS, ...LARGOS],
-  mujer: [...LARGOS, ...CORTOS],
-  nobinario: CORTOS.flatMap((c, i) => (LARGOS[i] ? [c, LARGOS[i]] : [c])),
+  hombre: ['corto', 'rapado', 'lado', 'rulos', 'afro', 'melena', 'largo', 'cola', 'mono'],
+  mujer: ['largo', 'cola', 'melena', 'mono', 'rulos', 'afro', 'corto', 'lado', 'rapado'],
+  nobinario: ['melena', 'corto', 'rulos', 'largo', 'lado', 'afro', 'cola', 'rapado', 'mono'],
 };
 
 export function opcionesDe(clave, cfg) {
   return clave === 'peinado' ? PEINADOS[cfg.genero || 'hombre'] : OPCIONES[clave];
 }
 
-// Colores representativos (para las muestras del editor).
+// Colores (tint) de cada opción.
 export const MUESTRA = {
   piel: { 1: 0xffe0b0, 2: 0xf1c27d, 3: 0xe0ac69, 4: 0xc68642, 5: 0x8d5524, 6: 0x6b3e1f, 7: 0xffd9c0, 8: 0xb07a4a },
-  colorPelo: { black: 0x2b2b2b, brown1: 0x6b4423, brown2: 0x5a4d45, blonde: 0xf2d16b, red: 0xc0502e, tan: 0xb08a5a, grey: 0x9aa0a6, white: 0xeeeeee },
+  colorPelo: { black: 0x2b2b2b, brown1: 0x6b4423, brown2: 0x4a3a30, blonde: 0xf2d16b, red: 0xc0502e, tan: 0xb08a5a, grey: 0x9aa0a6, white: 0xeeeeee },
+  ropa: {
+    white: 0xf5f5f5, blue: 0x3498db, navy: 0x34495e, grey: 0x95a5a6, red: 0xe05a47, green: 0x4caf50, pine: 0x2e7d6b,
+    yellow: 0xf4c430, Navy: 0x2c3e66, Grey: 0x8e9aa5, Brown: 0x8b5e3c, Blue1: 0x3b6fb6, LightBlue: 0x6ec6d9,
+    Tan: 0xc9a27e, Red: 0xc0392b, Green: 0x4caf50, black: 0x3a3f3a, brown: 0x8b5e3c, brown2: 0x6b4423, tan: 0xd2b48c,
+  },
+  // Color de ojos de cada cara
+  iris: { 1: 0x5a3b1e, 2: 0x2e7d6b, 3: 0x2b2b2b, 4: 0x6b4423, 5: 0x3b78b5, 6: 0x4a8a3c, 7: 0x8a6a3a, 8: 0x6b7a8a },
 };
 
-const cap = (s) => s[0].toUpperCase() + s.slice(1);
+// Geometría del render (ver tools/gen_personaje.py): lienzo 440x640, pies en y = 624.
+const PIES_Y = 624;
+const ALTO_LIENZO = 640;
+// En coordenadas del personaje (escala 1 ≈ 600 px de alto) los pies quedan en y = 290,
+// igual que el personaje anterior: así las escenas no cambian de posición.
+const PIES_LOCAL = 290;
+// Escala común a todas las escenas (los fondos de Blender están hechos para esto): una persona de
+// 1,72 m mide ~380 px con los pies en y = 600 (en bodega y estanterías, de frente, en y = 578).
+export const ESCALA = 0.63;
+export const PISO_Y = 600;
+export const PISO_FRONTAL_Y = 578;
+// y del contenedor para que los pies queden en `pies`.
+export const enPiso = (pies = PISO_Y, escala = ESCALA) => pies - PIES_LOCAL * escala;
 
-const frame = {
-  piel: (t, parte) => `tint${t}_${parte}.png`,
-  pelo: (c, p) => `${c}${p}.png`,
-  ceja: (pelo, n) => `${pelo}Brow${n}.png`,
-  ojo: (color, tam) => `eye${color}_${tam}.png`,
-  nariz: (piel, n) => `tint${piel}Nose${n}.png`,
-  boca: (b) => `mouth_${b}.png`,
-  polera: (c, n) => (c === 'yellow' ? `shirtYellow${n}.png` : `${c}Shirt${n}.png`),
-  manga: (c, m) => (c === 'white' || c === 'yellow' ? `arm${cap(c)}_${m}.png` : `${c}Arm_${m}.png`),
-  pantalonArriba: (c) => `pants${c}1.png`,
-  pantalonPierna: (c, l) => `pants${c}_${l}.png`,
-  zapato: (c) => `${c}Shoe1.png`,
-};
+// Centro de cada parte (coordenadas del personaje, escala 1), para encuadrarla en una miniatura.
+export const CENTRO_PARTE = { cabeza: -230, torso: -94, piernas: 130, pies: 274 };
 
-// Caras (opción "cara"): combinación de cejas, ojos y nariz.
-const CARAS = {
-  1: { ceja: 1, ojo: 'Brown', tam: 'large', nariz: 1 },
-  2: { ceja: 2, ojo: 'Pine', tam: 'large', nariz: 2 },
-  3: { ceja: 3, ojo: 'Black', tam: 'small', nariz: 3 },
-  4: { ceja: 1, ojo: 'Black', tam: 'large', nariz: 2 },
-  5: { ceja: 2, ojo: 'Blue', tam: 'small', nariz: 1 },
-  6: { ceja: 3, ojo: 'Green', tam: 'large', nariz: 3 },
-  7: { ceja: 1, ojo: 'Brown', tam: 'small', nariz: 2 },
-  8: { ceja: 2, ojo: 'Black', tam: 'large', nariz: 1 },
-};
-const BOCAS = { normal: 'glad', feliz: 'teethUpper', triste: 'sad' };
-const BOCAS_HABLA = ['oh', 'teethLower', 'straight', 'glad'];
-
-// Proporciones adultas sobre las piezas de Kenney (que vienen con cabeza grande):
-// cabeza más chica (desde el cuello), piernas y brazos más largos y brazos más pegados al cuerpo.
-const P = { cabeza: 0.8, piernas: 1.35, brazos: 1.1, giroBrazo: 12, mano: 0.85 };
-const CUELLO_Y = -96;
-const CADERA_Y = 97;
-const ZAPATO_Y = 268;
-// Todo sube para que los pies queden donde estaban (las escenas ubican al personaje por su centro).
-const DY = -(CADERA_Y + (ZAPATO_Y - CADERA_Y) * P.piernas - ZAPATO_Y);
+const ORDEN = ['piel', 'zapatos', 'pantalon', 'polera', 'chaleco', 'corbata', 'ojos', 'iris', 'parpados', 'cejas', 'boca', 'pelo', 'lentes', 'tabla'];
+const BOCA = { normal: 'sonrisa', feliz: 'abierta', triste: 'triste' };
+const BOCAS_HABLA = ['abierta', 'neutra', 'abierta', 'sonrisa'];
+const CAMINAR = ['camina1', 'quieto', 'camina2', 'quieto'];
 
 // Quién es quién para mover la boca: la voz que habla ('jefe', 'cliente' o la del jugador).
 const ROL_VOZ = { jugador: 'jugador', jugadora: 'jugador', jugadore: 'jugador', jefe: 'jefe', cliente: 'cliente' };
 
+// Capa (nombre en el atlas) y color de cada parte según la configuración.
+function capas(k) {
+  const chaleco = k.chaleco === true ? 'basico' : k.chaleco;
+  const pelo = PEINADOS.hombre.includes(k.peinado) ? k.peinado : 'corto';
+  return {
+    piel: ['piel', MUESTRA.piel[k.piel]],
+    zapatos: ['zapatos', MUESTRA.ropa[k.zapatos]],
+    pantalon: [k.pantalonLargo === 'long' ? 'pantalon_largo' : 'pantalon_corto', MUESTRA.ropa[k.pantalonColor]],
+    polera: [k.manga === 'long' ? 'polera_larga' : 'polera_corta', MUESTRA.ropa[k.poleraColor]],
+    chaleco: chaleco && chaleco !== 'no' ? ['chaleco_' + chaleco] : null,
+    corbata: k.corbata ? ['corbata'] : null,
+    ojos: ['ojos'],
+    iris: ['iris', MUESTRA.iris[k.cara] || MUESTRA.iris[1]],
+    parpados: ['parpados', MUESTRA.piel[k.piel]],
+    cejas: ['cejas', MUESTRA.colorPelo[k.colorPelo]],
+    boca: ['boca_sonrisa'],
+    pelo: ['pelo_' + pelo, MUESTRA.colorPelo[k.colorPelo]],
+    lentes: k.lentes ? ['lentes'] : null,
+    tabla: k.portapapeles ? ['tabla'] : null,
+  };
+}
+
 /**
- * Crea un contenedor con el personaje. `escala` 1 = tamaño original (~600 px de alto).
+ * Crea un contenedor con el personaje. `escala` 1 ≈ 600 px de alto; los pies quedan 290 px bajo (x, y).
+ * Mira en tres cuartos hacia el centro de la pantalla (opción `mirar`: 'derecha' | 'izquierda').
  * Con `vida: false` queda quieto (sin animaciones ni voz), por ejemplo para las miniaturas del editor.
  */
-export function crearPersonaje(scene, x, y, cfg, escala = 0.5, { vida = true } = {}) {
+export function crearPersonaje(scene, x, y, cfg, escala = 0.5, { vida = true, mirar } = {}) {
   const c = scene.add.container(x, y).setScale(escala);
   c.rol = cfg === SUPERVISOR ? 'jefe' : cfg === CLIENTA ? 'cliente' : 'jugador';
   c.cfg = { ...cfg };
+  c.mirar = mirar || (x > scene.scale.width / 2 && vida ? 'izquierda' : 'derecha');
+  c.pose = 'quieto';
+  c.boca = 'sonrisa';
+  c.expresionActual = 'normal';
   armar(scene, c);
   if (vida) darVida(scene, c);
   return c;
 }
 
-// Centro (en coordenadas del personaje, escala 1) de cada parte, para encuadrarla en una miniatura.
-export const CENTRO_PARTE = { cabeza: -225, torso: -45, piernas: 150, pies: 262 };
-
 export function actualizarPersonaje(scene, c, cfg) {
-  detenerAnimaciones(scene, c);
   c.cfg = { ...cfg };
   c.removeAll(true);
   armar(scene, c);
-  if (c.tParpadeo) animarCuerpo(scene, c);
+  if (c.respira) animarCuerpo(scene, c);
 }
 
 function armar(scene, c) {
-  const k = c.cfg;
-  const img = (destino, atlas, f, x, y, ox = 0.5, oy = 0.5, flip = false) => {
-    const i = scene.add.image(x, y, atlas, f).setOrigin(ox, oy).setFlipX(flip);
-    destino.add(i);
-    return i;
-  };
-  const grupo = (destino, x, y, sx = 1, sy = sx) => {
-    const g = scene.add.container(x, y).setScale(sx, sy);
-    destino.add(g);
-    return g;
-  };
-  const piel = (p) => frame.piel(k.piel, p);
-
-  // Sombra en el piso (bajo los zapatos).
-  c.add(scene.add.ellipse(0, ZAPATO_Y + 26, 300, 46, 0x000000, 0.13));
-  const cuerpo = grupo(c, 0, DY);
-
-  // Piernas: piel + pantalón (alineado arriba, por el lado interior), estiradas desde la cadera.
-  const piernas = grupo(cuerpo, 0, CADERA_Y, 1, P.piernas);
-  for (const lado of [-1, 1]) {
-    img(piernas, 'piel', piel('leg'), 38 * lado, 180 - CADERA_Y, 0.5, 0.5, lado < 0);
-    img(piernas, 'pantalon', frame.pantalonPierna(k.pantalonColor, k.pantalonLargo), -17 * lado, 0, lado < 0 ? 1 : 0, 0, lado < 0);
+  // Sombra en el piso, bajo los pies.
+  c.add(scene.add.ellipse(0, PIES_LOCAL + 4, 230, 40, 0x000000, 0.16));
+  // El cuerpo cuelga de los pies (así respirar o saltar escala desde el piso).
+  const cuerpo = scene.add.container(0, PIES_LOCAL).setScale(c.mirar === 'izquierda' ? -1 : 1, 1);
+  c.add(cuerpo);
+  c.cuerpo = cuerpo;
+  c.capas = {};
+  const def = capas(c.cfg);
+  for (const parte of ORDEN) {
+    const d = def[parte];
+    if (!d) continue;
+    const img = scene.add.image(0, 0, 'p3d', `${c.pose}/${d[0]}`).setOrigin(0.5, PIES_Y / ALTO_LIENZO);
+    if (d[1] !== undefined) img.setTint(d[1]);
+    img.capa = d[0];
+    if (parte === 'parpados') img.setVisible(false);
+    cuerpo.add(img);
+    c.capas[parte] = img;
   }
-  // Zapatos sin estirar, al final de la pierna.
-  for (const lado of [-1, 1]) {
-    img(cuerpo, 'zapatos', frame.zapato(k.zapatos), 48 * lado, CADERA_Y + (ZAPATO_Y - CADERA_Y) * P.piernas, 0.5, 0.5, lado < 0);
-  }
-  img(cuerpo, 'piel', piel('neck'), 0, -80);
-  // Brazos: piel + manga + mano, desde el hombro; algo girados hacia el cuerpo.
-  c.brazos = [-1, 1].map((lado) => {
-    const brazo = grupo(cuerpo, 45 * lado, -88, P.brazos).setAngle(P.giroBrazo * lado);
-    img(brazo, 'piel', piel('arm'), 0, 0, lado < 0 ? 1 : 0, 0, lado < 0);
-    img(brazo, 'polera', frame.manga(k.poleraColor, k.manga), -1 * lado, -3, lado < 0 ? 1 : 0, 0, lado < 0);
-    // Portapapeles en la mano derecha (el supervisor).
-    if (k.portapapeles && lado > 0) brazo.add(portapapeles(scene, 150, 118));
-    img(brazo, 'piel', piel('hand'), 155 * lado, 148, 0.5, 0.5, lado < 0).setScale(P.mano);
-    brazo.angulo = brazo.angle;
-    return brazo;
-  });
-  img(cuerpo, 'pantalon', frame.pantalonArriba(k.pantalonColor), 0, 95);
-  img(cuerpo, 'polera', frame.polera(k.poleraColor, k.poleraEstilo || (k.genero === 'mujer' ? 4 : 1)), 0, 0);
-  if (k.corbata) {
-    const t = scene.add.graphics();
-    t.fillStyle(0x2a4365, 1).fillTriangle(-11, -78, 11, -78, 0, -60).fillTriangle(-9, -62, 9, -62, 0, 40);
-    t.fillStyle(0x1a365d, 1).fillRect(-1, -60, 2, 98);
-    cuerpo.add(t);
-  }
-  // Chaleco: 'basico' (o true, en los personajes fijos) o una variante desbloqueada.
-  const chaleco = k.chaleco === true ? 'basico' : k.chaleco;
-  if (chaleco && chaleco !== 'no') cuerpo.add(scene.add.image(0, 0, chaleco === 'basico' ? 'chaleco' : 'chaleco_' + chaleco));
-
-  // Cabeza, escalada desde el cuello. Coordenadas locales: cuello = 0.
-  const cabeza = grupo(cuerpo, 0, CUELLO_Y, P.cabeza);
-  img(cabeza, 'piel', piel('head'), 0, -180 - CUELLO_Y);
-  const cara = CARAS[k.cara] || CARAS[1];
-  const yCara = -170 - CUELLO_Y - 50; // borde superior de la cara de Kenney (100 px de alto)
-  const cejas = [-1, 1].map((lado) => img(cabeza, 'cara', frame.ceja(k.colorPelo, cara.ceja), 30 * lado, yCara + 11, 0.5, 0.5, lado > 0));
-  const ojos = [-32, 29].map((x) => img(cabeza, 'cara', frame.ojo(cara.ojo, cara.tam), x, yCara + 48));
-  img(cabeza, 'cara', frame.nariz(k.piel, cara.nariz), -3, yCara + 68);
-  const boca = img(cabeza, 'cara', frame.boca(BOCAS.normal), 7, yCara + 94);
-  if (k.lentes) {
-    const l = scene.add.graphics();
-    l.lineStyle(6, 0x1a202c, 1).strokeRoundedRect(-58, yCara + 30, 50, 38, 10).strokeRoundedRect(4, yCara + 30, 50, 38, 10);
-    l.lineBetween(-8, yCara + 44, 4, yCara + 44);
-    cabeza.add(l);
-  }
-  // El pelo se alinea por arriba, 28 px sobre la frente (cabeza: centro -180, alto 168).
-  img(cabeza, 'pelo', frame.pelo(k.colorPelo, k.peinado), 0, -292 - CUELLO_Y, 0.5, 0);
+  ponerBoca(c, c.boca);
 
   // Globo de diálogo sobre la cabeza (visible mientras habla): deja claro quién habla.
-  const yGlobo = CUELLO_Y + (-292 - CUELLO_Y) * P.cabeza - 90;
-  const globo = scene.add.container(70, yGlobo).setVisible(false);
+  const globo = scene.add.container(60, PIES_LOCAL - 640).setVisible(false);
   const g = scene.add.graphics();
   g.fillStyle(0x000000, 0.15).fillRoundedRect(-86, -50, 180, 104, 40);
   g.fillStyle(0xffffff, 1).fillRoundedRect(-90, -56, 180, 104, 40).fillTriangle(-50, 40, -10, 40, -60, 84);
   g.lineStyle(5, 0x1f2d3a, 0.15).strokeRoundedRect(-90, -56, 180, 104, 40);
-  globo.puntos = [-44, 0, 44].map((x) => scene.add.circle(x, -4, 14, 0x553c9a));
+  globo.puntos = [-44, 0, 44].map((px) => scene.add.circle(px, -4, 14, 0x553c9a));
   globo.add([g, ...globo.puntos]);
-  cuerpo.add(globo);
-
+  c.add(globo);
   c.globo = globo;
-  c.cuerpo = cuerpo;
-  c.cabeza = cabeza;
-  c.cara = { ojos, cejas, boca, expresion: 'normal', hablando: false };
+}
+
+// Imagen suelta de una capa (íconos, premios): centrada en su contenido y del tamaño `tam`.
+// (Las capas vienen recortadas en el atlas; el origen se calcula sobre la parte visible.)
+export function imagenCapa(scene, x, y, capa, tam, tinte) {
+  const img = scene.add.image(x, y, 'p3d', 'quieto/' + capa);
+  const f = img.frame;
+  img.setOrigin((f.x + f.cutWidth / 2) / f.realWidth, (f.y + f.cutHeight / 2) / f.realHeight);
+  img.setScale(tam / Math.max(f.cutWidth, f.cutHeight));
+  if (tinte !== undefined) img.setTint(tinte);
+  return img;
+}
+
+// Cambia la pose (todas las capas a la vez).
+export function ponerPose(c, pose) {
+  if (!c.capas || c.pose === pose) return;
+  c.pose = pose;
+  for (const img of Object.values(c.capas)) if (img.active) img.setFrame(`${pose}/${img.capa}`);
 }
 
 function ponerBoca(c, b) {
-  if (c.cara?.boca?.active) c.cara.boca.setFrame(frame.boca(b));
+  const img = c.capas?.boca;
+  if (!img?.active) return;
+  img.capa = 'boca_' + b;
+  img.setFrame(`${c.pose}/${img.capa}`);
 }
 
-// Expresión por un rato (o fija si no hay duración).
+// Expresión por un rato (o fija si no hay duración): boca y pose.
 export function expresion(c, tipo, ms = 0) {
-  if (!c.cara) return;
-  c.cara.expresion = tipo;
-  if (!c.cara.hablando) ponerBoca(c, BOCAS[tipo]);
-  const scene = c.scene;
-  if (tipo === 'triste') c.cara.cejas.forEach((ce, i) => ce.setAngle(i ? -12 : 12));
-  else c.cara.cejas.forEach((ce) => ce.setAngle(0));
-  if (ms && scene) {
+  if (!c.capas) return;
+  c.expresionActual = tipo;
+  if (!c.hablando) ponerBoca(c, BOCA[tipo]);
+  ponerPose(c, tipo === 'feliz' ? 'feliz' : tipo === 'triste' ? 'triste' : c.hablando ? 'habla' : 'quieto');
+  if (ms && c.scene) {
     c.tExpresion?.remove();
-    c.tExpresion = scene.time.delayedCall(ms, () => c.active && expresion(c, 'normal'));
+    c.tExpresion = c.scene.time.delayedCall(ms, () => c.active && expresion(c, 'normal'));
   }
 }
 
-// Respiración: la cabeza sube y baja apenas y los brazos se mecen.
-function animarCuerpo(scene, c) {
-  c.anims_ = [
-    scene.tweens.add({ targets: c.cabeza, y: c.cabeza.y - 3, duration: 1700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }),
-    ...c.brazos.map((b) => scene.tweens.add({ targets: b, angle: b.angulo + (b.angulo > 0 ? 2 : -2), duration: 1700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' })),
-  ];
+// Caminar en el lugar (las escenas mueven el contenedor): alterna las poses de paso.
+export function caminar(c, activo) {
+  c.tCaminar?.remove();
+  c.tCaminar = null;
+  if (!activo) {
+    ponerPose(c, 'quieto');
+    return;
+  }
+  let i = 0;
+  c.tCaminar = c.scene.time.addEvent({ delay: 150, loop: true, callback: () => ponerPose(c, CAMINAR[i++ % CAMINAR.length]) });
 }
 
-function detenerAnimaciones(scene, c) {
-  (c.anims_ || []).forEach((t) => t.remove());
-  c.anims_ = [];
+// Respiración: el cuerpo se estira apenas desde los pies.
+function animarCuerpo(scene, c) {
+  c.respira?.remove();
+  c.respira = scene.tweens.add({ targets: c.cuerpo, scaleY: 1.012, duration: 1700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 }
 
 function darVida(scene, c) {
@@ -227,33 +208,37 @@ function darVida(scene, c) {
   // Parpadeo cada 2,5–5 s.
   const parpadear = () => {
     if (!c.active) return;
-    const ojos = c.cara.ojos.filter((o) => o.active);
-    scene.tweens.add({ targets: ojos, scaleY: 0.1, duration: 70, yoyo: true });
+    const p = c.capas.parpados;
+    if (p?.active) {
+      p.setVisible(true);
+      scene.time.delayedCall(110, () => p.active && p.setVisible(false));
+    }
     c.tParpadeo = scene.time.delayedCall(2500 + Math.random() * 2500, parpadear);
   };
   c.tParpadeo = scene.time.delayedCall(1000 + Math.random() * 2000, parpadear);
 
-  // Mover la boca mientras habla su voz.
+  // Gesticular y mover la boca mientras habla su voz.
   let tHabla = null;
   const callar = () => {
     tHabla?.remove();
     tHabla = null;
-    if (!c.cara) return;
-    c.cara.hablando = false;
+    if (!c.capas) return;
+    c.hablando = false;
     if (c.globo?.active) c.globo.setVisible(false);
-    ponerBoca(c, BOCAS[c.cara.expresion]);
+    ponerBoca(c, BOCA[c.expresionActual]);
+    if (c.pose === 'habla') ponerPose(c, 'quieto');
   };
   const alHablar = (id, texto, quien) => {
     callar();
-    if (ROL_VOZ[quien] !== c.rol || !c.active) return;
-    c.cara.hablando = true;
+    if (ROL_VOZ[quien] !== c.rol || !c.active || c.tCaminar) return;
+    c.hablando = true;
     c.globo.setVisible(true);
+    if (c.expresionActual === 'normal') ponerPose(c, 'habla');
     let i = 0;
     tHabla = scene.time.addEvent({
-      delay: 120, loop: true,
+      delay: 130, loop: true,
       callback: () => {
         ponerBoca(c, BOCAS_HABLA[i % BOCAS_HABLA.length]);
-        // Puntos del globo: se encienden de a uno.
         c.globo.puntos.forEach((p, k) => p.setAlpha(k === Math.floor(i / 3) % 3 ? 1 : 0.3));
         i++;
       },
@@ -264,13 +249,12 @@ function darVida(scene, c) {
 
   // Reacciones del jugador a aciertos y errores.
   const reaccionar = (tipo) => {
-    if (c.rol !== 'jugador' || !c.active) return;
+    if (c.rol !== 'jugador' || !c.active || c.tCaminar) return;
     if (tipo === 'bien' || tipo === 'logro') {
-      expresion(c, 'feliz', 1400);
-      scene.tweens.add({ targets: c.cuerpo, y: DY - 18, duration: 140, yoyo: true, ease: 'Quad.easeOut' });
+      expresion(c, 'feliz', 1100);
+      scene.tweens.add({ targets: c.cuerpo, y: PIES_LOCAL - 24, duration: 150, yoyo: true, ease: 'Quad.easeOut' });
     } else if (tipo === 'error') {
-      expresion(c, 'triste', 1400);
-      scene.tweens.add({ targets: c.cabeza, angle: { from: -7, to: 7 }, duration: 110, yoyo: true, repeat: 2, onComplete: () => c.cabeza?.setAngle(0) });
+      expresion(c, 'triste', 1300);
     }
   };
   scene.events.on('reaccion', reaccionar);
@@ -282,28 +266,18 @@ function darVida(scene, c) {
     tHabla?.remove();
     c.tParpadeo?.remove();
     c.tExpresion?.remove();
-    detenerAnimaciones(scene, c);
+    c.tCaminar?.remove();
+    c.respira?.remove();
   });
-}
-
-// Portapapeles con hoja y pinza (lo lleva el supervisor).
-function portapapeles(scene, x, y) {
-  const g = scene.add.graphics();
-  g.fillStyle(0x8b5e3c, 1).fillRoundedRect(-38, -50, 76, 100, 8);
-  g.fillStyle(0xffffff, 1).fillRect(-30, -38, 60, 80);
-  g.lineStyle(3, 0xa0aec0, 1);
-  for (let k = 0; k < 5; k++) g.lineBetween(-22, -24 + k * 14, 22, -24 + k * 14);
-  g.fillStyle(0x718096, 1).fillRoundedRect(-16, -58, 32, 16, 4);
-  return scene.add.container(x, y, [g]).setAngle(-12);
 }
 
 // Personajes fijos del juego.
 export const SUPERVISOR = {
-  genero: 'hombre', piel: 3, peinado: 'Man3', colorPelo: 'grey', cara: 1, poleraColor: 'white', poleraEstilo: 5, manga: 'long',
+  genero: 'hombre', piel: 3, peinado: 'rapado', colorPelo: 'grey', cara: 3, poleraColor: 'white', manga: 'long',
   pantalonColor: 'Navy', pantalonLargo: 'long', zapatos: 'black', chaleco: true, lentes: true, corbata: true, portapapeles: true,
 };
 
 export const CLIENTA = {
-  genero: 'mujer', piel: 5, peinado: 'Woman4', colorPelo: 'black', cara: 3, poleraColor: 'red', poleraEstilo: 4, manga: 'long',
+  genero: 'mujer', piel: 5, peinado: 'cola', colorPelo: 'black', cara: 1, poleraColor: 'red', manga: 'long',
   pantalonColor: 'Blue1', pantalonLargo: 'long', zapatos: 'brown', chaleco: false,
 };

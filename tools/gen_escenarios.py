@@ -316,7 +316,9 @@ def tienda():
             bpy.context.object.data.materials.append(mat('#553c9a', 0.6))
             bpy.ops.object.light_add(type='POINT', location=(lx, ly, 3.5))
             bpy.context.object.data.energy = 150
-    camara_libre((0, -3.5, 1.9), (0, 12, 1.1), lente=26)
+    # Cámara a 1,09 m y horizontal: una persona de 1,72 m a ~4,2 m mide ~380 px con los pies en y ≈ 600,
+    # la misma escala que en la bodega y las estanterías (ver ESCALA en src/lib/personaje.js).
+    camara_libre((0, -3.5, 1.09), (0, 12, 1.09), lente=26)
     guardar('tienda')
 
 
@@ -370,7 +372,7 @@ def habitacion():
         bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=5, radius=0.28,
                                              location=(-3.8 + random.uniform(-0.2, 0.2), 3.8 + random.uniform(-0.2, 0.2), 0.7 + k * 0.12))
         bpy.context.object.data.materials.append(mat('#38a169', 0.8))
-    camara_libre((0.4, -5.2, 1.7), (0.4, 3.0, 1.0), lente=24)
+    camara_libre((0.4, -5.2, 1.09), (0.4, 3.0, 1.09), lente=24)   # misma altura que la tienda
     guardar('habitacion')
 
 

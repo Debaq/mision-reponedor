@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { ANCHO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoEntrada } from '../lib/fondos.js';
 import { boton, dibujarReloj, panel } from '../lib/ui.js';
-import { crearPersonaje, SUPERVISOR } from '../lib/personaje.js';
+import { crearPersonaje, SUPERVISOR, enPiso, ESCALA, imagenCapa } from '../lib/personaje.js';
 import { estado, nombreJugador, nuevaPartida } from '../lib/estado.js';
 import { estrellasGuardadas, guardarPartida, perfil } from '../lib/perfil.js';
 import { nuevosPremios, turno2Desbloqueado } from '../lib/premios.js';
@@ -19,8 +19,8 @@ export default class Fin extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(300);
     fondoEntrada(this);
-    crearPersonaje(this, 170, 420, SUPERVISOR, 0.45);
-    crearPersonaje(this, 1110, 420, estado.avatar, 0.45);
+    crearPersonaje(this, 150, enPiso(640), SUPERVISOR, ESCALA);
+    crearPersonaje(this, 1130, enPiso(640), estado.avatar, ESCALA);
 
     // Etapas de este turno (las tareas encargadas solo si se jugaron: en el turno 2 se eligen al azar).
     const turno = FLUJO[estado.paso].turno;
@@ -109,8 +109,7 @@ export default class Fin extends Phaser.Scene {
     items.forEach((it, i) => {
       const x = ANCHO / 2 + (i - (items.length - 1) / 2) * 200;
       if (it.chaleco) {
-        const img = this.add.image(x, 320, 'chaleco_' + it.chaleco);
-        add(img.setScale(150 / img.width));
+        add(imagenCapa(this, x, 320, 'chaleco_' + it.chaleco, 170));
       } else {
         add(this.add.text(x, 300, 'TURNO 2', estiloTexto(32, '#ffffff', { backgroundColor: '#319795', padding: { x: 14, y: 10 } })).setOrigin(0.5));
         add(this.add.text(x, 360, 'Limpieza', estiloTexto(22, '#319795')).setOrigin(0.5));

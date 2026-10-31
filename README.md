@@ -59,11 +59,18 @@ Con las estrellas guardadas (la mejor de cada etapa) se desbloquea, según `src/
 - Chalecos de reconocimiento: estrella (10★), experto (25★), plata (40★) y oro (55★, requiere jugar el turno 2). Se eligen en la fila "Chaleco" al crear el personaje; los bloqueados muestran las estrellas que faltan.
 - Turno 2 (30★): pasillo de limpieza, con reloj en bodega y estantería, y el supervisor encarga 3 tareas al azar de las 5, con menos tiempo. Quien ya lo desbloqueó elige turno después de crear el personaje; también aparece un botón en la pantalla final.
 
-Al terminar un turno, una tarjeta "¡NUEVO!" muestra lo que se desbloqueó en esa partida. Los chalecos se generan con `uv run --with pillow python tools/gen_chaleco.py`.
+Al terminar un turno, una tarjeta "¡NUEVO!" muestra lo que se desbloqueó en esa partida.
 
-## Personajes
+## Personajes (Blender)
 
-Se arman con piezas de Kenney "Modular Characters" en `src/lib/personaje.js`, con proporciones adultas (cabeza más chica, piernas y brazos más largos) y cara por piezas (cejas, ojos, nariz y boca). Tienen vida: respiran, parpadean, mueven la boca y muestran un globo de diálogo cuando habla su voz (`jefe`, `cliente` o la del jugador), y el personaje del jugador sonríe y salta con los aciertos o pone cara triste con los errores (cada `sfx()` emite el evento `reaccion` en la escena).
+El personaje es 3D, modelado en `tools/gen_personaje.py`: un cuerpo continuo (modificador Skin) con esqueleto y pesos automáticos, ropa sacada del mismo cuerpo, 9 peinados, cara con ojos, párpados, cejas y bocas, chalecos de reconocimiento y accesorios del supervisor (lentes, corbata y portapapeles). Se renderiza **por capas en blanco** (piel, zapatos, pantalón, polera, chaleco, cara, pelo…) en 6 poses (quieto, habla, feliz, triste y dos de caminar), y el juego las colorea y combina (`src/lib/personaje.js`). Cada capa se renderiza con lo que la tapa como *holdout*, así se pueden superponer en cualquier combinación.
+
+```bash
+npm run personaje   # renderiza las capas y arma public/assets/personaje3d/personaje.png + .json
+npm run personaje -- preview <carpeta>   # (con blender -b -P tools/gen_personaje.py) vistas previas armadas
+```
+
+Todos los fondos y el personaje usan la misma escala: una persona de 1,72 m mide ~380 px con los pies en y = 600 (`ESCALA` y `enPiso()` en `personaje.js`). El personaje respira, parpadea, gesticula y mueve la boca con su voz (con un globo de diálogo), camina en el mapa y el traslado, y el del jugador celebra los aciertos y se pone triste con los errores (cada `sfx()` emite `reaccion`).
 
 ## Editar textos y voces
 

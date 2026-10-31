@@ -3,7 +3,7 @@ import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoRender } from '../lib/fondos.js';
 import { Indicador, marca, aleatorio, FELICITAR, letreroPasillo } from '../lib/ui.js';
 import { ListaPanel } from '../lib/listaPanel.js';
-import { crearPersonaje } from '../lib/personaje.js';
+import { crearPersonaje, enPiso, ESCALA, PISO_FRONTAL_Y } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -50,7 +50,7 @@ export default class Sala extends Phaser.Scene {
     }
     for (const m of nivel.malPuestos) this.crearMalPuesto(m);
 
-    crearPersonaje(this, 1195, 460, estado.avatar, 0.27);
+    crearPersonaje(this, 1200, enPiso(PISO_FRONTAL_Y), estado.avatar, ESCALA);
     this.enCarro = [];
     nivel.lista.flatMap((it) => Array(it.n).fill(it.p)).forEach((p, i) => this.crearItemCarro(p, i));
 
