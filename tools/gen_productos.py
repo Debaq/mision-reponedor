@@ -141,9 +141,9 @@ MODELOS = {'detergente': detergente, 'cloro': cloro, 'lavaloza': lavaloza, 'pape
 
 
 def escena():
-    # Luz común del juego (bl_util), con el sol desde arriba a la izquierda: cara superior clara,
-    # frente medio, costado derecho más oscuro.
-    bl_util.escena(512, 512, fondo='#ffffff', sol_rot=(40, -25, -35), sol=3.4, ambiente=0.45)
+    # Luz común del juego (bl_util) pero neutra, para combinar con los productos de Kenney; sol desde
+    # arriba a la izquierda: cara superior clara, frente medio, costado derecho más oscuro.
+    bl_util.escena(512, 512, fondo='#ffffff', sol_rot=(40, -25, -35), sol=3.4, ambiente=0.45, calida=False)
     bpy.context.scene.render.film_transparent = True
 
 

@@ -154,7 +154,9 @@ def lampara(tipo, pos, energia, tam=None):
     return luz
 
 
-def escena(W, H, fondo='#8fb9c9', sol_rot=LUZ_SOL, sol=3.0, ambiente=0.75):
+def escena(W, H, fondo='#8fb9c9', sol_rot=LUZ_SOL, sol=3.0, ambiente=0.75, calida=True):
+    """Escena vacía con la luz común. calida=False: sol blanco y sin relleno frío (productos, que
+    tienen que combinar con los de Kenney, iluminados neutros)."""
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete()
     s = bpy.context.scene
@@ -175,13 +177,14 @@ def escena(W, H, fondo='#8fb9c9', sol_rot=LUZ_SOL, sol=3.0, ambiente=0.75):
     w = s.world or bpy.data.worlds.new('w')
     s.world = w
     w.use_nodes = True
-    w.node_tree.nodes['Background'].inputs['Color'].default_value = (*[lineal(c) for c in mezclar(fondo, RELLENO, 0.4)], 1)
+    cielo = mezclar(fondo, RELLENO, 0.4) if calida else hexa(fondo)
+    w.node_tree.nodes['Background'].inputs['Color'].default_value = (*[lineal(c) for c in cielo], 1)
     w.node_tree.nodes['Background'].inputs['Strength'].default_value = ambiente
     bpy.ops.object.light_add(type='SUN', rotation=tuple(math.radians(a) for a in sol_rot))
     luz = bpy.context.object
     luz.data.energy = sol
     luz.data.angle = math.radians(15)
-    luz.data.color = [lineal(c) for c in hexa(SOL_CALIDO)]
+    luz.data.color = [lineal(c) for c in hexa(SOL_CALIDO if calida else '#ffffff')]
 
 
 def proyectar(cam, p):

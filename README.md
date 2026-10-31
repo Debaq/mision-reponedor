@@ -38,11 +38,17 @@ No hace falta que nadie fuerce la recarga:
 5. Lista de reposición: imagen del producto + cantidad, leída en voz alta. Luego el mapa del supermercado: ir a la bodega y, con el carro, elegir el pasillo correcto (1 Alimentos, 2 Bebidas, 3 Limpieza, 4 Higiene).
 6. Tutorial guiado: identificar, buscar en la bodega, seleccionar y contar, trasladar, ubicar en la estantería, ordenar.
 7. Práctica sin ayuda con una lista nueva, en el pasillo de higiene.
-8. Órdenes del supervisor: encarga tres tareas en un orden al azar (derrame, basura, vencidos) y hay que elegirlas en ese orden; cada una tiene tiempo límite. Después, orientar a una clienta.
+8. Órdenes del supervisor: encarga tres tareas en un orden al azar (derrame: botar la botella, limpiar y poner el letrero; basura; vencidos) y hay que elegirlas en ese orden; cada una tiene tiempo límite. Antes de cada tarea se camina por el mapa hasta su pasillo (`lugar` en `src/lib/flujo.js`). Después, orientar a una clienta.
 9. Segundas órdenes (dos tareas): cambiar etiquetas de precio y colgar el cartel de oferta (pasillo de limpieza), y revisar faltantes en el pasillo de bebidas y verificar en la bodega si quedan (si no, avisar al jefe).
 10. Fin del turno, con estrellas, puntos y errores por etapa.
 
 El documento pide elegir la vestimenta al crear el personaje; aquí se elige después del aviso de contratación, que es el orden lógico (el requisito de elegir la ropa adecuada se mantiene).
+
+## Celulares y tablets
+
+El juego se juega en horizontal (en vertical aparece el aviso "Gira tu celular"). Al tocar COMENZAR pasa a pantalla completa donde el navegador lo permite (Android y iPad). En iPhone, Safari no deja usar pantalla completa desde una página: para ganar espacio, instalarlo con **Compartir → Agregar a inicio**; así se abre sin barras del navegador (en Android: menú → **Instalar app**). El ícono y el modo de pantalla completa están en `public/manifest.webmanifest`.
+
+El campo del nombre es un `<input>` HTML que se ubica sobre el canvas (`campoTexto` en `src/lib/movil.js`) y va dentro del mismo contenedor que el canvas, para que se vea también en pantalla completa.
 
 ## Estrellas y puntos
 
@@ -101,6 +107,12 @@ npm run escenarios
 ```
 
 Las funciones comunes de Blender están en `tools/bl_util.py`.
+
+## Luz y sombras
+
+- **Renders** (`bl_util.escena()`): sol cálido con relleno frío, lámparas cálidas, oclusión y rebote de luz (raytracing de EEVEE) y una sola dirección de sol (`LUZ_SOL`) para los fondos de frente y el personaje. Los productos usan la misma escena con sol neutro (`calida=False`), para combinar con los de Kenney. Curva de tonos Standard: AgX apagaba los colores de marca.
+- **Modelos**: las cajas llevan bisel y los cilindros son redondos con sombreado suave (`caja()`, `cil()`); la gente de fondo es de cápsulas (`capsula()`).
+- **En el juego** (`src/lib/sombras.js`, hecho al cargar con degradados en canvas): sombra suave bajo personajes y carros, sombra de contacto horneada en cada producto, productos "levantados" al arrastrarlos, sombras difusas de paneles y botones, y una viñeta suave sobre los fondos. Nada es un efecto en tiempo real, para no bajar los fps en celulares.
 
 ## Probar cambios de luz (Blender)
 

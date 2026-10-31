@@ -126,8 +126,10 @@ export function actualizarPersonaje(scene, c, cfg) {
 }
 
 function armar(scene, c) {
-  // Sombra en el piso: una penumbra amplia y una más oscura justo bajo los pies.
-  c.add([sombra(scene, 0, PIES_LOCAL + 6, 300, 64, 0.3), sombra(scene, 0, PIES_LOCAL + 2, 180, 32, 0.55)]);
+  // Sombra en el piso: una penumbra amplia corrida hacia atrás y a la izquierda (adonde caen las
+  // sombras en los fondos: el sol de tools/bl_util.py viene de adelante, arriba y a la derecha) y una
+  // más oscura justo bajo los pies. No depende de hacia dónde mire: la luz no se espeja.
+  c.add([sombra(scene, -34, PIES_LOCAL - 2, 330, 70, 0.28), sombra(scene, 0, PIES_LOCAL + 2, 180, 32, 0.55)]);
   // El cuerpo cuelga de los pies (así respirar o saltar escala desde el piso). El render mira hacia la
   // izquierda: para mirar a la derecha se espeja.
   const cuerpo = scene.add.container(0, PIES_LOCAL).setScale(c.mirar === 'izquierda' ? 1 : -1, 1);
