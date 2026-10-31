@@ -13,6 +13,7 @@ class Voz extends Phaser.Events.EventEmitter {
     this.actual = null;
     this.ultimo = null;
     this._resolver = null;
+    this.generacion = 0; // sube con callar(): las secuencias en curso se cancelan
   }
 
   // Versión según género: "_f" (mujer) o "_n" (no binario, lenguaje neutro), si existe.
@@ -29,9 +30,11 @@ class Voz extends Phaser.Events.EventEmitter {
     return !!this.actual;
   }
 
-  // Devuelve una promesa: true si terminó de hablar, false si fue interrumpida.
+  // Devuelve una promesa: true si terminó de hablar, 'interrumpida' si otra línea habló encima
+  // (por ejemplo, el jugador tocó algo que se lee en voz alta) y false si se calló (cambio de etapa).
+  // Así, tocar cosas mientras se dan instrucciones no detiene el flujo de la escena.
   decir(id) {
-    this.callar();
+    if (this.actual) this._terminar('interrumpida');
     id = this.variante(id);
     const linea = LINEAS[id];
     if (!linea) {
@@ -56,11 +59,24 @@ class Voz extends Phaser.Events.EventEmitter {
     });
   }
 
+  // Dice varias líneas seguidas. Si el jugador habla encima de una, espera a que termine y la repite.
   async secuencia(ids) {
+    const gen = this.generacion;
     for (const id of ids) {
-      if (!(await this.decir(id))) return false;
+      let r = await this.decir(id);
+      if (r === 'interrumpida') {
+        await this.silencio();
+        if (gen !== this.generacion) return false;
+        r = await this.decir(id);
+      }
+      if (!r || gen !== this.generacion) return false;
     }
     return true;
+  }
+
+  // Promesa que se cumple cuando no hay ninguna voz sonando.
+  silencio() {
+    return this.actual ? new Promise((r) => this.once('fin', r)) : Promise.resolve();
   }
 
   // Repite la última línea (botón del parlante).
@@ -83,10 +99,11 @@ class Voz extends Phaser.Events.EventEmitter {
   }
 
   callar() {
+    this.generacion++;
     if (this.actual) this._terminar(false);
   }
 
-  _terminar(completa) {
+  _terminar(resultado) {
     clearTimeout(this._timer);
     const s = this.actual;
     this.actual = null;
@@ -97,7 +114,7 @@ class Voz extends Phaser.Events.EventEmitter {
     const r = this._resolver;
     this._resolver = null;
     this.emit('fin');
-    if (r) r(completa);
+    if (r) r(resultado);
   }
 }
 

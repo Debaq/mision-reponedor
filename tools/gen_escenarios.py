@@ -144,7 +144,9 @@ def plataforma(cam, x, y, ancho):
     """Dónde queda en pantalla la superficie del carro (para poner los productos encima)."""
     izq = proyectar(cam, (x - ancho / 2, y, 0.24))
     der = proyectar(cam, (x + ancho / 2, y, 0.24))
-    return {'x': round((izq[0] + der[0]) / 2), 'y': round(izq[1]), 'ancho': round(der[0] - izq[0])}
+    mango = proyectar(cam, (x + ancho / 2 - 0.05, y, 1.2))
+    return {'x': round((izq[0] + der[0]) / 2), 'y': round(izq[1]), 'ancho': round(der[0] - izq[0]),
+            'mango': [round(mango[0]), round(mango[1])]}
 
 
 # ---------------------------------------------------------------- sala

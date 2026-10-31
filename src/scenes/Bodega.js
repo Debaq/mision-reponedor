@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
+import { COLOR } from '../lib/estilo.js';
 import { fondoRender } from '../lib/fondos.js';
-import { Indicador, marca, sacudir } from '../lib/ui.js';
+import { boton, Indicador, marca, sacudir } from '../lib/ui.js';
 import { ListaPanel } from '../lib/listaPanel.js';
 import { crearPersonaje } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
@@ -15,6 +16,7 @@ const COLS = [370, 570, 770, 970];
 const FILAS = [150, 290, 430];
 // Superficie del carro en el render (los productos se ponen encima).
 const CARRO = ESCENARIOS.bodega.carro;
+const [MANGO_X, MANGO_Y] = CARRO.mango;
 
 // Etapas 5 y 6 (parte 1): buscar en la bodega, seleccionar y verificar cantidades.
 export default class Bodega extends Phaser.Scene {
@@ -44,8 +46,10 @@ export default class Bodega extends Phaser.Scene {
     ids.forEach((p, i) => this.crearCaja(p, COLS[i % 4], FILAS[Math.floor(i / 4)]));
 
     crearPersonaje(this, 1170, 470, estado.avatar, 0.27);
-    const zonaCarro = this.add.zone(CARRO.x, CARRO.y - 20, CARRO.ancho, 70).setInteractive({ useHandCursor: true });
-    zonaCarro.on('pointerup', () => this.tocarCarro());
+    // Flecha verde en el mango del carro: salir de la bodega (lejos de los productos, que al tocarlos vuelven a su caja).
+    this.salir = boton(this, MANGO_X, MANGO_Y - 20, {
+      icono: 'ui_right', ancho: 100, alto: 100, color: COLOR.verde, onClick: () => this.tocarCarro(),
+    }).setDepth(40);
 
     if (this.guiado) this.tutorial();
     else voz.decir('bodega_intro').then((ok) => partirReloj(this, ok));
@@ -129,7 +133,8 @@ export default class Bodega extends Phaser.Scene {
       return;
     }
     if (this.panelLista.todoCompleto()) {
-      this.ind.apuntar(CARRO.x, CARRO.y - 30, 90);
+      this.ind.apuntar(MANGO_X, MANGO_Y - 20, 66);
+      this.salir.latir();
       this.time.delayedCall(700, () => {
         if (!this.panelLista.todoCompleto() || this.terminado) return;
         voz.secuencia(this.guiado ? ['tut_verifica', 'tut_paso4'] : ['bodega_listo']);

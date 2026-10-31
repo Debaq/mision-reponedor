@@ -119,7 +119,7 @@ export async function siguiente(scene) {
 export async function partirReloj(scene, anunciar = true) {
   const segundos = FLUJO[estado.paso].datos?.tiempo;
   if (!segundos) return true;
-  const ok = anunciar ? await voz.decir('tiempo_' + segundos) : true;
+  const ok = anunciar === true ? await voz.decir('tiempo_' + segundos) : true;
   if (scene.sys.isActive() && !saliendo) scene.scene.get('Hud').iniciarReloj(segundos);
   return ok;
 }

@@ -230,7 +230,7 @@
   },
   "tut_paso4": {
     "voz": "guia",
-    "texto": "Paso cuatro: trasladar. Ya tienes todo en el carro. Toca el carro para llevarlo a la sala de ventas."
+    "texto": "Paso cuatro: trasladar. Ya tienes todo en el carro. Toca la flecha verde del carro para salir de la bodega."
   },
   "tut_paso5": {
     "voz": "guia",
@@ -250,7 +250,7 @@
   },
   "bodega_listo": {
     "voz": "guia",
-    "texto": "Tienes todo. Toca el carro para ir a la sala de ventas."
+    "texto": "Tienes todo. Toca la flecha verde del carro para salir de la bodega."
   },
   "traslado": {
     "voz": "guia",
