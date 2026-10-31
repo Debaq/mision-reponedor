@@ -30,6 +30,7 @@ export default class Ordenes extends Phaser.Scene {
 
   create(data) {
     this.cameras.main.fadeIn(300);
+    this.elegible = false;
     fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
     this.jefe = crearPersonaje(this, 160, enPiso(), SUPERVISOR, ESCALA);
     this.alHablar = (id, texto, quien) => {

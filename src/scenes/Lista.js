@@ -35,6 +35,8 @@ export default class Lista extends Phaser.Scene {
 
     this.ind = new Indicador(this);
     this.escuchadas = new Set();
+    // Phaser reutiliza la escena: el botón de la lista anterior ya no existe.
+    this.flecha = null;
     const ancho = 250;
     const paso = 270;
     const x0 = 480 - ((lista.length - 1) * paso) / 2;
