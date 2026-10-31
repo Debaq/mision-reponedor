@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { ANCHO, ALTO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { boton, flechaSiguiente, panel, sacudir } from '../lib/ui.js';
-import { crearPersonaje, actualizarPersonaje, opcionesDe, PEINADOS, CENTRO_PARTE, enPiso, ESCALA, imagenCapa } from '../lib/personaje.js';
+import { crearPersonaje, actualizarPersonaje, opcionesDe, PEINADOS, centroParte, enPiso, ESCALA, imagenCapa } from '../lib/personaje.js';
 import { estado, nombreJugador, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -16,7 +16,6 @@ const CATEGORIAS = {
   piel: { voz: 'avatar_piel', nombre: 'Piel', parte: 'cabeza', icono: ['piel', 0xc68642] },
   peinado: { voz: 'avatar_peinado', nombre: 'Peinado', parte: 'cabeza', icono: ['pelo_corto', 0x2b2b2b] },
   colorPelo: { voz: 'avatar_colorpelo', nombre: 'Color pelo', parte: 'cabeza', icono: ['pelo_rulos', 0xc0502e] },
-  cara: { voz: 'avatar_cara', nombre: 'Cara', parte: 'cabeza', icono: ['ojos'] },
   poleraColor: { voz: 'avatar_polera', nombre: 'Polera', parte: 'torso', icono: ['polera_corta', 0x3498db] },
   manga: { voz: 'avatar_polera', nombre: 'Manga', parte: 'torso', icono: ['polera_larga', 0x3498db] },
   pantalonColor: { voz: 'avatar_pantalon', nombre: 'Pantalón', parte: 'piernas', icono: ['pantalon_largo', 0x2c3e66] },
@@ -25,14 +24,14 @@ const CATEGORIAS = {
   chaleco: { voz: 'avatar_chaleco', nombre: 'Chaleco', parte: 'torso', icono: ['chaleco_basico'] },
 };
 const MODOS = {
-  personaje: ['genero', 'piel', 'peinado', 'colorPelo', 'cara', 'poleraColor', 'pantalonColor'],
+  personaje: ['genero', 'piel', 'peinado', 'colorPelo', 'poleraColor', 'pantalonColor'],
   trabajo: ['poleraColor', 'manga', 'pantalonColor', 'pantalonLargo', 'zapatos', 'chaleco'],
 };
 // Ropa de calle con la que se crea el personaje (en "trabajo" hay que cambiarla por la adecuada).
 const CALLE = { chaleco: 'no', pantalonLargo: 'shorter', poleraColor: 'red', pantalonColor: 'LightBlue', manga: 'short' };
 const NOMBRE_GENERO = { hombre: 'Hombre', mujer: 'Mujer', nobinario: 'No binario' };
 // Escala de la miniatura según la parte del cuerpo que muestra.
-const ESCALA_PARTE = { cabeza: 0.62, torso: 0.48, piernas: 0.33, pies: 0.9 };
+const ESCALA_PARTE = { cabeza: 1.05, torso: 0.5, piernas: 0.36, pies: 0.9 };
 
 const PANEL = { x: 30, y: 72, ancho: 640, alto: 530 };
 const GRILLA = { x0: 125, y0: 296, cols: 4, paso: 150, tam: 132 };
@@ -187,7 +186,7 @@ export default class Avatar extends Phaser.Scene {
     const prueba = { ...this.cfg, [cat]: valor };
     if (cat === 'genero' && valor !== 'nobinario') prueba.peinado = PEINADOS[valor][0];
     const dy = cat === 'genero' ? -12 : 0;
-    const mini = crearPersonaje(this, x, y - CENTRO_PARTE[parte] * escala + dy, prueba, escala, { vida: false }).setDepth(2);
+    const mini = crearPersonaje(this, x, y - centroParte(this, prueba.genero, parte) * escala + dy, prueba, escala, { vida: false }).setDepth(2);
     const mascara = this.make.graphics({ add: false }).fillRect(x - tam / 2 + 3, y - tam / 2 + 3, tam - 6, tam - 6);
     mini.setMask(mascara.createGeometryMask());
 
