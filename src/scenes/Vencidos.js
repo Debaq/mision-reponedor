@@ -7,6 +7,7 @@ import { crearPersonaje, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
+import { levantar } from '../lib/sombras.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
 
 // Hoy: 15 de noviembre. Fechas DDMM; vencida si es anterior a hoy.
@@ -64,6 +65,7 @@ export default class Vencidos extends Phaser.Scene {
       c.setSize(100, 240).setInteractive({ useHandCursor: true, draggable: true });
       c.on('pointerdown', () => voz.decir('fecha_' + f));
       c.on('dragstart', () => c.setDepth(100));
+      levantar(c);
       c.on('drag', (p, dx, dy) => c.setPosition(dx, dy));
       c.on('dragend', () => this.soltar(c));
     });

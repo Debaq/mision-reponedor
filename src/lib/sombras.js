@@ -21,6 +21,32 @@ function mancha(ancho, alto) {
   return c;
 }
 
+// Al arrastrar, el objeto se ve levantado: pierde la sombra de contacto y deja una sombra difusa
+// más abajo, que lo sigue. Al soltarlo, la sombra se recoge. Llamar después de los otros 'dragstart'
+// del objeto (usa su profundidad). Sirve para imágenes y contenedores.
+export function levantar(obj) {
+  const scene = obj.scene;
+  let s = null;
+  let abajo = 0;
+  const imagenes = () => (obj.list || [obj]).filter((o) => o.texture);
+  obj.on('dragstart', () => {
+    for (const o of imagenes()) if (scene.textures.exists(o.texture.key + '_limpio')) o.setTexture(o.texture.key + '_limpio');
+    const b = obj.getBounds();
+    abajo = b.bottom - obj.y + 26;
+    s?.destroy();
+    s = sombra(scene, obj.x + 12, obj.y + abajo, b.width * 0.9, b.width * 0.22, 0)
+      .setDepth(obj.depth - 0.5);
+    scene.tweens.add({ targets: s, alpha: 0.28, duration: 120 });
+  });
+  obj.on('drag', (p, x, y) => s?.setPosition(x + 12, y + abajo));
+  obj.on('dragend', () => {
+    for (const o of imagenes()) if (o.texture.key.endsWith('_limpio')) o.setTexture(o.texture.key.slice(0, -7));
+    const ultima = s;
+    s = null;
+    scene.tweens.add({ targets: ultima, alpha: 0, scaleX: ultima.scaleX * 0.5, scaleY: ultima.scaleY * 0.5, y: ultima.y - abajo / 2, duration: 140, onComplete: () => ultima.destroy() });
+  });
+}
+
 // Sombra difusa bajo algo apoyado en el piso, centrada en (x, y).
 export function sombra(scene, x, y, ancho, alto, alfa = 0.3) {
   return scene.add.image(x, y, 'sombra').setDisplaySize(ancho, alto).setAlpha(alfa);
@@ -57,6 +83,8 @@ function sombrearProducto(scene, clave) {
   ctx.drawImage(mancha(64, 16), (x0 + x1) / 2 - rx, base + 1 - ry, rx * 2, ry * 2);
   ctx.globalAlpha = 1;
   ctx.drawImage(img, 0, 0);
+  // Sin la sombra de contacto, para cuando el producto va levantado (ver levantar).
+  scene.textures.addImage(clave + '_limpio', img);
   scene.textures.remove(clave);
   scene.textures.addCanvas(clave, c);
 }

@@ -7,6 +7,7 @@ import { crearPersonaje, enPiso, ESCALA, PISO_FRONTAL_Y } from '../lib/personaje
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
+import { levantar } from '../lib/sombras.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
 import niveles from '../data/niveles.json';
 import ESCENARIOS from '../data/escenarios.json';
@@ -141,6 +142,7 @@ export default class Sala extends Phaser.Scene {
         this.ind.apuntar(sec.x0 + SECCION_ANCHO / 2, sec.base - 40, 120);
       }
     });
+    levantar(it);
     it.on('dragend', (pointer) => this.soltar(it, pointer));
   }
 

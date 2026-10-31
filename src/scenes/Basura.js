@@ -6,6 +6,7 @@ import { crearPersonaje, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
+import { levantar } from '../lib/sombras.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
 
 const BASURA = ['basura_lata', 'basura_envoltorio', 'basura_manzana', 'basura_vaso', 'basura_lata'];
@@ -41,6 +42,7 @@ export default class Basura extends Phaser.Scene {
         this.quedan++;
         it.setInteractive({ useHandCursor: true, draggable: true });
         it.on('dragstart', () => { it.setDepth(100); this.ind.ocultar(); sfx(this, 'tomar', 0.4); });
+        levantar(it);
         it.on('dragend', () => this.soltar(it));
       });
     this.input.on('drag', (p, obj, x, y) => obj.setPosition(x, y));
