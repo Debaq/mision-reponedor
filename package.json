@@ -2,7 +2,7 @@
   "name": "mision-reponedor",
   "private": true,
   "version": "0.1.0",
-  "sitio": "",
+  "sitio": "https://tecmedhub.org/mision_reponedor/",
   "type": "module",
   "scripts": {
     "dev": "vite",
