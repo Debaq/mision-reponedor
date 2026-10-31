@@ -126,7 +126,26 @@ function sombrearProducto(scene, clave) {
   scene.textures.addCanvas(clave, c);
 }
 
+// Viñeta: los bordes del fondo apenas más oscuros, para que la vista se vaya al centro. Una imagen fija
+// (no un efecto en tiempo real, que en celulares de gama baja bajaría los fps).
+function vineta() {
+  const [w, h] = [320, 180];
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext('2d');
+  ctx.translate(w / 2, h / 2);
+  ctx.scale(w / 2, h / 2);
+  const g = ctx.createRadialGradient(0, 0, 0.55, 0, 0, 1.45);
+  g.addColorStop(0, 'rgba(24, 18, 40, 0)');
+  g.addColorStop(1, 'rgba(24, 18, 40, 0.42)');
+  ctx.fillStyle = g;
+  ctx.fillRect(-1, -1, 2, 2);
+  return c;
+}
+
 export function crearSombras(scene) {
   scene.textures.addCanvas('sombra', mancha(128, 32));
+  scene.textures.addCanvas('vineta', vineta());
   for (const clave of scene.textures.getTextureKeys()) if (/^(prod|basura)_/.test(clave)) sombrearProducto(scene, clave);
 }
