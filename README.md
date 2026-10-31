@@ -50,6 +50,8 @@ El documento pide elegir la vestimenta al crear el personaje; aquí se elige des
 
 El juego se juega en horizontal (en vertical aparece el aviso "Gira tu celular"). Al tocar COMENZAR pasa a pantalla completa donde el navegador lo permite (Android y iPad). En iPhone, Safari no deja usar pantalla completa desde una página: para ganar espacio, instalarlo con **Compartir → Agregar a inicio**; así se abre sin barras del navegador (en Android: menú → **Instalar app**). El ícono y el modo de pantalla completa están en `public/manifest.webmanifest`.
 
+En celulares (pantalla táctil con el lado corto < 500 px) se activa el **modo compacto** (`compacto()` en `src/lib/movil.js`): productos y zonas de toque más grandes (mínimo 44 px reales), lo que se arrastra va un poco arriba del dedo para que no lo tape, más margen al soltar, subtítulo y parlante más grandes. En iPhone con Safari, la portada muestra una vez cómo agregarlo a la pantalla de inicio. Para probarlo en PC: abrir con `?movil=1`. Plan completo en `docs/plan-movil.md`.
+
 El campo del nombre es un `<input>` HTML que se ubica sobre el canvas (`campoTexto` en `src/lib/movil.js`) y va dentro del mismo contenedor que el canvas, para que se vea también en pantalla completa.
 
 ## Estrellas y puntos

@@ -9,7 +9,7 @@ import { FLUJO, siguiente } from '../lib/flujo.js';
 import { estrellasGuardadas } from '../lib/perfil.js';
 import { CHALECOS } from '../lib/premios.js';
 import { sombraPuntos } from '../lib/sombras.js';
-import { campoTexto } from '../lib/movil.js';
+import { campoTexto, compacto } from '../lib/movil.js';
 
 // Categorías del editor: voz, nombre, parte que se ve en la miniatura e ícono de la pestaña.
 // Ícono: capa del atlas del personaje y su color.
@@ -121,7 +121,7 @@ export default class Avatar extends Phaser.Scene {
     const fondo = this.add.graphics();
     const [capa, tinte] = CATEGORIAS[cat].icono;
     const img = imagenCapa(this, 0, -8, capa, 50, tinte);
-    c.add([fondo, img, this.add.text(0, 30, CATEGORIAS[cat].nombre, estiloTexto(13, '#2d3748')).setOrigin(0.5)]);
+    c.add([fondo, img, this.add.text(0, 30, CATEGORIAS[cat].nombre, estiloTexto(compacto() ? 15 : 13, '#2d3748')).setOrigin(0.5)]);
     c.setSize(78, 84).setInteractive({ useHandCursor: true });
     c.on('pointerup', () => this.elegirCategoria(cat, true));
     c.dibujar = (activa) => {

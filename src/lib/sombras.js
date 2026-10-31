@@ -1,3 +1,5 @@
+import { alzaDedo } from './movil.js';
+
 // Sombras suaves, hechas al cargar con degradados en un canvas (sin filtros, para que funcionen en
 // todos los navegadores): una mancha difusa ('sombra') para personajes y carros, y una sombra de
 // contacto horneada bajo cada producto, para que no floten sobre repisas, cajas y carros.
@@ -38,7 +40,7 @@ export function levantar(obj) {
       .setDepth(obj.depth - 0.5);
     scene.tweens.add({ targets: s, alpha: 0.28, duration: 120 });
   });
-  obj.on('drag', (p, x, y) => s?.setPosition(x + 12, y + abajo));
+  obj.on('drag', (p, x, y) => s?.setPosition(x + 12, y - alzaDedo(scene) + abajo));
   obj.on('dragend', () => {
     for (const o of imagenes()) if (o.texture.key.endsWith('_limpio')) o.setTexture(o.texture.key.slice(0, -7));
     const ultima = s;

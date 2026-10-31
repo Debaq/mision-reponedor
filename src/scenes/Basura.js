@@ -7,6 +7,7 @@ import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { levantar } from '../lib/sombras.js';
+import { alzaDedo, compacto, holgura, tocable } from '../lib/movil.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
 
 const BASURA = ['basura_lata', 'basura_envoltorio', 'basura_manzana', 'basura_vaso', 'basura_lata'];
@@ -36,16 +37,17 @@ export default class Basura extends Phaser.Scene {
     [...BASURA.map((k) => ({ k, basura: true })), ...NO_BASURA.map((k) => ({ k: k, basura: false }))]
       .forEach((o, i) => {
         const [x, y] = posiciones[i];
-        const it = this.add.image(x, y, o.basura ? o.k : 'prod_' + o.k).setDisplaySize(64, 64).setAngle(Phaser.Math.Between(-40, 40));
+        const tam = compacto() ? 80 : 64;
+        const it = this.add.image(x, y, o.basura ? o.k : 'prod_' + o.k).setDisplaySize(tam, tam).setAngle(Phaser.Math.Between(-40, 40));
         it.basura = o.basura;
         it.origen = { x, y };
         this.quedan++;
-        it.setInteractive({ useHandCursor: true, draggable: true });
+        tocable(it.setInteractive({ useHandCursor: true, draggable: true }));
         it.on('dragstart', () => { it.setDepth(100); this.ind.ocultar(); sfx(this, 'tomar', 0.4); });
         levantar(it);
         it.on('dragend', () => this.soltar(it));
       });
-    this.input.on('drag', (p, obj, x, y) => obj.setPosition(x, y));
+    this.input.on('drag', (p, obj, x, y) => obj.setPosition(x, y - alzaDedo(this)));
 
     this.instrucciones();
   }
@@ -57,8 +59,9 @@ export default class Basura extends Phaser.Scene {
   }
 
   async soltar(it) {
-    const enTacho = Math.abs(it.x - TACHO.x) < 80 && Math.abs(it.y - TACHO.y) < 110;
-    const enCarro = Math.abs(it.x - CARRO.x) < 110 && Math.abs(it.y - CARRO.y) < 100;
+    const h = holgura();
+    const enTacho = Math.abs(it.x - TACHO.x) < 80 * h && Math.abs(it.y - TACHO.y) < 110 * h;
+    const enCarro = Math.abs(it.x - CARRO.x) < 110 * h && Math.abs(it.y - CARRO.y) < 100 * h;
     if (!enTacho && !enCarro) {
       it.setDepth(0);
       return;

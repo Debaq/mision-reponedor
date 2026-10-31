@@ -9,6 +9,7 @@ import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
 import { sombraRect } from '../lib/sombras.js';
+import { compacto, tocable } from '../lib/movil.js';
 import niveles from '../data/niveles.json';
 import productos from '../data/productos.json';
 import ESCENARIOS from '../data/escenarios.json';
@@ -83,11 +84,12 @@ export default class Bodega extends Phaser.Scene {
     sfx(this, 'tomar');
     const i = this.enCarro.length;
     const destino = this.posCarro(i);
-    const u = this.add.image(caja.x, caja.y, 'prod_' + p).setDisplaySize(56, 56).setDepth(30);
+    const tam = compacto() ? 66 : 56;
+    const u = this.add.image(caja.x, caja.y, 'prod_' + p).setDisplaySize(tam, tam).setDepth(30);
     u.p = p;
     this.enCarro.push(u);
     this.tweens.add({ targets: u, x: destino.x, y: destino.y, duration: 380, ease: 'Quad.easeOut' });
-    u.setInteractive({ useHandCursor: true }).on('pointerup', () => this.devolver(u));
+    tocable(u.setInteractive({ useHandCursor: true })).on('pointerup', () => this.devolver(u));
     this.panelLista.sumar(p);
 
     const cant = this.panelLista.cant[p];
@@ -104,9 +106,10 @@ export default class Bodega extends Phaser.Scene {
   }
 
   posCarro(i) {
-    const porFila = 12;
+    const paso = compacto() ? 62 : 54;
+    const porFila = Math.floor((CARRO.ancho - 90) / paso);
     const fila = Math.floor(i / porFila);
-    return { x: CARRO.x - CARRO.ancho / 2 + 60 + (i % porFila) * 54, y: CARRO.y - 26 - fila * 46 };
+    return { x: CARRO.x - CARRO.ancho / 2 + 60 + (i % porFila) * paso, y: CARRO.y - 26 - fila * (paso - 8) };
   }
 
   devolver(u) {

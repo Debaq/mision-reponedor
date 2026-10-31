@@ -9,6 +9,7 @@ import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
 import { levantar } from '../lib/sombras.js';
+import { alzaDedo, holgura, tocable } from '../lib/movil.js';
 
 const CHARCO = { x: 640, y: 500, rx: 150, ry: 50 };
 const BASURERO = { x: 170, y: 480 };
@@ -44,7 +45,7 @@ export default class Derrame extends Phaser.Scene {
   botarBotella() {
     const b = this.botella;
     const origen = { x: b.x, y: b.y };
-    b.setInteractive({ useHandCursor: true, draggable: true });
+    tocable(b.setInteractive({ useHandCursor: true, draggable: true }), 56);
     b.on('dragstart', () => {
       sfx(this, 'tomar', 0.4);
       b.setDepth(60);
@@ -52,9 +53,9 @@ export default class Derrame extends Phaser.Scene {
       this.ind.apuntar(BASURERO.x, BASURERO.y - 40, 90);
     });
     levantar(b);
-    b.on('drag', (p, x, y) => b.setPosition(x, y));
+    b.on('drag', (p, x, y) => b.setPosition(x, y - alzaDedo(this)));
     b.on('dragend', async () => {
-      const enBasurero = Math.abs(b.x - BASURERO.x) < 90 && Math.abs(b.y - BASURERO.y) < 120;
+      const enBasurero = Math.abs(b.x - BASURERO.x) < 90 * holgura() && Math.abs(b.y - BASURERO.y) < 120 * holgura();
       if (!enBasurero) {
         this.tweens.add({ targets: b, x: origen.x, y: origen.y, angle: -100, duration: 250 });
         b.setDepth(0);
@@ -145,9 +146,9 @@ export default class Derrame extends Phaser.Scene {
     letrero.setSize(120, 150).setInteractive({ useHandCursor: true, draggable: true });
     this.ind.apuntar(960, 470, 80);
     letrero.on('dragstart', () => this.ind.apuntar(destino.x, destino.y, 80));
-    letrero.on('drag', (p, x, y) => letrero.setPosition(x, y));
+    letrero.on('drag', (p, x, y) => letrero.setPosition(x, y - alzaDedo(this)));
     letrero.on('dragend', async () => {
-      if (Phaser.Math.Distance.Between(letrero.x, letrero.y, destino.x, destino.y) > 110) {
+      if (Phaser.Math.Distance.Between(letrero.x, letrero.y, destino.x, destino.y) > 110 * holgura()) {
         this.ind.apuntar(destino.x, destino.y, 80);
         return;
       }

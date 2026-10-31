@@ -8,6 +8,7 @@ import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { levantar } from '../lib/sombras.js';
+import { alzaDedo, holgura } from '../lib/movil.js';
 import { FLUJO, partirReloj, siguiente } from '../lib/flujo.js';
 
 const MESES = { 11: 'NOV', 12: 'DIC' };
@@ -84,7 +85,7 @@ export default class Vencidos extends Phaser.Scene {
       c.on('pointerdown', () => voz.decir('fecha_' + f));
       c.on('dragstart', () => c.setDepth(100));
       levantar(c);
-      c.on('drag', (p, dx, dy) => c.setPosition(dx, dy));
+      c.on('drag', (p, dx, dy) => c.setPosition(dx, dy - alzaDedo(this)));
       c.on('dragend', () => this.soltar(c));
     });
 
@@ -92,7 +93,7 @@ export default class Vencidos extends Phaser.Scene {
   }
 
   async soltar(c) {
-    const enCanasto = Math.abs(c.x - CANASTO.x) < 110 && Math.abs(c.y - CANASTO.y) < 120;
+    const enCanasto = Math.abs(c.x - CANASTO.x) < 110 * holgura() && Math.abs(c.y - CANASTO.y) < 120 * holgura();
     if (!enCanasto) {
       this.tweens.add({ targets: c, x: c.origen.x, y: c.origen.y, duration: 250 });
       c.setDepth(0);

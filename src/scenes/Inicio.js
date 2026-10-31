@@ -7,7 +7,7 @@ import { irA } from '../lib/flujo.js';
 import { crearPersonaje, enPiso, ESCALA } from '../lib/personaje.js';
 import { AVATAR_INICIAL, nuevaPartida } from '../lib/estado.js';
 import { VERSION } from '../lib/version.js';
-import { pantallaCompleta } from '../lib/movil.js';
+import { avisoInstalar, pantallaCompleta } from '../lib/movil.js';
 
 export default class Inicio extends Phaser.Scene {
   constructor() {
@@ -47,5 +47,6 @@ export default class Inicio extends Phaser.Scene {
       icono: 'ui_information', texto: 'Etapas', ancho: 190, alto: 70, tam: 24, color: COLOR.gris,
       onClick: () => this.scene.start('Etapas'),
     });
+    avisoInstalar(this);
   }
 }

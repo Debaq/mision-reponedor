@@ -8,6 +8,7 @@ import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
+import { alzaDedo, holgura } from '../lib/movil.js';
 
 // Pasillo de limpieza: precio anterior → precio nuevo.
 const PRECIOS = [
@@ -46,7 +47,7 @@ export default class Precios extends Phaser.Scene {
       e.p = pr.p;
       this.arrastrable(e, (sec) => this.soltarEtiqueta(e, sec));
     });
-    this.input.on('drag', (p, obj, x, y) => obj.setPosition(x, y));
+    this.input.on('drag', (p, obj, x, y) => obj.setPosition(x, y - alzaDedo(this)));
 
     this.instrucciones();
   }
@@ -64,9 +65,11 @@ export default class Precios extends Phaser.Scene {
       this.ind.ocultar();
       sfx(this, 'tomar', 0.4);
     });
-    obj.on('dragend', (pointer) => {
+    obj.on('dragend', () => {
       obj.setScale(1);
-      const sec = this.secciones.find((s) => pointer.x >= s.x0 && pointer.x <= s.x1 && pointer.y >= s.arriba - 40 && pointer.y <= s.etiqueta.y + 50);
+      // Donde quedó la etiqueta (no el dedo, que en el celular va más abajo); con más margen en el celular.
+      const m = (holgura() - 1) * 100;
+      const sec = this.secciones.find((s) => obj.x >= s.x0 && obj.x <= s.x1 && obj.y >= s.arriba - 40 - m && obj.y <= s.etiqueta.y + 50 + m);
       if (!sec) {
         this.tweens.add({ targets: obj, x: obj.origen.x, y: obj.origen.y, duration: 250 });
         obj.setDepth(0);

@@ -8,6 +8,7 @@ import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { levantar } from '../lib/sombras.js';
+import { alzaDedo, compacto, holgura, tocable } from '../lib/movil.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
 import niveles from '../data/niveles.json';
 import ESCENARIOS from '../data/escenarios.json';
@@ -56,9 +57,15 @@ export default class Sala extends Phaser.Scene {
 
     crearPersonaje(this, 1200, enPiso(PISO_FRONTAL_Y), estado.avatar, ESCALA);
     this.enCarro = [];
-    nivel.lista.flatMap((it) => Array(it.n).fill(it.p)).forEach((p, i) => this.crearItemCarro(p, i));
+    // En el celular los productos del carro son más grandes (para tomarlos con el dedo).
+    this.tamCarro = compacto() ? 64 : 50;
+    const enCarro = nivel.lista.flatMap((it) => Array(it.n).fill(it.p));
+    // Todos en una fila si caben (se juntan un poco); si no, en filas.
+    this.pasoCarro = Math.min(this.tamCarro - 2, (CARRO.ancho - 60 - this.tamCarro) / Math.max(1, enCarro.length - 1));
+    if (this.pasoCarro < this.tamCarro * 0.85) this.pasoCarro = this.tamCarro - 2;
+    enCarro.forEach((p, i) => this.crearItemCarro(p, i));
 
-    this.input.on('drag', (pointer, obj, x, y) => obj.setPosition(x, y));
+    this.input.on('drag', (pointer, obj, x, y) => obj.setPosition(x, y - alzaDedo(this)));
 
     if (this.guiado) {
       voz.decir('tut_paso5');
@@ -101,7 +108,7 @@ export default class Sala extends Phaser.Scene {
     it.setAngle(Phaser.Math.RND.pick([-1, 1]) * Phaser.Math.Between(20, 30));
     it.x += Phaser.Math.Between(-8, 8);
     it.slot = slot;
-    it.setInteractive({ useHandCursor: true });
+    tocable(it.setInteractive({ useHandCursor: true }));
     it.on('pointerup', () => {
       if (!this.ordenarActivo || !this.chuecos.includes(it)) return;
       sfx(this, 'tick');
@@ -123,17 +130,19 @@ export default class Sala extends Phaser.Scene {
   }
 
   crearItemCarro(p, i) {
-    const porFila = 14;
-    const x = CARRO.x - CARRO.ancho / 2 + 36 + (i % porFila) * 48;
-    const y = CARRO.y - 26 - Math.floor(i / porFila) * 46;
-    const it = this.add.image(x, y, 'prod_' + p).setDisplaySize(50, 50);
+    const tam = this.tamCarro;
+    const paso = this.pasoCarro;
+    const porFila = Math.floor((CARRO.ancho - 60 - tam) / paso) + 1;
+    const x = CARRO.x - CARRO.ancho / 2 + 30 + tam / 2 + (i % porFila) * paso;
+    const y = CARRO.y - tam / 2 - 1 - Math.floor(i / porFila) * (tam - 4);
+    const it = this.add.image(x, y, 'prod_' + p).setDisplaySize(tam, tam);
     it.p = p;
     this.hacerArrastrable(it);
     this.enCarro.push(it);
   }
 
   hacerArrastrable(it) {
-    it.setInteractive({ useHandCursor: true, draggable: true });
+    tocable(it.setInteractive({ useHandCursor: true, draggable: true }));
     it.origen = { x: it.x, y: it.y, angle: it.angle };
     it.on('dragstart', () => {
       if (it.malPuesto && !this.ordenarActivo) return;
@@ -146,15 +155,21 @@ export default class Sala extends Phaser.Scene {
       }
     });
     levantar(it);
-    it.on('dragend', (pointer) => this.soltar(it, pointer));
+    it.on('dragend', () => this.soltar(it));
   }
 
+  // Sección donde cae el producto (por su centro): entre las que lo alcanzan, la más cercana. En el
+  // celular, con más margen.
   seccionEn(x, y) {
-    return this.secciones.find((s) => x >= s.x0 && x <= s.x0 + SECCION_ANCHO && y >= s.base - 130 && y <= s.base + 60);
+    const m = (holgura() - 1) * 120;
+    const centro = (s) => Math.hypot(x - (s.x0 + SECCION_ANCHO / 2), y - (s.base - 35));
+    return this.secciones
+      .filter((s) => x >= s.x0 - m && x <= s.x0 + SECCION_ANCHO + m && y >= s.base - 130 - m && y <= s.base + 60 + m)
+      .sort((a, b) => centro(a) - centro(b))[0];
   }
 
-  soltar(it, pointer) {
-    const sec = this.seccionEn(pointer.x, pointer.y);
+  soltar(it) {
+    const sec = this.seccionEn(it.x, it.y);
     const libre = sec && sec.p === it.p ? sec.slots.find((s) => !s.lleno) : null;
     if (sec && libre) {
       libre.lleno = true;
@@ -175,7 +190,7 @@ export default class Sala extends Phaser.Scene {
     }
     // Volver al origen
     this.tweens.add({ targets: it, x: it.origen.x, y: it.origen.y, angle: it.origen.angle, duration: 250 });
-    it.setDisplaySize(it.malPuesto ? TAM : 50, it.malPuesto ? TAM : 50).setDepth(it.malPuesto ? 1 : 0);
+    it.setDisplaySize(it.malPuesto ? TAM : this.tamCarro, it.malPuesto ? TAM : this.tamCarro).setDepth(it.malPuesto ? 1 : 0);
     if (!sec) {
       if (this.guiado) this.guiarUbicar();
       return;

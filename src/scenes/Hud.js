@@ -5,6 +5,7 @@ import { sfx } from '../lib/sfx.js';
 import { estado, totales } from '../lib/estado.js';
 import { destello, dibujarReloj } from '../lib/ui.js';
 import { sombraCirculo } from '../lib/sombras.js';
+import { compacto } from '../lib/movil.js';
 
 const COLOR_VOZ = { guia: COLOR.azul, jugador: COLOR.verde, jugadora: COLOR.verde, jugadore: COLOR.verde, jefe: 0x6b46c1, cliente: 0xb7791f };
 const VOZ_PREMIO = { 3: 'premio_3', 2: 'premio_2', 1: 'premio_1' };
@@ -39,10 +40,12 @@ export default class Hud extends Phaser.Scene {
       voz.repetir();
     });
     this.parlante.setVisible(false);
+    // En el celular, el parlante y el subtítulo más grandes.
+    if (compacto()) this.parlante.setScale(1.15);
 
     voz.on('linea', (id, texto, quien) => this.mostrar(texto, quien));
     voz.on('fin', () => this.ondas && this.ondas.pause());
-    this.ondas = this.tweens.add({ targets: this.parlante, scale: 1.1, duration: 300, yoyo: true, repeat: -1, paused: true });
+    this.ondas = this.tweens.add({ targets: this.parlante, scale: this.parlante.scale * 1.1, duration: 300, yoyo: true, repeat: -1, paused: true });
     this.crearMarcador();
     this.crearReloj();
   }
@@ -200,7 +203,9 @@ export default class Hud extends Phaser.Scene {
     this.fondo.fillStyle(COLOR_VOZ[quien] || COLOR.azul, 1).fillRoundedRect(130, y - 46, 8, 92, 4);
     this.quien.setText(NOMBRE_VOZ[quien] || '');
     this.texto.setText(texto);
-    const tam = texto.length > 150 ? 19 : texto.length > 100 ? 21 : 24;
+    const tam = compacto()
+      ? (texto.length > 150 ? 23 : texto.length > 100 ? 26 : 30)
+      : (texto.length > 150 ? 19 : texto.length > 100 ? 21 : 24);
     this.texto.setFontSize(tam);
     this.caja.setVisible(true);
     this.parlante.setVisible(true);
