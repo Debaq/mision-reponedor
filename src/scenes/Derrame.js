@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoRender } from '../lib/fondos.js';
 import { Indicador, marca, sacudir } from '../lib/ui.js';
-import { herramienta, letreroPisoMojado, tarjeta } from '../lib/objetos.js';
+import { charco, herramienta, letreroPisoMojado, tarjeta } from '../lib/objetos.js';
 import { crearPersonaje, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
@@ -23,15 +23,9 @@ export default class Derrame extends Phaser.Scene {
     crearPersonaje(this, 1170, enPiso(), estado.avatar, ESCALA);
     this.ind = new Indicador(this);
 
-    // Charco: varias manchas que se van desvaneciendo al limpiar.
-    this.charco = this.add.container(CHARCO.x, CHARCO.y);
-    const g = this.add.graphics();
-    g.fillStyle(0x9c4221, 0.75);
-    g.fillEllipse(0, 0, CHARCO.rx * 2, CHARCO.ry * 2);
-    g.fillEllipse(-110, 20, 90, 40).fillEllipse(120, -14, 110, 46).fillEllipse(40, 34, 80, 30);
-    g.fillStyle(0xffffff, 0.35).fillEllipse(-40, -14, 60, 12);
-    this.charco.add(g);
-    this.add.image(CHARCO.x + 190, CHARCO.y - 20, 'prod_bebida').setDisplaySize(70, 70).setAngle(95);
+    // Charco de bebida (se va desvaneciendo al limpiar) y la botella caída, con la boca hacia el charco.
+    this.charco = charco(this, CHARCO.x, CHARCO.y, 400);
+    this.add.image(CHARCO.x + 240, CHARCO.y - 26, 'prod_bebida').setDisplaySize(70, 70).setAngle(-100);
     this.limpieza = 0;
 
     this.inicio();

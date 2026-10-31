@@ -98,3 +98,98 @@ export function carroReposicion(scene, x, y) {
   c.add(g);
   return c;
 }
+
+// Bebida derramada en el piso (vista en perspectiva): contorno irregular de líquido, más oscuro en el
+// borde y translúcido al centro, con brillos de las lámparas, gotas sueltas y un hilo hacia la derecha
+// (donde queda la botella). Se dibuja una vez en un canvas; `ancho` en px del juego.
+const CHARCO = { w: 480, h: 170 };
+
+function contorno(ctx, cx, cy, rx, ry, ondas) {
+  const n = 72;
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const t = (i / n) * Math.PI * 2;
+    const r = ondas.reduce((r, [k, a, f]) => r + a * Math.sin(k * t + f), 1);
+    pts.push([cx + Math.cos(t) * rx * r, cy + Math.sin(t) * ry * r]);
+  }
+  // Curva suave que pasa por los puntos medios (sin esquinas).
+  const medio = (p, q) => [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+  ctx.moveTo(...medio(pts[n - 1], pts[0]));
+  pts.forEach((p, i) => ctx.quadraticCurveTo(p[0], p[1], ...medio(p, pts[(i + 1) % n])));
+  ctx.closePath();
+}
+
+function texturaCharco(scene) {
+  if (scene.textures.exists('charco')) return;
+  const { w, h } = CHARCO;
+  const lienzo = () => {
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    return [c, c.getContext('2d')];
+  };
+  // El líquido se pinta opaco en un canvas aparte y se pega translúcido: así las partes que se
+  // superponen (charco, hilo) no marcan bordes por dentro.
+  const [liq, ctx] = lienzo();
+  const forma = () => {
+    ctx.beginPath();
+    contorno(ctx, 205, 88, 175, 54, [[2, 0.07, 0.4], [3, 0.11, 1.9], [5, 0.06, 0.2], [7, 0.035, 2.6], [11, 0.015, 1.1]]);
+    contorno(ctx, 375, 74, 62, 20, [[2, 0.1, 1.2], [3, 0.12, 0.3], [6, 0.05, 2]]);   // hilo hacia la botella
+    contorno(ctx, 452, 68, 18, 8, [[3, 0.15, 0.7]]);
+  };
+  // Borde más oscuro (el líquido se acumula en la orilla) y centro más claro (se ve el piso).
+  forma();
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = 'rgb(66, 24, 6)';
+  ctx.stroke();
+  const g = ctx.createRadialGradient(205, 80, 10, 205, 88, 200);
+  g.addColorStop(0, 'rgb(168, 86, 38)');
+  g.addColorStop(0.7, 'rgb(126, 56, 20)');
+  g.addColorStop(1, 'rgb(92, 36, 10)');
+  ctx.fillStyle = g;
+  ctx.fill();
+  // Brillos de las lámparas del techo, dentro del charco.
+  ctx.save();
+  forma();
+  ctx.clip();
+  const brillo = (x, y, rx, ry, a) => {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(rx, ry);
+    const b = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+    b.addColorStop(0, `rgba(255, 250, 240, ${a})`);
+    b.addColorStop(1, 'rgba(255, 250, 240, 0)');
+    ctx.fillStyle = b;
+    ctx.beginPath();
+    ctx.arc(0, 0, 1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  };
+  brillo(150, 66, 70, 11, 0.6);
+  brillo(268, 96, 46, 8, 0.4);
+  brillo(372, 70, 26, 5, 0.45);
+  brillo(140, 64, 18, 3, 0.95);
+  ctx.restore();
+  // Gotas sueltas alrededor.
+  for (const [x, y, r] of [[22, 112, 7], [44, 132, 4], [330, 140, 6], [362, 124, 3.5], [96, 30, 5], [300, 22, 4], [420, 100, 4]]) {
+    ctx.beginPath();
+    contorno(ctx, x, y, r * 1.5, r, [[3, 0.12, x]]);
+    ctx.fillStyle = 'rgb(96, 40, 12)';
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255, 250, 240, 0.8)';
+    ctx.beginPath();
+    ctx.ellipse(x - r * 0.4, y - r * 0.3, r * 0.5, r * 0.22, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const [c, final] = lienzo();
+  final.globalAlpha = 0.8;
+  final.drawImage(liq, 0, 0);
+  scene.textures.addCanvas('charco', c);
+}
+
+// El centro del charco principal queda en (x, y); la botella va a la derecha, a ~0,5·ancho.
+export function charco(scene, x, y, ancho) {
+  texturaCharco(scene);
+  const k = ancho / CHARCO.w;
+  return scene.add.image(x + (CHARCO.w / 2 - 205) * k, y, 'charco').setScale(k);
+}

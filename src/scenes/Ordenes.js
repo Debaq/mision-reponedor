@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { fondoRender } from '../lib/fondos.js';
 import { boton, marca, panel, sacudir } from '../lib/ui.js';
-import { basurero, herramienta } from '../lib/objetos.js';
+import { basurero, charco, herramienta } from '../lib/objetos.js';
 import { etiquetaPrecio } from '../lib/gondola.js';
 import { crearPersonaje, SUPERVISOR, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado } from '../lib/estado.js';
@@ -102,9 +102,7 @@ export default class Ordenes extends Phaser.Scene {
   dibujoTarea(id) {
     const d = this.add.container(0, -14);
     if (id === 'derrame') {
-      const g = this.add.graphics();
-      g.fillStyle(0x9c4221, 0.75).fillEllipse(-10, 40, 150, 46).fillEllipse(-60, 50, 60, 24);
-      d.add([g, this.add.image(55, 20, 'prod_bebida').setDisplaySize(56, 56).setAngle(95),
+      d.add([charco(this, -20, 42, 170), this.add.image(64, 32, 'prod_bebida').setDisplaySize(50, 50).setAngle(-100),
         herramienta(this, -30, -10, 'trapero').setScale(0.55).setAngle(-20)]);
     } else if (id === 'basura') {
       d.add([basurero(this, 20, 10).setScale(0.75),
