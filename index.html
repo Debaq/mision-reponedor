@@ -41,7 +41,9 @@
       overscroll-behavior: none; -webkit-tap-highlight-color: transparent;
     }
     /* dvh: altura real visible en celulares (sin la barra del navegador) */
-    #juego { width: 100vw; height: 100vh; height: 100dvh; }
+    /* Alto visible real: --alto lo mide el script de abajo (en Safari de iPhone 100vh y a veces 100dvh
+       incluyen las barras del navegador y el juego se corta abajo). */
+    #juego { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; height: 100dvh; height: var(--alto, 100dvh); }
     /* Campo de texto sobre el canvas (src/lib/movil.js: campoTexto ubica y escala) */
     input.campo {
       position: fixed; z-index: 5; box-sizing: border-box; margin: 0; padding: 0 0.6em;
@@ -88,6 +90,16 @@
     </svg>
     <div>Gira tu celular</div>
   </div>
+  <script>
+    (() => {
+      const vv = window.visualViewport;
+      const medir = () => document.documentElement.style.setProperty('--alto', `${Math.round(vv ? vv.height : innerHeight)}px`);
+      medir();
+      addEventListener('resize', medir);
+      addEventListener('orientationchange', () => setTimeout(medir, 300));
+      vv?.addEventListener('resize', medir);
+    })();
+  </script>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
