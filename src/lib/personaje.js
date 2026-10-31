@@ -73,6 +73,8 @@ const CARA = ['cara', 'rasgos', 'cejas'];
 const GESTO = { normal: 'sonrisa', feliz: 'abierta', triste: 'triste' };
 const GESTOS_HABLA = ['abierta', 'sonrisa'];
 const CAMINAR = ['camina1', 'quieto', 'camina2', 'quieto'];
+// De espaldas: al caminar alejándose de la cámara (hacia arriba en el mapa).
+const CAMINAR_ESPALDA = ['espalda1', 'espalda', 'espalda2', 'espalda'];
 
 // Quién es quién para mover la boca: la voz que habla ('jefe', 'cliente' o la del jugador).
 const ROL_VOZ = { jugador: 'jugador', jugadora: 'jugador', jugadore: 'jugador', jefe: 'jefe', cliente: 'cliente' };
@@ -125,8 +127,9 @@ export function actualizarPersonaje(scene, c, cfg) {
 function armar(scene, c) {
   // Sombra en el piso, bajo los pies.
   c.add(scene.add.ellipse(0, PIES_LOCAL + 4, 230, 40, 0x000000, 0.16));
-  // El cuerpo cuelga de los pies (así respirar o saltar escala desde el piso).
-  const cuerpo = scene.add.container(0, PIES_LOCAL).setScale(c.mirar === 'izquierda' ? -1 : 1, 1);
+  // El cuerpo cuelga de los pies (así respirar o saltar escala desde el piso). El render mira hacia la
+  // izquierda: para mirar a la derecha se espeja.
+  const cuerpo = scene.add.container(0, PIES_LOCAL).setScale(c.mirar === 'izquierda' ? 1 : -1, 1);
   c.add(cuerpo);
   c.cuerpo = cuerpo;
   c.capas = {};
@@ -191,23 +194,37 @@ export function expresion(c, tipo, ms = 0) {
   if (!c.capas) return;
   c.expresionActual = tipo;
   if (!c.hablando) ponerGesto(c, GESTO[tipo]);
-  ponerPose(c, tipo === 'feliz' ? 'feliz' : tipo === 'triste' ? 'triste' : c.hablando ? 'habla' : 'quieto');
+  // Caminando, la pose la pone el paso.
+  if (!c.tCaminar) ponerPose(c, tipo === 'feliz' ? 'feliz' : tipo === 'triste' ? 'triste' : c.hablando ? 'habla' : 'quieto');
   if (ms && c.scene) {
     c.tExpresion?.remove();
     c.tExpresion = c.scene.time.delayedCall(ms, () => c.active && expresion(c, 'normal'));
   }
 }
 
-// Caminar en el lugar (las escenas mueven el contenedor): alterna las poses de paso.
+// Caminar en el lugar (las escenas mueven el contenedor): alterna las poses de paso, de frente o de
+// espaldas según `c.deEspaldas` (ver mirarHacia).
 export function caminar(c, activo) {
   c.tCaminar?.remove();
   c.tCaminar = null;
   if (!activo) {
+    c.deEspaldas = false;
     ponerPose(c, 'quieto');
     return;
   }
-  let i = 0;
-  c.tCaminar = c.scene.time.addEvent({ delay: 150, loop: true, callback: () => ponerPose(c, CAMINAR[i++ % CAMINAR.length]) });
+  c.paso = 0;
+  ponerPaso(c);
+  c.tCaminar = c.scene.time.addEvent({ delay: 150, loop: true, callback: () => { c.paso++; ponerPaso(c); } });
+}
+
+const ponerPaso = (c) => ponerPose(c, (c.deEspaldas ? CAMINAR_ESPALDA : CAMINAR)[c.paso % CAMINAR.length]);
+
+// Orienta al personaje según hacia dónde se mueve (dx, dy en pantalla): mira a la izquierda o a la
+// derecha, y queda de espaldas si va hacia arriba (alejándose de la cámara).
+export function mirarHacia(c, dx, dy) {
+  if (Math.abs(dx) > 2) c.cuerpo.scaleX = dx > 0 ? -1 : 1;
+  c.deEspaldas = dy < 0;
+  if (c.tCaminar) ponerPaso(c);
 }
 
 // Respiración: el cuerpo se estira apenas desde los pies.

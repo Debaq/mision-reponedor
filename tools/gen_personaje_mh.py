@@ -29,6 +29,8 @@ PELOS = {'corto': 'short02', 'rapado': 'short04', 'lado': 'short01', 'rulos': 's
          'melena': 'bob02', 'largo': 'long01', 'cola': 'ponytail01', 'mono': 'bob01', 'trenza': 'braid01'}
 EXPRESIONES = {'sonrisa': 'smile02', 'abierta': 'vocalize01', 'triste': 'sad01', 'parpadeo': 'sleep01'}
 ANCHO_PX, ALTO_PX, ALTO_M = 360, 520, 2.0
+# Tres cuartos: el personaje queda mirando hacia la izquierda de la pantalla (el juego lo espeja).
+GIRO = -22
 _mats = {}
 
 
@@ -248,7 +250,7 @@ class Cuerpo:
         pb.matrix = r @ pb.matrix
         bpy.context.view_layer.update()
 
-    def posar(self, pose, giro=-22):
+    def posar(self, pose, giro=GIRO):
         for pb in self.arm.pose.bones:
             pb.matrix_basis = self.base[pb.name]
         self.arm.rotation_euler = self.giro0
@@ -730,6 +732,8 @@ def capas(c):
 
 
 POSES_JUEGO = ['quieto', 'habla', 'feliz', 'triste', 'camina1', 'camina2']
+# De espaldas (para caminar alejándose de la cámara, en el mapa): la pose de origen con media vuelta.
+ESPALDA = {'espalda': 'quieto', 'espalda1': 'camina1', 'espalda2': 'camina2'}
 CARAS = ['sonrisa', 'abierta', 'triste', 'parpadeo']
 
 
@@ -747,8 +751,9 @@ def renderizar(c, salida):
         s.render.filepath = str(salida / f'{nombre}.png')
         bpy.ops.render.render(write_still=True)
 
-    for pose in POSES_JUEGO:
-        c.posar(pose)
+    for pose in [*POSES_JUEGO, *ESPALDA]:
+        espalda = pose in ESPALDA
+        c.posar(ESPALDA.get(pose, pose), GIRO + 180 if espalda else GIRO)
         poner_expresion(c, None)
         for capa, tapan in capas(c).items():
             mostrar(capa, tapan)
@@ -759,7 +764,7 @@ def renderizar(c, salida):
             foto(f'{pose}__cara_{cara}')
             mostrar('rasgos', ['cara'])
             foto(f'{pose}__rasgos_{cara}')
-            mostrar('cejas', [])
+            mostrar('cejas', ['cara'] if espalda else [])
             foto(f'{pose}__cejas_{cara}')
     for lc in vistas.values():
         lc.exclude = False
