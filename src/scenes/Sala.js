@@ -13,6 +13,9 @@ import niveles from '../data/niveles.json';
 import ESCENARIOS from '../data/escenarios.json';
 import productos from '../data/productos.json';
 
+// 1290 → "1.290"
+const miles = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
 const ESTANTE = { x0: 250, ancho: 860, bases: [190, 330, 470] };
 const SECCION_ANCHO = 420;
 const TAM = 60;
@@ -75,7 +78,7 @@ export default class Sala extends Phaser.Scene {
     g.fillStyle(COLOR.amarillo, 1).fillRoundedRect(tx - 60, nivelY + 16, 120, 40, 6);
     g.lineStyle(2, 0xb7791f, 1).strokeRoundedRect(tx - 60, nivelY + 16, 120, 40, 6);
     this.add.image(tx - 34, nivelY + 36, 'prod_' + s.p).setDisplaySize(36, 36);
-    this.add.text(tx + 18, nivelY + 36, '$990', estiloTexto(18, '#1f2d3a')).setOrigin(0.5);
+    this.add.text(tx + 20, nivelY + 36, '$' + miles(productos[s.p].precio), estiloTexto(18, '#1f2d3a')).setOrigin(0.5);
 
     const total = s.llenos + s.vacios;
     const paso = 64;
