@@ -66,6 +66,9 @@ export const indiceDe = (escena) => FLUJO.findIndex((p) => p.escena === escena);
 let saliendo = false;
 
 export function irA(scene, indice, extra = {}) {
+  // Una escena que ya se cerró no cambia de etapa (ej.: COMENZAR esperaba la voz de bienvenida y
+  // mientras tanto se eligió otra etapa en el menú).
+  if (!scene.sys.isActive()) return;
   saliendo = true;
   estado.paso = indice;
   estado.erroresPaso = 0;
