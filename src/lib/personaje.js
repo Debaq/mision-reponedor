@@ -79,22 +79,28 @@ const DY = -(CADERA_Y + (ZAPATO_Y - CADERA_Y) * P.piernas - ZAPATO_Y);
 // Quién es quién para mover la boca: la voz que habla ('jefe', 'cliente' o la del jugador).
 const ROL_VOZ = { jugador: 'jugador', jugadora: 'jugador', jugadore: 'jugador', jefe: 'jefe', cliente: 'cliente' };
 
-/** Crea un contenedor con el personaje. `escala` 1 = tamaño original (~600 px de alto). */
-export function crearPersonaje(scene, x, y, cfg, escala = 0.5) {
+/**
+ * Crea un contenedor con el personaje. `escala` 1 = tamaño original (~600 px de alto).
+ * Con `vida: false` queda quieto (sin animaciones ni voz), por ejemplo para las miniaturas del editor.
+ */
+export function crearPersonaje(scene, x, y, cfg, escala = 0.5, { vida = true } = {}) {
   const c = scene.add.container(x, y).setScale(escala);
   c.rol = cfg === SUPERVISOR ? 'jefe' : cfg === CLIENTA ? 'cliente' : 'jugador';
   c.cfg = { ...cfg };
   armar(scene, c);
-  darVida(scene, c);
+  if (vida) darVida(scene, c);
   return c;
 }
+
+// Centro (en coordenadas del personaje, escala 1) de cada parte, para encuadrarla en una miniatura.
+export const CENTRO_PARTE = { cabeza: -225, torso: -45, piernas: 150, pies: 262 };
 
 export function actualizarPersonaje(scene, c, cfg) {
   detenerAnimaciones(scene, c);
   c.cfg = { ...cfg };
   c.removeAll(true);
   armar(scene, c);
-  animarCuerpo(scene, c);
+  if (c.tParpadeo) animarCuerpo(scene, c);
 }
 
 function armar(scene, c) {

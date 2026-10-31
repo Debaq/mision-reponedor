@@ -6,7 +6,7 @@
   },
   "avatar_intro": {
     "voz": "guia",
-    "texto": "Primero, vamos a crear tu personaje. Toca las flechas para elegir cómo te identificas, tu piel, tu pelo y tu ropa."
+    "texto": "Primero, vamos a crear tu personaje. Arriba toca qué quieres cambiar, y abajo elige la opción que más te guste."
   },
   "avatar_nombre": {
     "voz": "guia",
@@ -702,7 +702,7 @@
   },
   "vestir_intro": {
     "voz": "guia",
-    "texto": "¡Conseguiste el trabajo! Antes de ir al supermercado, elige la ropa adecuada para trabajar."
+    "texto": "¡Conseguiste el trabajo! Antes de ir al supermercado, elige la ropa adecuada para trabajar. Arriba eliges qué cambiar y abajo la opción."
   },
   "vestir_t2": {
     "voz": "guia",

@@ -1,8 +1,7 @@
 import Phaser from 'phaser';
-import { ANCHO, COLOR, estiloTexto } from '../lib/estilo.js';
-import { fondoSala } from '../lib/fondos.js';
+import { ANCHO, ALTO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { boton, flechaSiguiente, panel, sacudir } from '../lib/ui.js';
-import { crearPersonaje, actualizarPersonaje, opcionesDe, PEINADOS, MUESTRA } from '../lib/personaje.js';
+import { crearPersonaje, actualizarPersonaje, opcionesDe, PEINADOS, CENTRO_PARTE } from '../lib/personaje.js';
 import { estado, nombreJugador, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -10,37 +9,35 @@ import { FLUJO, siguiente } from '../lib/flujo.js';
 import { estrellasGuardadas } from '../lib/perfil.js';
 import { CHALECOS } from '../lib/premios.js';
 
-const COLORES_ROPA = {
-  white: 0xf5f5f5, blue: 0x3498db, navy: 0x34495e, grey: 0x95a5a6, red: 0xe05a47, green: 0x4caf50, pine: 0x2e7d6b,
-  yellow: 0xf4c430, Navy: 0x34495e, Grey: 0x8e9aa5, Brown: 0x8b5e3c, Blue1: 0x3b6fb6, LightBlue: 0x6ec6d9,
-  Tan: 0xc9a27e, Red: 0xc0392b, Green: 0x4caf50, black: 0x3a3f3a, brown: 0xb08d57, brown2: 0x7a5232, tan: 0xd2b48c,
+// Categorías del editor: voz, nombre, parte que se ve en la miniatura e ícono de la pestaña.
+const CATEGORIAS = {
+  genero: { voz: 'avatar_genero', nombre: 'Soy', parte: 'cabeza', icono: ['pelo', 'brown2Woman2.png'] },
+  piel: { voz: 'avatar_piel', nombre: 'Piel', parte: 'cabeza', icono: ['piel', 'tint4_head.png'] },
+  peinado: { voz: 'avatar_peinado', nombre: 'Peinado', parte: 'cabeza', icono: ['pelo', 'blackMan3.png'] },
+  colorPelo: { voz: 'avatar_colorpelo', nombre: 'Color pelo', parte: 'cabeza', icono: ['pelo', 'redWoman4.png'] },
+  cara: { voz: 'avatar_cara', nombre: 'Cara', parte: 'cabeza', icono: ['cara', 'eyeBrown_large.png'] },
+  poleraColor: { voz: 'avatar_polera', nombre: 'Polera', parte: 'torso', icono: ['polera', 'blueShirt1.png'] },
+  manga: { voz: 'avatar_polera', nombre: 'Manga', parte: 'torso', icono: ['polera', 'blueArm_long.png'] },
+  pantalonColor: { voz: 'avatar_pantalon', nombre: 'Pantalón', parte: 'piernas', icono: ['pantalon', 'pantsNavy_long.png'] },
+  pantalonLargo: { voz: 'avatar_pantalon', nombre: 'Largo', parte: 'piernas', icono: ['pantalon', 'pantsNavy_shorter.png'] },
+  zapatos: { voz: 'avatar_zapatos', nombre: 'Zapatos', parte: 'pies', icono: ['zapatos', 'blackShoe1.png'] },
+  chaleco: { voz: 'avatar_chaleco', nombre: 'Chaleco', parte: 'torso', icono: ['chaleco', null] },
 };
-
-// Filas del editor: [clave del avatar, línea de voz, etiqueta, cómo mostrar el valor]
-const FILAS = [
-  ['genero', 'avatar_genero', 'Soy', (v) => ({ texto: { hombre: 'Hombre', mujer: 'Mujer', nobinario: 'No binario' }[v] })],
-  ['piel', 'avatar_piel', 'Piel', (v) => ({ color: MUESTRA.piel[v] })],
-  ['peinado', 'avatar_peinado', 'Peinado', (v, cfg) => ({ texto: String(opcionesDe('peinado', cfg).indexOf(v) + 1) })],
-  ['colorPelo', 'avatar_colorpelo', 'Color de pelo', (v) => ({ color: MUESTRA.colorPelo[v] })],
-  ['cara', 'avatar_cara', 'Cara', (v) => ({ texto: String(v) })],
-  ['poleraColor', 'avatar_polera', 'Polera', (v) => ({ color: COLORES_ROPA[v] })],
-  ['manga', 'avatar_polera', 'Manga', (v) => ({ texto: v === 'short' ? 'Corta' : 'Larga' })],
-  ['pantalonColor', 'avatar_pantalon', 'Pantalón', (v) => ({ color: COLORES_ROPA[v] })],
-  ['pantalonLargo', 'avatar_pantalon', 'Largo', (v) => ({ texto: v === 'long' ? 'Largo' : 'Short' })],
-  ['zapatos', 'avatar_zapatos', 'Zapatos', (v) => ({ color: COLORES_ROPA[v] })],
-  ['chaleco', 'avatar_chaleco', 'Chaleco', (v, cfg, estrellas) => (estrellas < CHALECOS[v]
-    ? { texto: `★ ${CHALECOS[v]}`, bloqueado: true }
-    : { texto: { no: 'No', basico: 'Sí', estrella: 'Estrella', experto: 'Experto', plata: 'Plata', oro: 'Oro' }[v] })],
-];
-
-// Columnas del editor según el modo.
-const FILAS_TU = FILAS.slice(0, 5);
-const FILAS_CALLE = [FILAS[5], FILAS[7]];
-const FILAS_TRABAJO = FILAS.slice(5);
+const MODOS = {
+  personaje: ['genero', 'piel', 'peinado', 'colorPelo', 'cara', 'poleraColor', 'pantalonColor'],
+  trabajo: ['poleraColor', 'manga', 'pantalonColor', 'pantalonLargo', 'zapatos', 'chaleco'],
+};
 // Ropa de calle con la que se crea el personaje (en "trabajo" hay que cambiarla por la adecuada).
 const CALLE = { chaleco: 'no', pantalonLargo: 'shorter', poleraColor: 'red', pantalonColor: 'LightBlue', manga: 'short' };
+const NOMBRE_GENERO = { hombre: 'Hombre', mujer: 'Mujer', nobinario: 'No binario' };
+// Escala de la miniatura según la parte del cuerpo que muestra.
+const ESCALA_PARTE = { cabeza: 0.42, torso: 0.27, piernas: 0.32, pies: 0.5 };
 
-// Editor del personaje, en dos momentos:
+const PANEL = { x: 30, y: 72, ancho: 640, alto: 530 };
+const GRILLA = { x0: 125, y0: 296, cols: 4, paso: 150, tam: 132 };
+const POR_PAGINA = 8;
+
+// Editor del personaje por pestañas y grilla (como la referencia del documento), en dos momentos:
 // - modo 'personaje' (al empezar): nombre, cómo te identificas, físico y ropa de calle.
 // - modo 'trabajo' (después del contrato): elegir la ropa adecuada para trabajar (se valida).
 export default class Avatar extends Phaser.Scene {
@@ -54,94 +51,184 @@ export default class Avatar extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(300);
-    fondoSala(this);
+    this.add.image(0, 0, 'esc_habitacion').setOrigin(0).setDisplaySize(ANCHO, ALTO);
     const trabajo = this.modo === 'trabajo';
     // Sin chaleco al empezar: en "trabajo" hay que ponérselo.
     this.cfg = estado.nombre ? { ...estado.avatar, chaleco: 'no' } : { ...estado.avatar, ...CALLE };
-
-    panel(this, 250, 360, 380, 520, 0xffffff, 24);
-    this.muneco = crearPersonaje(this, 250, 420, this.cfg, 0.5);
-
-    // (Phaser reutiliza la escena: se limpian las filas de la vez anterior antes de refrescarlas.)
-    this.valores = {};
+    this.categorias = MODOS[this.modo];
+    this.categoria = this.categorias[0];
+    this.pagina = 0;
     this.estrellas = 0;
-    this.iconoEstrellas = this.add.image(220, 212, 'ui_star').setTint(COLOR.amarillo).setDisplaySize(30, 30);
-    this.txtEstrellas = this.add.text(240, 212, '', estiloTexto(24, '#b7791f')).setOrigin(0, 0.5);
+    // (Phaser reutiliza la escena: se limpian las referencias de la vez anterior.)
+    this.tarjetas = [];
+    this.pestanas = {};
+
+    this.crearPasos(trabajo ? 3 : 1);
+    this.muneco = crearPersonaje(this, 960, 418, this.cfg, 0.55);
+
+    // Panel con pestañas, grilla y páginas
+    panel(this, PANEL.x + PANEL.ancho / 2, PANEL.y + PANEL.alto / 2, PANEL.ancho, PANEL.alto, 0xffffff, 22);
+    this.add.graphics().fillStyle(0x3182ce, 1).fillRoundedRect(PANEL.x, PANEL.y, PANEL.ancho, 46, { tl: 22, tr: 22, bl: 0, br: 0 });
+    this.add.text(PANEL.x + 24, PANEL.y + 23, trabajo ? 'ROPA DE TRABAJO' : 'TU PERSONAJE', estiloTexto(22, '#ffffff')).setOrigin(0, 0.5);
+    this.categorias.forEach((cat, i) => this.crearPestana(cat, PANEL.x + 56 + i * 86, PANEL.y + 104));
+    const yPag = PANEL.y + PANEL.alto - 36;
+    this.flechaAtras = boton(this, PANEL.x + 80, yPag, { icono: 'ui_left', ancho: 120, alto: 54, color: 0x3182ce, onClick: () => this.cambiarPagina(-1) });
+    this.flechaAdelante = boton(this, PANEL.x + PANEL.ancho - 80, yPag, { icono: 'ui_right', ancho: 120, alto: 54, color: 0x3182ce, onClick: () => this.cambiarPagina(1) });
+    this.txtPagina = this.add.text(PANEL.x + PANEL.ancho / 2, yPag, '', estiloTexto(20, '#4a5568')).setOrigin(0.5);
+
+    // Nombre y estrellas guardadas (desbloquean chalecos), sobre el personaje
+    this.iconoEstrellas = this.add.image(915, 212, 'ui_star').setTint(COLOR.amarillo).setDisplaySize(32, 32).setVisible(false);
+    this.txtEstrellas = this.add.text(937, 212, '', estiloTexto(26, '#b7791f', { stroke: '#ffffff', strokeThickness: 6 })).setOrigin(0, 0.5);
     const mostrarEstrellas = (nombre) => {
       this.estrellas = nombre ? estrellasGuardadas(nombre) : 0;
-      this.txtEstrellas.setText(String(this.estrellas));
+      this.txtEstrellas.setText(this.estrellas ? String(this.estrellas) : '');
       this.iconoEstrellas.setVisible(this.estrellas > 0);
-      this.txtEstrellas.setVisible(this.estrellas > 0);
-      if (this.valores.chaleco) this.refrescarFila('chaleco');
+      if (this.categoria === 'chaleco') this.mostrarTarjetas();
     };
-
     if (trabajo) {
-      // Nombre fijo; las estrellas guardadas desbloquean chalecos.
-      this.add.text(250, 150, nombreJugador(), estiloTexto(30, '#553c9a')).setOrigin(0.5);
+      this.add.text(960, 165, nombreJugador(), estiloTexto(30, '#553c9a', { backgroundColor: '#ffffff', padding: { x: 18, y: 6 } })).setOrigin(0.5);
       mostrarEstrellas(estado.nombre);
-      this.add.text(800, 70, 'ROPA DE TRABAJO', estiloTexto(26, '#553c9a')).setOrigin(0.5);
-      FILAS_TRABAJO.forEach((fila, i) => this.crearFila(800, 125 + i * 80, fila));
       this.listo = flechaSiguiente(this, () => this.validarTrabajo());
       voz.decir(FLUJO[estado.paso]?.turno === 2 ? 'vestir_t2' : 'vestir_intro');
-      return;
+    } else {
+      this.input_ = this.add.dom(960, 165).createFromHTML('<input class="nombre" maxlength="14" placeholder="Tu nombre" autocomplete="off">');
+      this.input_.setScale(0.8);
+      const campo = this.input_.node.querySelector('input');
+      campo.value = estado.nombre;
+      campo.addEventListener('focus', () => voz.decir('avatar_nombre'));
+      campo.addEventListener('keydown', (e) => e.stopPropagation());
+      campo.addEventListener('input', () => mostrarEstrellas(campo.value.trim()));
+      mostrarEstrellas(campo.value.trim());
+      this.listo = flechaSiguiente(this, () => this.validarPersonaje(campo));
+      voz.secuencia(['avatar_intro', 'avatar_nombre']);
     }
-
-    // Nombre
-    this.add.text(250, 118, 'Tu nombre', estiloTexto(24, '#553c9a')).setOrigin(0.5);
-    this.input_ = this.add.dom(250, 162).createFromHTML('<input class="nombre" maxlength="14" placeholder="Nombre" autocomplete="off">');
-    this.input_.setScale(0.8);
-    const campo = this.input_.node.querySelector('input');
-    campo.value = estado.nombre;
-    campo.addEventListener('focus', () => voz.decir('avatar_nombre'));
-    campo.addEventListener('keydown', (e) => e.stopPropagation());
-    campo.addEventListener('input', () => mostrarEstrellas(campo.value.trim()));
-    mostrarEstrellas(campo.value.trim());
-
-    this.add.text(640, 72, 'TÚ', estiloTexto(26, '#553c9a')).setOrigin(0.5);
-    FILAS_TU.forEach((fila, i) => this.crearFila(640, 125 + i * 82, fila));
-    this.add.text(1010, 72, 'TU ROPA', estiloTexto(26, '#553c9a')).setOrigin(0.5);
-    FILAS_CALLE.forEach((fila, i) => this.crearFila(1010, 125 + i * 82, fila));
-
-    this.listo = flechaSiguiente(this, () => this.validarPersonaje(campo));
-    voz.secuencia(['avatar_intro', 'avatar_nombre']);
+    this.elegirCategoria(this.categoria, false);
   }
 
-  crearFila(x, y, [clave, linea, etiqueta, mostrar]) {
-    panel(this, x, y, 350, 74, 0xffffff, 14);
-    // Etiqueta: al tocarla se escucha.
-    const lbl = this.add.text(x - 30, y - 16, etiqueta, estiloTexto(19, '#4a5568')).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    lbl.on('pointerup', () => voz.decir(linea));
-    const muestra = this.add.circle(x - 30, y + 14, 14, 0xffffff).setStrokeStyle(3, 0x1f2d3a);
-    const valor = this.add.text(x - 30, y + 14, '', estiloTexto(22)).setOrigin(0.5);
-    this.valores[clave] = { muestra, valor, mostrar };
-    this.refrescarFila(clave);
+  // Pasos del proceso (como la referencia): 1. Personaje → 2. Contrato → 3. Ropa de trabajo.
+  crearPasos(actual) {
+    ['Personaje', 'Contrato', 'Ropa de trabajo'].forEach((t, i) => {
+      const x = 700 + i * 186;
+      const flecha = (dx, dy) => [[0, 76], [167, 76], [185, 100], [167, 124], [0, 124], [18, 100]].map(([px, py]) => ({ x: x + px + dx, y: py + dy }));
+      const color = i + 1 === actual ? 0xed8936 : i + 1 < actual ? 0x48bb78 : 0x2b6cb0;
+      const g = this.add.graphics();
+      g.fillStyle(0x000000, 0.2).fillPoints(flecha(3, 4), true);
+      g.fillStyle(color, 1).fillPoints(flecha(0, 0), true);
+      this.add.text(x + 96, 100, `${i + 1}. ${t}`, estiloTexto(17, '#ffffff')).setOrigin(0.5);
+    });
+  }
 
-    const cambiar = (d) => {
-      const ops = opcionesDe(clave, this.cfg);
-      const i = ops.indexOf(this.cfg[clave]);
-      this.cfg[clave] = ops[(i + d + ops.length) % ops.length];
-      if (clave === 'genero') {
-        if (this.cfg.genero !== 'nobinario') this.cfg.peinado = PEINADOS[this.cfg.genero][0];
-        this.refrescarFila('peinado');
-        voz.decir('gen_' + this.cfg.genero);
-      }
-      actualizarPersonaje(this, this.muneco, this.cfg);
-      this.refrescarFila(clave);
-      if (clave === 'chaleco' && this.bloqueado()) voz.decir('avatar_bloqueado');
+  crearPestana(cat, x, y) {
+    const c = this.add.container(x, y);
+    const fondo = this.add.graphics();
+    const [atlas, f] = CATEGORIAS[cat].icono;
+    const img = f ? this.add.image(0, -8, atlas, f) : this.add.image(0, -8, atlas);
+    img.setScale(Math.min(46 / img.width, 46 / img.height));
+    c.add([fondo, img, this.add.text(0, 30, CATEGORIAS[cat].nombre, estiloTexto(13, '#2d3748')).setOrigin(0.5)]);
+    c.setSize(78, 84).setInteractive({ useHandCursor: true });
+    c.on('pointerup', () => this.elegirCategoria(cat, true));
+    c.dibujar = (activa) => {
+      fondo.clear();
+      fondo.fillStyle(activa ? 0x9ae6b4 : 0xebf4ff, 1).fillRoundedRect(-39, -42, 78, 84, 14);
+      fondo.lineStyle(activa ? 4 : 2, activa ? 0x2f855a : 0x90cdf4, 1).strokeRoundedRect(-39, -42, 78, 84, 14);
     };
-    // Flechas grandes: en celular deben quedar de ~40 px para tocarlas fácil.
-    boton(this, x - 132, y, { icono: 'ui_left', ancho: 74, alto: 66, color: COLOR.azul, onClick: () => cambiar(-1) });
-    boton(this, x + 94, y, { icono: 'ui_right', ancho: 74, alto: 66, color: COLOR.azul, onClick: () => cambiar(1) });
-    this.add.image(x + 152, y, 'ui_audioOn').setDisplaySize(28, 28).setTint(0x2b6cb0)
-      .setInteractive({ useHandCursor: true }).on('pointerup', () => voz.decir(linea));
+    this.pestanas[cat] = c;
   }
 
-  refrescarFila(clave) {
-    const { muestra, valor, mostrar } = this.valores[clave];
-    const m = mostrar(this.cfg[clave], this.cfg, this.estrellas);
-    muestra.setVisible(m.color !== undefined);
-    if (m.color !== undefined) muestra.setFillStyle(m.color);
-    valor.setText(m.texto || '').setColor(m.bloqueado ? '#c53030' : '#1f2d3a');
+  elegirCategoria(cat, hablar) {
+    this.categoria = cat;
+    this.pagina = Math.floor(Math.max(0, this.opciones().indexOf(this.cfg[cat])) / POR_PAGINA);
+    for (const [k, p] of Object.entries(this.pestanas)) p.dibujar(k === cat);
+    if (hablar) {
+      sfx(this, 'click', 0.3);
+      voz.decir(CATEGORIAS[cat].voz);
+    }
+    this.mostrarTarjetas();
+  }
+
+  opciones() {
+    return opcionesDe(this.categoria, this.cfg);
+  }
+
+  cambiarPagina(d) {
+    const paginas = Math.ceil(this.opciones().length / POR_PAGINA);
+    this.pagina = (this.pagina + d + paginas) % paginas;
+    this.mostrarTarjetas();
+  }
+
+  // Grilla de tarjetas: cada una muestra cómo se vería esa opción en el personaje.
+  mostrarTarjetas() {
+    for (const t of this.tarjetas) t.destroy();
+    this.tarjetas = [];
+    const ops = this.opciones();
+    const paginas = Math.ceil(ops.length / POR_PAGINA);
+    ops.slice(this.pagina * POR_PAGINA, (this.pagina + 1) * POR_PAGINA).forEach((v, i) => {
+      const x = GRILLA.x0 + (i % GRILLA.cols) * GRILLA.paso;
+      const y = GRILLA.y0 + Math.floor(i / GRILLA.cols) * GRILLA.paso;
+      this.tarjetas.push(this.crearTarjeta(v, x, y));
+    });
+    this.flechaAtras.setVisible(paginas > 1);
+    this.flechaAdelante.setVisible(paginas > 1);
+    this.txtPagina.setText(paginas > 1 ? `${this.pagina + 1} / ${paginas}` : '');
+  }
+
+  // Tarjeta en tres capas: fondo, miniatura del personaje (recortada a la tarjeta) y encima borde y marcas.
+  crearTarjeta(valor, x, y) {
+    const cat = this.categoria;
+    const { tam } = GRILLA;
+    const elegida = this.cfg[cat] === valor;
+    const bloqueada = cat === 'chaleco' && this.estrellas < CHALECOS[valor];
+
+    const fondo = this.add.graphics().setDepth(1);
+    fondo.fillStyle(0xf7fafc, 1).fillRoundedRect(x - tam / 2, y - tam / 2, tam, tam, 14);
+
+    const parte = CATEGORIAS[cat].parte;
+    const escala = ESCALA_PARTE[parte];
+    const prueba = { ...this.cfg, [cat]: valor };
+    if (cat === 'genero' && valor !== 'nobinario') prueba.peinado = PEINADOS[valor][0];
+    const dy = cat === 'genero' ? -12 : 0;
+    const mini = crearPersonaje(this, x, y - CENTRO_PARTE[parte] * escala + dy, prueba, escala, { vida: false }).setDepth(2);
+    const mascara = this.make.graphics({ add: false }).fillRect(x - tam / 2 + 3, y - tam / 2 + 3, tam - 6, tam - 6);
+    mini.setMask(mascara.createGeometryMask());
+
+    const c = this.add.container(x, y).setDepth(3);
+    if (cat === 'genero') c.add(this.add.text(0, tam / 2 - 18, NOMBRE_GENERO[valor], estiloTexto(16, '#2d3748', { backgroundColor: '#ffffffdd', padding: { x: 6, y: 2 } })).setOrigin(0.5));
+    if (cat === 'chaleco' && valor === 'no') {
+      c.add([this.add.circle(-tam / 2 + 22, tam / 2 - 22, 18, 0xffffff).setStrokeStyle(3, COLOR.rojo),
+        this.add.image(-tam / 2 + 22, tam / 2 - 22, 'ui_cross').setDisplaySize(24, 24).setTint(COLOR.rojo)]);
+    }
+    const borde = this.add.graphics();
+    if (bloqueada) {
+      borde.fillStyle(0x1a202c, 0.55).fillRoundedRect(-tam / 2, -tam / 2, tam, tam, 14);
+      candado(borde, 0, -12);
+    }
+    borde.lineStyle(elegida ? 6 : 3, elegida ? 0x38a169 : 0xcbd5e0, 1).strokeRoundedRect(-tam / 2, -tam / 2, tam, tam, 14);
+    c.add(borde);
+    if (bloqueada) c.add(this.add.text(0, 40, `★ ${CHALECOS[valor]}`, estiloTexto(20, '#f6c343')).setOrigin(0.5));
+    if (elegida) c.add(this.add.image(tam / 2 - 18, -tam / 2 + 18, 'ui_checkmark').setDisplaySize(28, 28).setTint(0x38a169));
+
+    c.setSize(tam, tam).setInteractive({ useHandCursor: true });
+    c.on('pointerup', () => this.elegir(valor, bloqueada));
+    c.once('destroy', () => {
+      fondo.destroy();
+      mini.destroy();
+      mascara.destroy();
+    });
+    return c;
+  }
+
+  elegir(valor, bloqueada) {
+    sfx(this, 'click', 0.3);
+    const cat = this.categoria;
+    this.cfg[cat] = valor;
+    if (cat === 'genero') {
+      if (valor !== 'nobinario') this.cfg.peinado = PEINADOS[valor][0];
+      voz.decir('gen_' + valor);
+    }
+    if (bloqueada) voz.decir('avatar_bloqueado');
+    actualizarPersonaje(this, this.muneco, this.cfg);
+    this.tweens.add({ targets: this.muneco, scale: 0.58, duration: 120, yoyo: true });
+    this.mostrarTarjetas();
   }
 
   bloqueado() {
@@ -160,7 +247,7 @@ export default class Avatar extends Phaser.Scene {
     estado.estrellasInicio = estrellasGuardadas(nombre);
     this.listo.setActivo(false);
     sfx(this, 'logro');
-    this.tweens.add({ targets: this.muneco, scale: 0.56, duration: 250, yoyo: true });
+    this.tweens.add({ targets: this.muneco, scale: 0.6, duration: 250, yoyo: true });
     await voz.decir('personaje_listo');
     siguiente(this);
   }
@@ -185,8 +272,15 @@ export default class Avatar extends Phaser.Scene {
     estado.avatar = { ...this.cfg };
     this.listo.setActivo(false);
     sfx(this, 'logro');
-    this.tweens.add({ targets: this.muneco, scale: 0.56, duration: 250, yoyo: true });
+    this.tweens.add({ targets: this.muneco, scale: 0.6, duration: 250, yoyo: true });
     await voz.decir('avatar_bien');
     siguiente(this);
   }
+}
+
+// Candado dibujado (opciones bloqueadas).
+function candado(g, x, y) {
+  g.lineStyle(7, 0xf7fafc, 1).beginPath().arc(x, y - 6, 15, Math.PI, 0).strokePath();
+  g.fillStyle(0xf7fafc, 1).fillRoundedRect(x - 22, y - 8, 44, 34, 6);
+  g.fillStyle(0x1a202c, 1).fillCircle(x, y + 6, 5);
 }
