@@ -102,6 +102,17 @@ npm run escenarios
 
 Las funciones comunes de Blender están en `tools/bl_util.py`.
 
+## Probar cambios de luz (Blender)
+
+Para no regenerar todo en cada ajuste de luz o materiales, hay un banco de pruebas que renderiza una vista chica de la sala, la bodega, el mapa, dos productos, el personaje y una muestra de los colores de marca, sin tocar los assets:
+
+```bash
+npm run muestras -- antes          # .cache/muestras/antes/ (~4 min; el mapa es lo más lento)
+# ...cambiar la luz...
+npm run muestras -- despues sala   # solo algunas: sala, bodega, mapa, producto, personaje, marca
+npm run comparar -- antes despues  # lámina lado a lado: .cache/muestras/antes_vs_despues.png
+```
+
 ## Productos nuevos (Blender)
 
 Los productos de Kenney son de comida. Los de limpieza, higiene y el agua se modelan con formas simples en `tools/gen_productos.py` y se renderizan con Blender en el mismo estilo:

@@ -11,7 +11,9 @@
     "productos": "uv run --with pillow python tools/productos.py",
     "mapa": "uv run --with pillow python tools/mapa.py",
     "escenarios": "blender -b -P tools/gen_escenarios.py --",
-    "personaje": "uv run --with pillow python tools/personaje.py"
+    "personaje": "uv run --with pillow python tools/personaje.py",
+    "muestras": "python3 tools/muestras.py",
+    "comparar": "uv run --with pillow python tools/comparar.py"
   },
   "dependencies": {
     "phaser": "^3.90.0"

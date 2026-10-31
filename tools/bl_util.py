@@ -3,12 +3,21 @@
 Se importa desde los scripts que corre Blender: tools/gen_mapa.py y tools/gen_escenarios.py.
 """
 import math
+import os
+import pathlib
 
 import bpy
 from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
 JUEGO = (1280, 720)
+
+
+def muestra():
+    """Carpeta de muestras (variable MUESTRA, la pone tools/muestras.py) o None. En modo muestra los
+    scripts renderizan chico ahí, sin tocar los assets ni los JSON del juego."""
+    m = os.environ.get('MUESTRA')
+    return pathlib.Path(m) if m else None
 
 
 def lineal(c):

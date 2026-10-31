@@ -21,7 +21,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from bl_util import caja, cil, escena, mat, piso_ajedrez, proyectar  # noqa: E402
+from bl_util import caja, cil, escena, mat, muestra, piso_ajedrez, proyectar  # noqa: E402
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 PASILLOS = json.loads((RAIZ / 'src' / 'data' / 'pasillos.json').read_text())
@@ -293,6 +293,12 @@ cam = camara()
 s = bpy.context.scene
 s.render.image_settings.file_format = 'PNG'
 s.render.filepath = str(CACHE / 'mapa.png')
+if muestra():
+    # Solo el fondo, a media resolución (sin piezas ni mapa.json).
+    s.render.resolution_percentage = 50
+    s.render.filepath = str(muestra() / 'mapa.png')
+    bpy.ops.render.render(write_still=True)
+    sys.exit(0)
 bpy.ops.render.render(write_still=True)
 
 

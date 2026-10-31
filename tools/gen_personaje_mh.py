@@ -2,6 +2,7 @@
 
 Uso (lo llama tools/personaje.py):
   blender -b -P tools/gen_personaje_mh.py -- preview <entrada> <salida.png>
+  blender -b -P tools/gen_personaje_mh.py -- muestra <entrada> <salida.png>   (solo hombre, quieto)
   blender -b -P tools/gen_personaje_mh.py -- capas <entrada> <carpeta> [cuerpo ...]
 
 <entrada> es la carpeta que exporta tools/mh_exportar.py (FBX de cuerpos, peinados y zapatos, OBJ de
@@ -782,14 +783,14 @@ def generar_capas(entrada, salida, cuerpos):
         renderizar(c, carpeta)
 
 
-def preview(entrada, salida):
+def preview(entrada, salida, solo=False):
     """Vista previa vestida: hombre y mujer en varias poses y expresiones, con colores de prueba."""
     salida = pathlib.Path(salida)
     tintes = {'piel': '#c68642', 'cara': '#c68642', 'zapatos': '#2d3748', 'polera_corta': '#e53e3e',
               'polera_larga': '#f7fafc', 'pantalon_largo': '#2c5282', 'pelo_corto': '#3b2a1a', 'pelo_cola': '#1a1a1a', 'pelo_melena': '#6b4423',
               'cejas': '#3b2a1a'}
     for nombre, pelo, chaleco_, polera_ in (('hombre', 'pelo_corto', 'chaleco_basico', 'polera_larga'), ('mujer', 'pelo_cola', 'chaleco_oro', 'polera_corta'),
-                                            ('nobinario', 'pelo_melena', None, 'polera_corta')):
+                                            ('nobinario', 'pelo_melena', None, 'polera_corta'))[:1 if solo else 3]:
         bpy.ops.wm.read_factory_settings(use_empty=True)
         _mats.clear()
         preparar()
@@ -812,15 +813,16 @@ def preview(entrada, salida):
                             m.node_tree.links.new(enlace.from_socket, mix.inputs['A'])
                             mix.inputs['B'].default_value = (*[lineal(x) for x in hexa(tintes[n])], 1)
                             m.node_tree.links.new(mix.outputs['Result'], b.inputs['Base Color'])
-        for pose, cara in (('quieto', 'sonrisa'), ('habla', 'abierta'), ('feliz', 'abierta'), ('triste', 'triste')):
+        for pose, cara in (('quieto', 'sonrisa'), ('habla', 'abierta'), ('feliz', 'abierta'), ('triste', 'triste'))[:1 if solo else 4]:
             c.posar(pose)
             poner_expresion(c, cara)
-            bpy.context.scene.render.filepath = str(salida.with_name(f'{salida.stem}_{nombre}_{pose}{"" if chaleco_ else "_sin"}.png'))
+            nombre_png = salida.name if solo else f'{salida.stem}_{nombre}_{pose}{"" if chaleco_ else "_sin"}.png'
+            bpy.context.scene.render.filepath = str(salida.with_name(nombre_png))
             bpy.ops.render.render(write_still=True)
 
 
-if ARGS and ARGS[0] == 'preview':
-    preview(pathlib.Path(ARGS[1]), ARGS[2])
+if ARGS and ARGS[0] in ('preview', 'muestra'):
+    preview(pathlib.Path(ARGS[1]), ARGS[2], solo=ARGS[0] == 'muestra')
 elif ARGS and ARGS[0] == 'capas':
     generar_capas(pathlib.Path(ARGS[1]), pathlib.Path(ARGS[2]), ARGS[3:] or CUERPOS)
 print('listo')

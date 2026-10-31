@@ -19,10 +19,10 @@ import sys
 import bpy
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from bl_util import caja, cil, escena, mat, piso_ajedrez, proyectar  # noqa: E402
+from bl_util import caja, cil, escena, mat, muestra, piso_ajedrez, proyectar  # noqa: E402
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
-OUT = RAIZ / 'public' / 'assets' / 'escenarios'
+OUT = muestra() or RAIZ / 'public' / 'assets' / 'escenarios'
 W, H = 1600, 900
 PX = 200          # px del juego por metro, en el plano y = 0
 ALTURA_CAM = 1.0  # la cámara está horizontal a 1 m: y = 360 px ↔ z = 1 m; z = 0 ↔ y = 560 px
@@ -69,6 +69,8 @@ def guardar(nombre):
     s.render.image_settings.file_format = 'JPEG'
     s.render.image_settings.quality = 88
     s.render.filepath = str(OUT / f'{nombre}.jpg')
+    if muestra():
+        s.render.resolution_percentage = 50
     bpy.ops.render.render(write_still=True)
 
 
@@ -461,5 +463,6 @@ for nombre, f in ESCENAS.items():
     r = f()
     if r:
         datos[nombre] = r
-archivo.write_text(json.dumps(datos, ensure_ascii=False, indent=1))
+if not muestra():
+    archivo.write_text(json.dumps(datos, ensure_ascii=False, indent=1))
 print('escenarios listos', datos)
