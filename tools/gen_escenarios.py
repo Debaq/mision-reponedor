@@ -1,7 +1,7 @@
 """Fondos 3D de la bodega y de la estantería (sala de ventas), renderizados con Blender.
 
 Uso:  npm run escenarios               (todas)
-      npm run escenarios -- tienda sala   (solo algunas: bodega, sala, gondola3, tienda, habitacion)
+      npm run escenarios -- tienda sala   (solo algunas: bodega, sala, gondola3, tienda, habitacion, fachada)
 
 La cámara mira de frente al rack / la góndola, de modo que en ese plano 1 metro = 200 px del juego
 y el piso (z = 0) queda en y = 560. Así las cajas y repisas del render calzan con las posiciones
@@ -374,9 +374,82 @@ def habitacion():
     guardar('habitacion')
 
 
+def fachada():
+    """Fachada del supermercado (inicio, fin del turno, elegir turno). Cámara frontal: el letrero
+    queda en y = 90..170 px y las puertas al centro, igual que el fondo plano anterior."""
+    escena(W, H, fondo='#9fd3ef', sol_rot=(50, -15, -25), sol=2.0, ambiente=0.8)
+    random.seed(17)
+    # Cielo con degradado: plano lejano celeste
+    caja(0, 30, -5, 80, 0.2, 40, '#9fd3ef')
+    # Calle, vereda y solera
+    caja(0, -6, -0.06, 40, 12, 0.05, '#5a6470')
+    caja(0, -0.9, -0.02, 40, 3.2, 0.06, '#c9c4ba')
+    caja(0, -2.45, -0.02, 40, 0.15, 0.1, '#e2e8f0')
+    piso_ajedrez(-20, -2.4, 20, 0.6, '#c9c4ba', '#b9b4aa', 0.6, 0.045)
+    # Interior que se ve por las vitrinas y la puerta
+    caja(0, 1.6, 0, gx(1200) - gx(80), 0.1, gz(120), '#dfe8ee')
+    for (x0p, x1p) in ((130, 410), (870, 1150)):
+        xc = gx((x0p + x1p) / 2)
+        for z in (gz(420), gz(360), gz(300)):
+            caja(xc, 0.8, z, gx(x1p) - gx(x0p) - 0.1, 0.5, 0.03, '#a0aec0')
+            x = gx(x0p) + 0.12
+            while x < gx(x1p) - 0.12:
+                caja(x, 0.75, z + 0.03, 0.12, 0.14, random.choice((0.16, 0.2, 0.24)),
+                     random.choice(('#e53e3e', '#3182ce', '#ecc94b', '#48bb78', '#ed8936', '#d53f8c')))
+                x += 0.15
+    # Fachada por tramos (deja abiertas las vitrinas y la puerta)
+    fx0, fx1 = gx(80), gx(1200)
+    pared = '#f2efe8'
+    def tramo(px0, px1, py0, py1):
+        caja(gx((px0 + px1) / 2), 0.1, gz(py1), gx(px1) - gx(px0), 0.2, gz(py0) - gz(py1), pared)
+    tramo(80, 1200, 120, 240)                     # franja superior bajo el letrero
+    for (a_, b_) in ((80, 130), (410, 470), (810, 870), (1150, 1200)):
+        tramo(a_, b_, 240, 560)                   # pilares
+    tramo(130, 410, 440, 560)                     # bajo las vitrinas
+    tramo(870, 1150, 440, 560)
+    caja(0, -0.02, gz(170), fx1 - fx0 + 0.4, 0.2, gz(90) - gz(170), '#553c9a', rough=0.5)   # letrero
+    caja(0, -0.14, gz(178), fx1 - fx0 + 0.4, 0.06, 0.08, '#38b2ac')
+    caja(0, 0.8, gz(120), fx1 - fx0 + 0.3, 1.7, 0.15, '#4a3a7a')                          # cornisa
+    # Marcos de las vitrinas
+    for (x0p, x1p) in ((130, 410), (870, 1150)):
+        xc = gx((x0p + x1p) / 2)
+        caja(xc, 0.0, gz(440) - 0.05, gx(x1p) - gx(x0p) + 0.1, 0.12, 0.06, '#7f8c97')
+        caja(xc, 0.0, gz(240), gx(x1p) - gx(x0p) + 0.1, 0.12, 0.06, '#7f8c97')
+        caja(xc, 0.0, gz(440), 0.05, 0.1, gz(240) - gz(440), '#7f8c97')
+    # Puertas de vidrio
+    caja(gx(555), 0.15, 0, gx(630) - gx(480), 0.05, gz(240), '#bfe3f5', rough=0.15)
+    caja(gx(725), 0.15, 0, gx(800) - gx(650), 0.05, gz(240), '#bfe3f5', rough=0.15)
+    for xp in (470, 640, 810):
+        caja(gx(xp), 0.1, 0, 0.07, 0.12, gz(240), '#7f8c97')
+    caja(gx(640), 0.1, gz(240) - 0.06, gx(810) - gx(470), 0.12, 0.08, '#7f8c97')
+    # Toldos sobre las vitrinas (rayas violeta y blanco)
+    for (x0p, x1p) in ((130, 410), (870, 1150)):
+        n = 8
+        paso = (gx(x1p) - gx(x0p)) / n
+        for k in range(n):
+            o = caja(gx(x0p) + paso * (k + 0.5), -0.35, gz(235), paso, 0.7, 0.06, '#553c9a' if k % 2 == 0 else '#f7fafc')
+            o.rotation_euler = (math.radians(-25), 0, 0)
+    # Árboles en maceteros y maceteros con flores junto a la puerta
+    for tx in (gx(60), gx(1220)):
+        cil(tx, -1.6, 0, 0.32, 0.45, '#a0aec0')
+        cil(tx, -1.6, 0.45, 0.06, 0.9, '#7a5230')
+        for k in range(5):
+            bpy.ops.mesh.primitive_uv_sphere_add(segments=10, ring_count=6, radius=0.38,
+                                                 location=(tx + random.uniform(-0.25, 0.25), -1.6 + random.uniform(-0.2, 0.2), 1.45 + random.uniform(0, 0.45)))
+            bpy.context.object.data.materials.append(mat(random.choice(('#38a169', '#48bb78', '#2f855a')), 0.8))
+    for fx_ in (gx(440), gx(840)):
+        caja(fx_, -0.5, 0, 0.5, 0.4, 0.35, '#553c9a')
+        for k in range(4):
+            bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=5, radius=0.1,
+                                                 location=(fx_ - 0.15 + k * 0.1, -0.5, 0.42))
+            bpy.context.object.data.materials.append(mat(random.choice(('#f687b3', '#f6e05e', '#fc8181')), 0.7))
+    camara()
+    guardar('fachada')
+
+
 OUT.mkdir(parents=True, exist_ok=True)
 args = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
-ESCENAS = {'bodega': bodega, 'sala': sala, 'gondola3': gondola3, 'tienda': tienda, 'habitacion': habitacion}
+ESCENAS = {'bodega': bodega, 'sala': sala, 'gondola3': gondola3, 'tienda': tienda, 'habitacion': habitacion, 'fachada': fachada}
 archivo = RAIZ / 'src' / 'data' / 'escenarios.json'
 datos = json.loads(archivo.read_text()) if archivo.exists() else {}
 datos['_info'] = 'Generado por tools/gen_escenarios.py (npm run escenarios). Coordenadas del juego (1280x720).'

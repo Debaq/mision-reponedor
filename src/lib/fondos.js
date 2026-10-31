@@ -40,22 +40,10 @@ export function fondoBodega(scene) {
   return g;
 }
 
-// Exterior / entrada del supermercado.
+// Exterior / entrada del supermercado (render de Blender: tools/gen_escenarios.py) con el nombre en el letrero.
 export function fondoEntrada(scene) {
-  const g = scene.add.graphics();
-  g.fillStyle(0x9fd3ef, 1).fillRect(0, 0, ANCHO, 560);
-  g.fillStyle(0xf2efe8, 1).fillRect(80, 120, ANCHO - 160, 440);
-  g.fillStyle(COLOR.marca, 1).fillRect(60, 90, ANCHO - 120, 80);
-  g.fillStyle(COLOR.marcaAcento, 1).fillRect(60, 170, ANCHO - 120, 8);
-  scene.add.text(ANCHO / 2, 130, 'SUPERMERCADO EL BARRIO', estiloTexto(44, '#ffffff')).setOrigin(0.5);
-  // puertas de vidrio
-  g.fillStyle(0xbfe3f5, 1).fillRect(470, 230, 340, 330);
-  g.lineStyle(8, 0x7f8c97, 1).strokeRect(470, 230, 340, 330).lineBetween(640, 230, 640, 560);
-  // vitrinas
-  g.fillStyle(0xcfeaf7, 1).fillRect(130, 240, 280, 200).fillRect(870, 240, 280, 200);
-  g.lineStyle(6, 0x7f8c97, 1).strokeRect(130, 240, 280, 200).strokeRect(870, 240, 280, 200);
-  piso(g, 560, 0xb9b4aa, 0xc9c4ba, 90);
-  return g;
+  scene.add.image(0, 0, 'esc_fachada').setOrigin(0).setDisplaySize(ANCHO, ALTO);
+  scene.add.text(ANCHO / 2, 130, 'SUPERMERCADO EL BARRIO', estiloTexto(48, '#ffffff', { stroke: '#2d2060', strokeThickness: 6 })).setOrigin(0.5);
 }
 
 /** Estantería decorativa llena de productos al azar. */
