@@ -119,37 +119,485 @@
   "voz": "guia",
   "texto": "Diez."
  },
+ "lista_atun_1": {
+  "voz": "guia",
+  "texto": "Una lata de atún."
+ },
+ "lista_atun_2": {
+  "voz": "guia",
+  "texto": "Dos latas de atún."
+ },
  "lista_atun_3": {
   "voz": "guia",
   "texto": "Tres latas de atún."
+ },
+ "lista_atun_4": {
+  "voz": "guia",
+  "texto": "Cuatro latas de atún."
+ },
+ "lista_atun_5": {
+  "voz": "guia",
+  "texto": "Cinco latas de atún."
+ },
+ "lista_atun_6": {
+  "voz": "guia",
+  "texto": "Seis latas de atún."
+ },
+ "lista_leche_1": {
+  "voz": "guia",
+  "texto": "Una caja de leche."
  },
  "lista_leche_2": {
   "voz": "guia",
   "texto": "Dos cajas de leche."
  },
- "lista_papel_4": {
+ "lista_leche_3": {
   "voz": "guia",
-  "texto": "Cuatro paquetes de papel higiénico."
+  "texto": "Tres cajas de leche."
  },
- "lista_shampoo_3": {
+ "lista_leche_4": {
   "voz": "guia",
-  "texto": "Tres botellas de shampoo."
+  "texto": "Cuatro cajas de leche."
  },
- "lista_jabon_5": {
+ "lista_leche_5": {
   "voz": "guia",
-  "texto": "Cinco jabones."
+  "texto": "Cinco cajas de leche."
+ },
+ "lista_leche_6": {
+  "voz": "guia",
+  "texto": "Seis cajas de leche."
+ },
+ "lista_aceite_1": {
+  "voz": "guia",
+  "texto": "Una botella de aceite."
+ },
+ "lista_aceite_2": {
+  "voz": "guia",
+  "texto": "Dos botellas de aceite."
+ },
+ "lista_aceite_3": {
+  "voz": "guia",
+  "texto": "Tres botellas de aceite."
+ },
+ "lista_aceite_4": {
+  "voz": "guia",
+  "texto": "Cuatro botellas de aceite."
+ },
+ "lista_aceite_5": {
+  "voz": "guia",
+  "texto": "Cinco botellas de aceite."
+ },
+ "lista_aceite_6": {
+  "voz": "guia",
+  "texto": "Seis botellas de aceite."
+ },
+ "lista_bebida_1": {
+  "voz": "guia",
+  "texto": "Una botella de bebida."
+ },
+ "lista_bebida_2": {
+  "voz": "guia",
+  "texto": "Dos botellas de bebida."
+ },
+ "lista_bebida_3": {
+  "voz": "guia",
+  "texto": "Tres botellas de bebida."
+ },
+ "lista_bebida_4": {
+  "voz": "guia",
+  "texto": "Cuatro botellas de bebida."
+ },
+ "lista_bebida_5": {
+  "voz": "guia",
+  "texto": "Cinco botellas de bebida."
+ },
+ "lista_bebida_6": {
+  "voz": "guia",
+  "texto": "Seis botellas de bebida."
+ },
+ "lista_tomate_1": {
+  "voz": "guia",
+  "texto": "Una lata de salsa de tomate."
+ },
+ "lista_tomate_2": {
+  "voz": "guia",
+  "texto": "Dos latas de salsa de tomate."
+ },
+ "lista_tomate_3": {
+  "voz": "guia",
+  "texto": "Tres latas de salsa de tomate."
+ },
+ "lista_tomate_4": {
+  "voz": "guia",
+  "texto": "Cuatro latas de salsa de tomate."
+ },
+ "lista_tomate_5": {
+  "voz": "guia",
+  "texto": "Cinco latas de salsa de tomate."
+ },
+ "lista_tomate_6": {
+  "voz": "guia",
+  "texto": "Seis latas de salsa de tomate."
+ },
+ "lista_ketchup_1": {
+  "voz": "guia",
+  "texto": "Un kétchup."
+ },
+ "lista_ketchup_2": {
+  "voz": "guia",
+  "texto": "Dos kétchup."
+ },
+ "lista_ketchup_3": {
+  "voz": "guia",
+  "texto": "Tres kétchup."
+ },
+ "lista_ketchup_4": {
+  "voz": "guia",
+  "texto": "Cuatro kétchup."
+ },
+ "lista_ketchup_5": {
+  "voz": "guia",
+  "texto": "Cinco kétchup."
+ },
+ "lista_ketchup_6": {
+  "voz": "guia",
+  "texto": "Seis kétchup."
+ },
+ "lista_miel_1": {
+  "voz": "guia",
+  "texto": "Un frasco de miel."
+ },
+ "lista_miel_2": {
+  "voz": "guia",
+  "texto": "Dos frascos de miel."
+ },
+ "lista_miel_3": {
+  "voz": "guia",
+  "texto": "Tres frascos de miel."
+ },
+ "lista_miel_4": {
+  "voz": "guia",
+  "texto": "Cuatro frascos de miel."
+ },
+ "lista_miel_5": {
+  "voz": "guia",
+  "texto": "Cinco frascos de miel."
+ },
+ "lista_miel_6": {
+  "voz": "guia",
+  "texto": "Seis frascos de miel."
+ },
+ "lista_chocolate_1": {
+  "voz": "guia",
+  "texto": "Un chocolate."
+ },
+ "lista_chocolate_2": {
+  "voz": "guia",
+  "texto": "Dos chocolates."
+ },
+ "lista_chocolate_3": {
+  "voz": "guia",
+  "texto": "Tres chocolates."
+ },
+ "lista_chocolate_4": {
+  "voz": "guia",
+  "texto": "Cuatro chocolates."
+ },
+ "lista_chocolate_5": {
+  "voz": "guia",
+  "texto": "Cinco chocolates."
+ },
+ "lista_chocolate_6": {
+  "voz": "guia",
+  "texto": "Seis chocolates."
+ },
+ "lista_jugo_1": {
+  "voz": "guia",
+  "texto": "Una caja de jugo."
+ },
+ "lista_jugo_2": {
+  "voz": "guia",
+  "texto": "Dos cajas de jugo."
+ },
+ "lista_jugo_3": {
+  "voz": "guia",
+  "texto": "Tres cajas de jugo."
+ },
+ "lista_jugo_4": {
+  "voz": "guia",
+  "texto": "Cuatro cajas de jugo."
+ },
+ "lista_jugo_5": {
+  "voz": "guia",
+  "texto": "Cinco cajas de jugo."
+ },
+ "lista_jugo_6": {
+  "voz": "guia",
+  "texto": "Seis cajas de jugo."
+ },
+ "lista_mani_1": {
+  "voz": "guia",
+  "texto": "Un frasco de mantequilla de maní."
+ },
+ "lista_mani_2": {
+  "voz": "guia",
+  "texto": "Dos frascos de mantequilla de maní."
+ },
+ "lista_mani_3": {
+  "voz": "guia",
+  "texto": "Tres frascos de mantequilla de maní."
+ },
+ "lista_mani_4": {
+  "voz": "guia",
+  "texto": "Cuatro frascos de mantequilla de maní."
+ },
+ "lista_mani_5": {
+  "voz": "guia",
+  "texto": "Cinco frascos de mantequilla de maní."
+ },
+ "lista_mani_6": {
+  "voz": "guia",
+  "texto": "Seis frascos de mantequilla de maní."
+ },
+ "lista_pan_1": {
+  "voz": "guia",
+  "texto": "Un pan de molde."
+ },
+ "lista_pan_2": {
+  "voz": "guia",
+  "texto": "Dos panes de molde."
+ },
+ "lista_pan_3": {
+  "voz": "guia",
+  "texto": "Tres panes de molde."
+ },
+ "lista_pan_4": {
+  "voz": "guia",
+  "texto": "Cuatro panes de molde."
+ },
+ "lista_pan_5": {
+  "voz": "guia",
+  "texto": "Cinco panes de molde."
+ },
+ "lista_pan_6": {
+  "voz": "guia",
+  "texto": "Seis panes de molde."
+ },
+ "lista_queso_1": {
+  "voz": "guia",
+  "texto": "Un queso."
+ },
+ "lista_queso_2": {
+  "voz": "guia",
+  "texto": "Dos quesos."
+ },
+ "lista_queso_3": {
+  "voz": "guia",
+  "texto": "Tres quesos."
+ },
+ "lista_queso_4": {
+  "voz": "guia",
+  "texto": "Cuatro quesos."
+ },
+ "lista_queso_5": {
+  "voz": "guia",
+  "texto": "Cinco quesos."
+ },
+ "lista_queso_6": {
+  "voz": "guia",
+  "texto": "Seis quesos."
+ },
+ "lista_agua_1": {
+  "voz": "guia",
+  "texto": "Una botella de agua."
+ },
+ "lista_agua_2": {
+  "voz": "guia",
+  "texto": "Dos botellas de agua."
+ },
+ "lista_agua_3": {
+  "voz": "guia",
+  "texto": "Tres botellas de agua."
+ },
+ "lista_agua_4": {
+  "voz": "guia",
+  "texto": "Cuatro botellas de agua."
+ },
+ "lista_agua_5": {
+  "voz": "guia",
+  "texto": "Cinco botellas de agua."
+ },
+ "lista_agua_6": {
+  "voz": "guia",
+  "texto": "Seis botellas de agua."
+ },
+ "lista_detergente_1": {
+  "voz": "guia",
+  "texto": "Un detergente."
+ },
+ "lista_detergente_2": {
+  "voz": "guia",
+  "texto": "Dos detergentes."
+ },
+ "lista_detergente_3": {
+  "voz": "guia",
+  "texto": "Tres detergentes."
  },
  "lista_detergente_4": {
   "voz": "guia",
   "texto": "Cuatro detergentes."
  },
+ "lista_detergente_5": {
+  "voz": "guia",
+  "texto": "Cinco detergentes."
+ },
+ "lista_detergente_6": {
+  "voz": "guia",
+  "texto": "Seis detergentes."
+ },
+ "lista_cloro_1": {
+  "voz": "guia",
+  "texto": "Una botella de cloro."
+ },
+ "lista_cloro_2": {
+  "voz": "guia",
+  "texto": "Dos botellas de cloro."
+ },
  "lista_cloro_3": {
   "voz": "guia",
   "texto": "Tres botellas de cloro."
  },
+ "lista_cloro_4": {
+  "voz": "guia",
+  "texto": "Cuatro botellas de cloro."
+ },
+ "lista_cloro_5": {
+  "voz": "guia",
+  "texto": "Cinco botellas de cloro."
+ },
+ "lista_cloro_6": {
+  "voz": "guia",
+  "texto": "Seis botellas de cloro."
+ },
+ "lista_lavaloza_1": {
+  "voz": "guia",
+  "texto": "Una botella de lavaloza."
+ },
+ "lista_lavaloza_2": {
+  "voz": "guia",
+  "texto": "Dos botellas de lavaloza."
+ },
+ "lista_lavaloza_3": {
+  "voz": "guia",
+  "texto": "Tres botellas de lavaloza."
+ },
+ "lista_lavaloza_4": {
+  "voz": "guia",
+  "texto": "Cuatro botellas de lavaloza."
+ },
  "lista_lavaloza_5": {
   "voz": "guia",
   "texto": "Cinco botellas de lavaloza."
+ },
+ "lista_lavaloza_6": {
+  "voz": "guia",
+  "texto": "Seis botellas de lavaloza."
+ },
+ "lista_papel_1": {
+  "voz": "guia",
+  "texto": "Un paquete de papel higiénico."
+ },
+ "lista_papel_2": {
+  "voz": "guia",
+  "texto": "Dos paquetes de papel higiénico."
+ },
+ "lista_papel_3": {
+  "voz": "guia",
+  "texto": "Tres paquetes de papel higiénico."
+ },
+ "lista_papel_4": {
+  "voz": "guia",
+  "texto": "Cuatro paquetes de papel higiénico."
+ },
+ "lista_papel_5": {
+  "voz": "guia",
+  "texto": "Cinco paquetes de papel higiénico."
+ },
+ "lista_papel_6": {
+  "voz": "guia",
+  "texto": "Seis paquetes de papel higiénico."
+ },
+ "lista_shampoo_1": {
+  "voz": "guia",
+  "texto": "Una botella de shampoo."
+ },
+ "lista_shampoo_2": {
+  "voz": "guia",
+  "texto": "Dos botellas de shampoo."
+ },
+ "lista_shampoo_3": {
+  "voz": "guia",
+  "texto": "Tres botellas de shampoo."
+ },
+ "lista_shampoo_4": {
+  "voz": "guia",
+  "texto": "Cuatro botellas de shampoo."
+ },
+ "lista_shampoo_5": {
+  "voz": "guia",
+  "texto": "Cinco botellas de shampoo."
+ },
+ "lista_shampoo_6": {
+  "voz": "guia",
+  "texto": "Seis botellas de shampoo."
+ },
+ "lista_jabon_1": {
+  "voz": "guia",
+  "texto": "Un jabón."
+ },
+ "lista_jabon_2": {
+  "voz": "guia",
+  "texto": "Dos jabones."
+ },
+ "lista_jabon_3": {
+  "voz": "guia",
+  "texto": "Tres jabones."
+ },
+ "lista_jabon_4": {
+  "voz": "guia",
+  "texto": "Cuatro jabones."
+ },
+ "lista_jabon_5": {
+  "voz": "guia",
+  "texto": "Cinco jabones."
+ },
+ "lista_jabon_6": {
+  "voz": "guia",
+  "texto": "Seis jabones."
+ },
+ "lista_pasta_1": {
+  "voz": "guia",
+  "texto": "Una pasta de dientes."
+ },
+ "lista_pasta_2": {
+  "voz": "guia",
+  "texto": "Dos pastas de dientes."
+ },
+ "lista_pasta_3": {
+  "voz": "guia",
+  "texto": "Tres pastas de dientes."
+ },
+ "lista_pasta_4": {
+  "voz": "guia",
+  "texto": "Cuatro pastas de dientes."
+ },
+ "lista_pasta_5": {
+  "voz": "guia",
+  "texto": "Cinco pastas de dientes."
+ },
+ "lista_pasta_6": {
+  "voz": "guia",
+  "texto": "Seis pastas de dientes."
  },
  "fecha_0111": {
   "voz": "guia",

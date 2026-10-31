@@ -4,9 +4,10 @@ import { fondoEntrada } from '../lib/fondos.js';
 import { boton, dibujarReloj, panel } from '../lib/ui.js';
 import { crearPersonaje, SUPERVISOR, enPiso, ESCALA, imagenCapa } from '../lib/personaje.js';
 import { estado, nombreJugador, nuevaPartida } from '../lib/estado.js';
-import { estrellasGuardadas, guardarPartida, perfil } from '../lib/perfil.js';
+import { estrellasGuardadas, guardarDia, guardarPartida, perfil, ultimoDia } from '../lib/perfil.js';
 import { nuevosPremios, turno2Desbloqueado } from '../lib/premios.js';
 import { FLUJO, inicioTurno, irA } from '../lib/flujo.js';
+import { diasDesbloqueados, empezarDia, proximoDia } from '../lib/dias.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 
@@ -22,7 +23,7 @@ export default class Fin extends Phaser.Scene {
     crearPersonaje(this, 150, enPiso(640), SUPERVISOR, ESCALA);
     crearPersonaje(this, 1130, enPiso(640), estado.avatar, ESCALA);
 
-    // Etapas de este turno (las tareas encargadas solo si se jugaron: en el turno 2 se eligen al azar).
+    // Etapas de este turno (las tareas encargadas solo si se jugaron: desde el turno 2 se eligen al azar).
     const turno = FLUJO[estado.paso].turno;
     const etapas = FLUJO.filter((p) => p.id && p.turno === turno && (!p.enOrden || estado.resultados[p.id]));
     const jugadas = etapas.filter((p) => estado.resultados[p.id]);
@@ -35,9 +36,14 @@ export default class Fin extends Phaser.Scene {
     const promedio = jugadas.length ? Math.round(t.estrellas / jugadas.length) : 0;
     const recordAnterior = perfil().record;
     guardarPartida(t.puntos);
+    // Terminar el turno 2 desbloquea los días al azar; cada día terminado deja listo el siguiente.
+    this.diasNuevos = turno === 2 && ultimoDia() < 2;
+    if (turno === 2) guardarDia(2);
+    if (turno === 3) guardarDia(estado.dia);
 
     panel(this, ANCHO / 2, 320, 740, 470, 0xffffff, 24);
-    this.add.text(ANCHO / 2, 118, turno === 2 ? '¡TURNO 2 TERMINADO!' : '¡TURNO TERMINADO!', estiloTexto(40, '#553c9a')).setOrigin(0.5);
+    const titulo = { 1: '¡TURNO TERMINADO!', 2: '¡TURNO 2 TERMINADO!', 3: `¡DÍA ${estado.dia} TERMINADO!` }[turno];
+    this.add.text(ANCHO / 2, 118, titulo, estiloTexto(40, '#553c9a')).setOrigin(0.5);
     this.add.text(ANCHO / 2, 162, nombreJugador(), estiloTexto(28)).setOrigin(0.5);
     for (let i = 0; i < 3; i++) {
       const e = this.add.image(ANCHO / 2 - 70 + i * 70, 215, 'ui_star').setDisplaySize(60, 60).setScale(0)
@@ -80,13 +86,17 @@ export default class Fin extends Phaser.Scene {
         this.scene.start('Inicio');
       },
     });
-    if (turno2Desbloqueado()) {
+    // Seguir jugando: después del turno 1, el turno 2; después del turno 2 o de un día, el día siguiente.
+    const otro = turno === 1 ? (turno2Desbloqueado() ? 2 : null) : diasDesbloqueados() ? 3 : null;
+    if (otro) {
       boton(this, ANCHO - 140, 190, {
-        icono: 'ui_right', texto: 'Turno 2', ancho: 200, alto: 76, tam: 26, color: COLOR.marca,
+        icono: 'ui_right', texto: otro === 2 ? 'Turno 2' : `Día ${proximoDia()}`, ancho: 200, alto: 76, tam: 26,
+        color: otro === 2 ? COLOR.marca : COLOR.verde,
         onClick: () => {
           nuevaPartida();
           estado.estrellasInicio = estrellasGuardadas();
-          irA(this, inicioTurno(2));
+          if (otro === 3) empezarDia();
+          irA(this, inicioTurno(otro));
         },
       });
     }
@@ -99,17 +109,20 @@ export default class Fin extends Phaser.Scene {
     const ahora = estrellasGuardadas();
     const nuevos = nuevosPremios(estado.estrellasInicio, ahora);
     estado.estrellasInicio = ahora;
-    if (!nuevos.chalecos.length && !nuevos.turno2) return;
+    if (!nuevos.chalecos.length && !nuevos.turno2 && !this.diasNuevos) return;
 
     const capa = this.add.rectangle(ANCHO / 2, ALTO / 2, ANCHO_MAX, ALTO, 0x000000, 0.6).setInteractive().setDepth(200);
     const objs = [capa, panel(this, ANCHO / 2, 330, 620, 380, 0xffffff, 24).setDepth(201)];
     const add = (o) => objs.push(o.setDepth(202));
     add(this.add.text(ANCHO / 2, 175, '¡NUEVO!', estiloTexto(44, '#553c9a')).setOrigin(0.5));
-    const items = [...nuevos.chalecos.map((c) => ({ chaleco: c })), ...(nuevos.turno2 ? [{ turno2: true }] : [])];
+    const items = [...nuevos.chalecos.map((c) => ({ chaleco: c })), ...(nuevos.turno2 ? [{ turno2: true }] : []), ...(this.diasNuevos ? [{ dias: true }] : [])];
     items.forEach((it, i) => {
       const x = ANCHO / 2 + (i - (items.length - 1) / 2) * 200;
       if (it.chaleco) {
         add(imagenCapa(this, x, 320, 'chaleco_' + it.chaleco, 170));
+      } else if (it.dias) {
+        add(this.add.text(x, 300, 'DÍA 3', estiloTexto(32, '#ffffff', { backgroundColor: '#38a169', padding: { x: 14, y: 10 } })).setOrigin(0.5));
+        add(this.add.text(x, 360, 'Al azar', estiloTexto(22, '#38a169')).setOrigin(0.5));
       } else {
         add(this.add.text(x, 300, 'TURNO 2', estiloTexto(32, '#ffffff', { backgroundColor: '#319795', padding: { x: 14, y: 10 } })).setOrigin(0.5));
         add(this.add.text(x, 360, 'Limpieza', estiloTexto(22, '#319795')).setOrigin(0.5));
@@ -121,6 +134,6 @@ export default class Fin extends Phaser.Scene {
       voz.callar();
       objs.forEach((o) => o.destroy());
     });
-    voz.secuencia([...(nuevos.chalecos.length ? ['premio_chaleco'] : []), ...(nuevos.turno2 ? ['premio_turno2'] : [])]);
+    voz.secuencia([...(nuevos.chalecos.length ? ['premio_chaleco'] : []), ...(nuevos.turno2 ? ['premio_turno2'] : []), ...(this.diasNuevos ? ['premio_dias'] : [])]);
   }
 }

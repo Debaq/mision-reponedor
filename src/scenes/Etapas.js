@@ -18,7 +18,7 @@ export default class Etapas extends Phaser.Scene {
       const col = Math.floor(n / porColumna);
       const fila = n % porColumna;
       boton(this, 340 + col * 600, 120 + fila * paso, {
-        texto: p.titulo, ancho: 560, alto: paso - 8, tam: paso < 56 ? 18 : 22, color: p.turno === 2 ? COLOR.marca : COLOR.azul,
+        texto: p.titulo, ancho: 560, alto: paso - 8, tam: paso < 56 ? 18 : 22, color: [COLOR.azul, COLOR.azul, COLOR.marca, COLOR.verde][p.turno],
         onClick: () => irA(this, p.i),
       });
     });

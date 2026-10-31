@@ -49,6 +49,15 @@ export function guardarPartida(puntos) {
   });
 }
 
+// Días de trabajo terminados: 2 = terminó el turno 2 (se desbloquean los días al azar); 3, 4... = días.
+export function guardarDia(n) {
+  modificar((p) => {
+    p.dia = Math.max(p.dia || 0, n);
+  });
+}
+
+export const ultimoDia = (nombre = estado.nombre) => perfil(nombre).dia || 0;
+
 // Suma de las mejores estrellas de cada etapa (para desbloquear ropa y secciones).
 export function estrellasGuardadas(nombre = estado.nombre) {
   return Object.values(perfil(nombre).mejores).reduce((a, b) => a + b, 0);

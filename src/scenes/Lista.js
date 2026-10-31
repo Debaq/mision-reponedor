@@ -72,7 +72,7 @@ export default class Lista extends Phaser.Scene {
       return c;
     });
 
-    const intro = { practica: ['prac_intro', 'lista_intro'], turno2: ['t2_intro', 'lista_intro'] }[this.nivel] || ['lista_intro'];
+    const intro = { practica: ['prac_intro', 'lista_intro'], turno2: ['t2_intro', 'lista_intro'], dia: ['dia_intro_' + niveles.dia.pasillo, 'lista_intro'] }[this.nivel] || ['lista_intro'];
     voz.secuencia(intro).then((ok) => ok && this.guiar());
   }
 

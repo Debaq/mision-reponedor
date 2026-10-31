@@ -59,9 +59,24 @@ const TURNO_2 = [
 
 // Las tareas con `lugar` llevan antes el mapa: se camina hasta su pasillo.
 const conMapa = (pasos) => pasos.flatMap((p) => (p.lugar ? [{ escena: 'Mapa', datos: { destino: p.lugar }, enOrden: p.enOrden, mapa: true }, p] : [p]));
-export const FLUJO = [...conMapa(TURNO_1).map((p) => ({ ...p, turno: 1 })), ...conMapa(TURNO_2).map((p) => ({ ...p, turno: 2 }))];
+// Días al azar (del día 3 en adelante, al terminar el turno 2): el recorrido del turno 2 con el nivel que
+// arma src/lib/dias.js (otro pasillo, otros productos y otra estantería cada día).
+const DIAS = TURNO_2.map((p) => ({
+  ...p,
+  datos: p.datos?.nivel ? { ...p.datos, nivel: 'dia' } : p.datos,
+  id: p.id && p.id.replace(/^t2_/, 'd_'),
+  enOrden: p.enOrden && p.enOrden.replace(/^t2_/, 'd_'),
+  titulo: p.escena === 'Avatar' ? 'Día 3 en adelante (al azar)' : undefined,
+}));
+
+export const FLUJO = [
+  ...conMapa(TURNO_1).map((p) => ({ ...p, turno: 1 })),
+  ...conMapa(TURNO_2).map((p) => ({ ...p, turno: 2 })),
+  ...conMapa(DIAS).map((p) => ({ ...p, turno: 3 })),
+];
 // Primera etapa de cada turno (en el turno 1, la que sigue a crear el personaje).
-export const inicioTurno = (n) => (n === 1 ? indiceDe('Contrato') : FLUJO.findIndex((p) => p.turno === 2));
+// (turno 3 = días al azar).
+export const inicioTurno = (n) => (n === 1 ? indiceDe('Contrato') : FLUJO.findIndex((p) => p.turno === n));
 
 export const indiceDe = (escena) => FLUJO.findIndex((p) => p.escena === escena);
 

@@ -34,17 +34,16 @@ MESES = {11: ('noviembre', 30), 12: ('diciembre', 31)}
 
 def lineas_auto():
     prods = json.loads((DATA / 'productos.json').read_text())
-    niveles = json.loads((DATA / 'niveles.json').read_text())
     auto = {}
     for pid, p in prods.items():
         auto[f'prod_{pid}'] = {'voz': 'guia', 'texto': p['nombre'] + '.'}
     for n in range(1, 11):
         auto[f'num_{n}'] = {'voz': 'guia', 'texto': NUM[n].capitalize() + '.'}
-    for nivel in niveles.values():
-        for item in nivel['lista']:
-            p, n = prods[item['p']], item['n']
+    # Cantidades de la lista: todas las de 1 a 6 de cada producto (los días al azar arman listas nuevas).
+    for pid, p in prods.items():
+        for n in range(1, 7):
             txt = f"{p['uno'].capitalize()} {p['sing']}." if n == 1 else f"{NUM[n].capitalize()} {p['plur']}."
-            auto[f"lista_{item['p']}_{n}"] = {'voz': 'guia', 'texto': txt}
+            auto[f"lista_{pid}_{n}"] = {'voz': 'guia', 'texto': txt}
     # Leche vencida (escena Vencidos): fechas de las cajas y el día de hoy (del 6 al 24 de noviembre).
     for m, (mes, dias) in MESES.items():
         for d in range(1, dias + 1):

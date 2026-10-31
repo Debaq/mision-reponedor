@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ANCHO, COLOR, estiloTexto, ANCHO_MAX, X_IZQ } from '../lib/estilo.js';
+import { ANCHO, ALTO, COLOR, estiloTexto, ANCHO_MAX, X_IZQ } from '../lib/estilo.js';
 import { fondoEntrada } from '../lib/fondos.js';
 import { dibujarReloj, flechaSiguiente, letreroPasillo } from '../lib/ui.js';
 import { tarjeta } from '../lib/objetos.js';
@@ -8,9 +8,10 @@ import { estrellasGuardadas } from '../lib/perfil.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { inicioTurno, irA } from '../lib/flujo.js';
+import { diasDesbloqueados, empezarDia, proximoDia } from '../lib/dias.js';
 
-// Elegir turno (solo para quien ya desbloqueó el turno 2). Tocar una tarjeta la elige y la lee;
-// la flecha verde confirma.
+// Elegir turno (solo para quien ya desbloqueó el turno 2) y, al terminar el turno 2, el día siguiente
+// al azar (día 3, 4...). Tocar una tarjeta la elige y la lee; la flecha verde confirma.
 export default class Turnos extends Phaser.Scene {
   constructor() {
     super('Turnos');
@@ -26,14 +27,23 @@ export default class Turnos extends Phaser.Scene {
     this.add.image(ANCHO / 2 - 40, 70, 'ui_star').setTint(COLOR.amarillo).setDisplaySize(44, 44);
     this.add.text(ANCHO / 2 - 10, 70, String(estrellasGuardadas()), estiloTexto(36, '#ffffff')).setOrigin(0, 0.5);
 
-    this.tarjetas = [1, 2].map((n) => this.crearTarjeta(n, n === 1 ? 470 : 810));
+    const turnos = diasDesbloqueados() ? [1, 2, 3] : [1, 2];
+    const x0 = ANCHO / 2 + 40 - ((turnos.length - 1) * 330) / 2;
+    this.tarjetas = turnos.map((n, i) => this.crearTarjeta(n, x0 + i * 330));
     voz.decir('turnos_elige');
   }
 
   crearTarjeta(n, x) {
     const t = tarjeta(this, x, 330, 300, 340);
-    t.add(this.add.text(0, -130, `TURNO ${n}`, estiloTexto(34, '#553c9a')).setOrigin(0.5));
-    if (n === 1) {
+    t.add(this.add.text(0, -130, n === 3 ? `DÍA ${proximoDia()}` : `TURNO ${n}`, estiloTexto(34, '#553c9a')).setOrigin(0.5));
+    if (n === 3) {
+      // Día al azar: los cuatro carteles de pasillo, uno resaltado con un signo de pregunta.
+      ['alimentos', 'bebidas', 'limpieza', 'higiene'].forEach((id, i) => {
+        t.add(letreroPasillo(this, id, -66 + (i % 2) * 132, -30 + Math.floor(i / 2) * 92).setScale(0.55).disableInteractive());
+      });
+      t.add(this.add.text(0, 14, '?', estiloTexto(90, '#f6c343', { stroke: '#1f2d3a', strokeThickness: 10 })).setOrigin(0.5));
+      t.add(this.add.text(0, 140, 'Pasillo al azar + reloj', estiloTexto(22, '#4a5568')).setOrigin(0.5));
+    } else if (n === 1) {
       t.add([crearPersonaje(this, 0, 40, { ...SUPERVISOR, poleraColor: 'white', colorPelo: 'brown2', peinado: 'corto', lentes: false, corbata: false, portapapeles: false }, 0.3)]);
       t.add(this.add.text(0, 140, 'Día completo', estiloTexto(22, '#4a5568')).setOrigin(0.5));
     } else {
@@ -57,7 +67,10 @@ export default class Turnos extends Phaser.Scene {
     t.marco.lineStyle(8, COLOR.amarillo, 1).strokeRoundedRect(-150, -170, 300, 340, 18);
     voz.decir('turno_' + n);
     if (!this.flecha) {
-      this.flecha = flechaSiguiente(this, () => irA(this, inicioTurno(this.elegido)));
+      this.flecha = flechaSiguiente(this, () => {
+        if (this.elegido === 3) empezarDia();
+        irA(this, inicioTurno(this.elegido));
+      });
       this.flecha.latir();
     }
   }

@@ -24,6 +24,7 @@ export const estado = {
   lugar: null, // dónde quedó el personaje en el mapa (nodo de MAPA.caminos): de ahí parte la próxima vez
   diaTurno1: null, // día del calendario en la tarea de vencidos del turno 1 (el turno 2 es el día siguiente)
   vencidosHoy: null, // día de la tarea de vencidos en curso (lo muestra también la tarjeta de Órdenes)
+  dia: 3, // número del día al azar en curso (turno 3 del flujo: día 3, 4, 5...)
   estrellasInicio: null, // estrellas guardadas al empezar la partida (para avisar lo que se desbloqueó)
 };
 

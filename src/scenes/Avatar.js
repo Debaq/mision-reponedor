@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ANCHO, ALTO, COLOR, estiloTexto } from '../lib/estilo.js';
+import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { boton, flechaSiguiente, panel, sacudir } from '../lib/ui.js';
 import { crearPersonaje, actualizarPersonaje, opcionesDe, PEINADOS, centroParte, enPiso, ESCALA, imagenCapa } from '../lib/personaje.js';
 import { estado, nombreJugador, sumarError } from '../lib/estado.js';
@@ -92,7 +92,7 @@ export default class Avatar extends Phaser.Scene {
       this.add.text(960, 165, nombreJugador(), estiloTexto(30, '#553c9a', { backgroundColor: '#ffffff', padding: { x: 18, y: 6 } })).setOrigin(0.5);
       mostrarEstrellas(estado.nombre);
       this.listo = flechaSiguiente(this, () => this.validarTrabajo());
-      voz.decir(FLUJO[estado.paso]?.turno === 2 ? 'vestir_t2' : 'vestir_intro');
+      voz.decir(FLUJO[estado.paso]?.turno >= 2 ? 'vestir_t2' : 'vestir_intro');
     } else {
       const campo = campoTexto(this, 960, 165, 304, 62, { maxLength: 14, placeholder: 'Tu nombre', value: estado.nombre });
       campo.addEventListener('focus', () => voz.decir('avatar_nombre'));

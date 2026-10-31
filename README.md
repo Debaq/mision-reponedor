@@ -71,6 +71,8 @@ Con las estrellas guardadas (la mejor de cada etapa) se desbloquea, según `src/
 - Chalecos de reconocimiento: estrella (10★), experto (25★), plata (40★) y oro (55★, requiere jugar el turno 2). Se eligen en la fila "Chaleco" al crear el personaje; los bloqueados muestran las estrellas que faltan.
 - Turno 2 (30★): pasillo de limpieza, con reloj en bodega y estantería, y el supervisor encarga 3 tareas al azar de las 5, con menos tiempo. Quien ya lo desbloqueó elige turno después de crear el personaje; también aparece un botón en la pantalla final.
 
+- Días al azar (al terminar el turno 2): día 3, 4, 5… Mismo recorrido que el turno 2 (con reloj y 3 tareas al azar de las 5), pero cada día con otro pasillo, otros 3 productos (de 2 a 4 de cada uno), otra estantería (vacíos, un producto mal puesto, uno o dos chuecos) y otra fecha en la leche. Lo arma `src/lib/dias.js` en `niveles.dia`; el último día terminado se guarda en el perfil y la pantalla final ofrece el siguiente.
+
 Al terminar un turno, una tarjeta "¡NUEVO!" muestra lo que se desbloqueó en esa partida.
 
 ## Personajes (Blender)

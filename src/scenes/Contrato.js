@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ANCHO, ALTO, COLOR, estiloTexto } from '../lib/estilo.js';
+import { COLOR, estiloTexto } from '../lib/estilo.js';
 import { flechaSiguiente, Indicador } from '../lib/ui.js';
 import { crearPersonaje, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado, nombreJugador, segunGenero } from '../lib/estado.js';

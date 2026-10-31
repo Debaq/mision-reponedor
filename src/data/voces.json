@@ -680,6 +680,30 @@
     "voz": "guia",
     "texto": "¡Ganaste un chaleco nuevo! Lo puedes elegir la próxima vez que crees tu personaje."
   },
+  "turno_3": {
+    "voz": "guia",
+    "texto": "Otro día de trabajo: el pasillo, los productos y las tareas salen al azar, con reloj."
+  },
+  "premio_dias": {
+    "voz": "guia",
+    "texto": "¡Y terminaste el turno dos! Desde ahora puedes seguir trabajando más días: cada día con otro pasillo y otras tareas."
+  },
+  "dia_intro_alimentos": {
+    "voz": "jefe",
+    "texto": "Buen día. Hoy te toca el pasillo uno, alimentos, con reloj. Aquí tienes tu lista."
+  },
+  "dia_intro_bebidas": {
+    "voz": "jefe",
+    "texto": "Buen día. Hoy te toca el pasillo dos, bebidas, con reloj. Aquí tienes tu lista."
+  },
+  "dia_intro_limpieza": {
+    "voz": "jefe",
+    "texto": "Buen día. Hoy te toca el pasillo tres, limpieza, con reloj. Aquí tienes tu lista."
+  },
+  "dia_intro_higiene": {
+    "voz": "jefe",
+    "texto": "Buen día. Hoy te toca el pasillo cuatro, higiene personal, con reloj. Aquí tienes tu lista."
+  },
   "premio_turno2": {
     "voz": "jefe",
     "texto": "¡Muy buen trabajo! Ya puedes hacer el turno dos, en el pasillo de limpieza."
