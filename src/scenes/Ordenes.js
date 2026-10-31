@@ -10,6 +10,7 @@ import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { FLUJO, irA, siguiente } from '../lib/flujo.js';
 import { sombraRect } from '../lib/sombras.js';
+import { diaVencidos } from './Vencidos.js';
 
 const TAREAS = {
   derrame: { escena: 'Derrame', nombre: 'Derrame' },
@@ -126,7 +127,7 @@ export default class Ordenes extends Phaser.Scene {
       g.fillStyle(COLOR.rojo, 1).fillRoundedRect(8, -62, 76, 24, { tl: 10, tr: 10, bl: 0, br: 0 });
       d.add([this.add.image(-36, 14, 'prod_leche').setDisplaySize(96, 96), g,
         this.add.text(46, -50, 'HOY', estiloTexto(14, '#ffffff')).setOrigin(0.5),
-        this.add.text(46, -6, '15', estiloTexto(30)).setOrigin(0.5)]);
+        this.add.text(46, -6, String(diaVencidos()), estiloTexto(30)).setOrigin(0.5)]);
     }
     return d;
   }

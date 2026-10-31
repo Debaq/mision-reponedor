@@ -23,6 +23,7 @@ export const estado = {
   ordenes: null, // tareas encadenadas del supervisor: { bloque, lista, hechas, errores }
   lugar: null, // dónde quedó el personaje en el mapa (nodo de MAPA.caminos): de ahí parte la próxima vez
   diaTurno1: null, // día del calendario en la tarea de vencidos del turno 1 (el turno 2 es el día siguiente)
+  vencidosHoy: null, // día de la tarea de vencidos en curso (lo muestra también la tarjeta de Órdenes)
   estrellasInicio: null, // estrellas guardadas al empezar la partida (para avisar lo que se desbloqueó)
 };
 
@@ -41,6 +42,7 @@ export function nuevaPartida() {
   estado.erroresPaso = 0;
   estado.resultados = {};
   estado.ordenes = null;
+  estado.vencidosHoy = null;
 }
 
 // Cierra la etapa actual: calcula estrellas y puntos según los errores.

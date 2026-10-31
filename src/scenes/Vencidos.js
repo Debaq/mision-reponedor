@@ -15,15 +15,24 @@ const MESES = { 11: 'NOV', 12: 'DIC' };
 const CANASTO = { x: 1060, y: 520 };
 const ddmm = (d, m) => String(d).padStart(2, '0') + m;
 
-// Cada vez es otro día: hoy, entre el 6 y el 24 de noviembre (en el turno 2, el día siguiente al del
-// turno 1 si se jugó), y seis fechas DDMM: 2 o 3 vencidas (antes de hoy), una que vence mañana (para
-// mirar con atención) y el resto más adelante en noviembre o en diciembre. Cada fecha tiene su voz
-// (fecha_DDMM y hoy_DDMM, generadas en tools/gen_voces.py).
+// Día de "hoy" de la tarea (de noviembre): cada vez otro, entre el 6 y el 23; en el turno 2, el día
+// siguiente al del turno 1 si se jugó. Se elige una vez y queda guardado hasta terminar la tarea, así la
+// tarjeta del tablero de Órdenes muestra el mismo día.
+export function diaVencidos() {
+  if (estado.vencidosHoy) return estado.vencidosHoy;
+  const turno = FLUJO[estado.paso]?.turno;
+  const d = turno === 2 && estado.diaTurno1 ? Math.min(24, estado.diaTurno1 + 1) : Phaser.Math.Between(6, 23);
+  if (turno === 1) estado.diaTurno1 = d;
+  estado.vencidosHoy = d;
+  return d;
+}
+
+// Seis fechas DDMM: 2 o 3 vencidas (antes de hoy), una que vence mañana (para mirar con atención) y el
+// resto más adelante en noviembre o en diciembre. Cada fecha tiene su voz (fecha_DDMM y hoy_DDMM,
+// generadas en tools/gen_voces.py).
 function fechasDelDia() {
   const { Between } = Phaser.Math;
-  const turno = FLUJO[estado.paso]?.turno;
-  const hoy = { d: turno === 2 && estado.diaTurno1 ? Math.min(24, estado.diaTurno1 + 1) : Between(6, 23), m: 11 };
-  if (turno === 1) estado.diaTurno1 = hoy.d;
+  const hoy = { d: diaVencidos(), m: 11 };
   const fechas = new Set();
   const vencidas = Between(2, 3);
   while (fechas.size < vencidas) fechas.add(ddmm(Between(Math.max(1, hoy.d - 12), hoy.d - 1), 11));
@@ -114,6 +123,7 @@ export default class Vencidos extends Phaser.Scene {
       voz.decir('vencidos_bien');
       return;
     }
+    estado.vencidosHoy = null;
     marca(this, CANASTO.x, CANASTO.y - 120, true);
     sfx(this, 'logro');
     if (!(await voz.secuencia(['vencidos_bien', 'vencidos_fin']))) return;
