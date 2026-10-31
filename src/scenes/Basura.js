@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { fondoRender } from '../lib/fondos.js';
 import { Indicador, marca, sacudir } from '../lib/ui.js';
-import { basurero } from '../lib/objetos.js';
+import { basurero, carroReposicion } from '../lib/objetos.js';
 import { crearPersonaje } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
@@ -9,10 +9,12 @@ import { sfx } from '../lib/sfx.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
 
 const BASURA = ['basura_lata', 'basura_envoltorio', 'basura_manzana', 'basura_vaso', 'basura_lata'];
-const NO_BASURA = ['atun', 'chocolate'];
+const NO_BASURA = ['atun', 'chocolate', 'jabon'];
 const TACHO = { x: 1080, y: 470 };
+const CARRO = { x: 170, y: 480 };
 
-// Tarea adicional: recoger basura del pasillo (y distinguir productos que no son basura).
+// Tarea adicional: ordenar el pasillo. La basura va al basurero y los productos caídos
+// van al carro de reposición, para devolverlos a su lugar.
 export default class Basura extends Phaser.Scene {
   constructor() {
     super('Basura');
@@ -23,10 +25,11 @@ export default class Basura extends Phaser.Scene {
     fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
     crearPersonaje(this, 1210, 470, estado.avatar, 0.27);
     basurero(this, TACHO.x, TACHO.y);
+    carroReposicion(this, CARRO.x, CARRO.y);
     this.ind = new Indicador(this);
 
     const posiciones = Phaser.Utils.Array.Shuffle([
-      [180, 450], [320, 520], [460, 440], [600, 530], [740, 460], [880, 540], [260, 560], [540, 470],
+      [340, 450], [460, 530], [580, 440], [700, 530], [820, 460], [940, 545], [400, 580], [640, 480], [760, 590],
     ]);
     this.quedan = 0;
     [...BASURA.map((k) => ({ k, basura: true })), ...NO_BASURA.map((k) => ({ k: k, basura: false }))]
@@ -35,7 +38,7 @@ export default class Basura extends Phaser.Scene {
         const it = this.add.image(x, y, o.basura ? o.k : 'prod_' + o.k).setDisplaySize(64, 64).setAngle(Phaser.Math.Between(-40, 40));
         it.basura = o.basura;
         it.origen = { x, y };
-        if (o.basura) this.quedan++;
+        this.quedan++;
         it.setInteractive({ useHandCursor: true, draggable: true });
         it.on('dragstart', () => { it.setDepth(100); this.ind.ocultar(); sfx(this, 'tomar', 0.4); });
         it.on('dragend', () => this.soltar(it));
@@ -53,26 +56,36 @@ export default class Basura extends Phaser.Scene {
 
   async soltar(it) {
     const enTacho = Math.abs(it.x - TACHO.x) < 80 && Math.abs(it.y - TACHO.y) < 110;
-    if (!enTacho) {
+    const enCarro = Math.abs(it.x - CARRO.x) < 110 && Math.abs(it.y - CARRO.y) < 100;
+    if (!enTacho && !enCarro) {
       it.setDepth(0);
       return;
     }
-    if (!it.basura) {
+    // Lugar equivocado: producto al basurero o basura al carro.
+    if (enTacho !== it.basura) {
       sfx(this, 'error');
       sumarError();
-      voz.decir('basura_no');
+      voz.decir(it.basura ? 'basura_carro_no' : 'basura_no');
       this.tweens.add({ targets: it, x: it.origen.x, y: it.origen.y, duration: 300 });
       sacudir(this, it);
       return;
     }
     it.disableInteractive();
-    sfx(this, 'soltar');
-    this.tweens.add({ targets: it, x: TACHO.x, y: TACHO.y - 60, scale: 0, duration: 250, onComplete: () => it.destroy() });
+    if (enTacho) {
+      sfx(this, 'soltar');
+      this.tweens.add({ targets: it, x: TACHO.x, y: TACHO.y - 60, scale: 0, duration: 250, onComplete: () => it.destroy() });
+    } else {
+      // Al carro: queda a la vista, ordenado en la canasta.
+      sfx(this, 'bien');
+      this.enCarro = (this.enCarro || 0) + 1;
+      this.tweens.add({ targets: it, x: CARRO.x - 50 + (this.enCarro - 1) * 48, y: CARRO.y - 52, angle: 0, duration: 250 });
+      it.setDisplaySize(46, 46).setDepth(5);
+    }
     this.quedan--;
     if (this.quedan > 0) return;
-    marca(this, TACHO.x, TACHO.y - 160, true);
+    marca(this, 640, 330, true);
     sfx(this, 'logro');
-    if (!(await voz.decir('basura_fin'))) return;
+    await voz.decir('basura_fin');
     siguiente(this);
   }
 }

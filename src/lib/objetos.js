@@ -75,3 +75,25 @@ export function tarjeta(scene, x, y, w, h) {
   c.setSize(w, h).setInteractive({ useHandCursor: true });
   return c;
 }
+
+// Carro de reposición: canasta de alambre con manilla y ruedas (para productos que hay que devolver).
+export function carroReposicion(scene, x, y) {
+  const c = scene.add.container(x, y);
+  const g = scene.add.graphics();
+  g.fillStyle(0x000000, 0.15).fillEllipse(0, 78, 220, 26);
+  // Canasta
+  g.fillStyle(0x553c9a, 0.18).fillRoundedRect(-95, -80, 190, 90, 10);
+  g.lineStyle(5, 0x553c9a, 1).strokeRoundedRect(-95, -80, 190, 90, 10);
+  g.lineStyle(2, 0x6b46c1, 0.8);
+  for (let k = -70; k <= 70; k += 28) g.lineBetween(k, -78, k, 8);
+  g.lineBetween(-93, -50, 93, -50).lineBetween(-93, -20, 93, -20);
+  // Manilla y estructura
+  g.lineStyle(6, 0x4a5568, 1).lineBetween(95, -80, 125, -110).lineBetween(-80, 10, -80, 56).lineBetween(80, 10, 80, 56);
+  g.lineStyle(8, 0x38b2ac, 1).lineBetween(115, -112, 140, -112);
+  g.lineStyle(5, 0x4a5568, 1).lineBetween(-90, 56, 90, 56);
+  // Ruedas
+  g.fillStyle(0x1a202c, 1).fillCircle(-70, 66, 12).fillCircle(70, 66, 12);
+  g.fillStyle(0xa0aec0, 1).fillCircle(-70, 66, 5).fillCircle(70, 66, 5);
+  c.add(g);
+  return c;
+}

@@ -350,19 +350,19 @@
   },
   "extra_basura_jefe": {
     "voz": "jefe",
-    "texto": "Hay basura en el pasillo. Recógela y bótala en el basurero, por favor."
+    "texto": "El pasillo está desordenado: hay basura y productos en el piso. Por favor, ordénalo."
   },
   "basura_instr": {
     "voz": "guia",
-    "texto": "Arrastra cada basura al basurero. Los productos buenos déjalos en el piso, no son basura."
+    "texto": "Arrastra la basura al basurero. Los productos buenos van al carro, para devolverlos a su lugar."
   },
   "basura_no": {
     "voz": "guia",
-    "texto": "Eso no es basura. Es un producto que se le cayó a alguien. Déjalo, después lo devolvemos a su lugar."
+    "texto": "Eso no es basura. Es un producto que se le cayó a alguien. Ponlo en el carro."
   },
   "basura_fin": {
     "voz": "guia",
-    "texto": "Pasillo limpio. ¡Buen trabajo!"
+    "texto": "Pasillo limpio y ordenado. ¡Buen trabajo!"
   },
   "extra_vencidos_jefe": {
     "voz": "jefe",
@@ -506,7 +506,7 @@
   },
   "tarea_basura": {
     "voz": "jefe",
-    "texto": "Recoge la basura del pasillo."
+    "texto": "Ordena el pasillo: la basura al basurero y los productos al carro."
   },
   "tarea_vencidos": {
     "voz": "jefe",
@@ -711,5 +711,9 @@
   "lista_lista": {
     "voz": "guia",
     "texto": "¡Listo! Ya revisaste toda la lista. Toca el botón verde para seguir."
+  },
+  "basura_carro_no": {
+    "voz": "guia",
+    "texto": "Eso es basura. Va al basurero, no al carro."
   }
 }
