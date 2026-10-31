@@ -49,8 +49,12 @@ def poner(obj, color):
 def caja(x, y, z, sx, sy, sz, color, rz=0):
     bpy.ops.mesh.primitive_cube_add(location=(x, y, z), rotation=(0, 0, rz))
     o = bpy.context.object
-    o.scale = (sx / 2, sy / 2, sz / 2)
-    return poner(o, color)
+    bl_util.escalar_malla(o, sx / 2, sy / 2, sz / 2)
+    poner(o, color)
+    # Cantos apenas redondeados: siguen facetados como los productos de Kenney, pero atrapan la luz.
+    if min(sx, sy, sz) >= 0.05:
+        bl_util.biselar(o, min(sx, sy, sz) * 0.06)
+    return o
 
 
 def cil(x, y, z, r, h, color, n=10, sx=1, sy=1, r2=None):

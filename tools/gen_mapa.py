@@ -21,7 +21,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from bl_util import caja, cil, escena, mat, muestra, piso_ajedrez, proyectar  # noqa: E402
+from bl_util import caja, capsula, cil, escena, mat, muestra, piso_ajedrez, proyectar  # noqa: E402
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 PASILLOS = json.loads((RAIZ / 'src' / 'data' / 'pasillos.json').read_text())
@@ -204,12 +204,14 @@ def persona(x, y, polera, pelo='#2d3748', piel='#e0ac69', rz=0):
 
 
 def persona_(x, y, polera, pelo, piel, rz):
-    caja(x - 0.09, y, 0, 0.14, 0.16, 0.75, '#2d3748')
-    caja(x + 0.09, y, 0, 0.14, 0.16, 0.75, '#2d3748')
-    caja(x, y, 0.75, 0.42, 0.24, 0.55, polera, rz=rz)
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=10, ring_count=6, radius=0.16, location=(x, y, 1.48))
+    capsula(x - 0.09, y, 0, 0.14, 0.16, 0.85, '#2d3748')
+    capsula(x + 0.09, y, 0, 0.14, 0.16, 0.85, '#2d3748')
+    capsula(x, y, 0.7, 0.42, 0.26, 0.66, polera).rotation_euler.z = rz
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=10, radius=0.16, location=(x, y, 1.48))
+    bpy.ops.object.shade_smooth()
     bpy.context.object.data.materials.append(mat(piel, 0.7))
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=10, ring_count=6, radius=0.17, location=(x, y + 0.03, 1.55))
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=10, radius=0.17, location=(x, y + 0.03, 1.55))
+    bpy.ops.object.shade_smooth()
     o = bpy.context.object
     o.scale = (1, 1, 0.6)
     o.data.materials.append(mat(pelo, 0.8))

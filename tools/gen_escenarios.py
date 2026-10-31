@@ -19,7 +19,7 @@ import sys
 import bpy
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from bl_util import caja, cil, escena, lampara, mat, muestra, piso_ajedrez, proyectar  # noqa: E402
+from bl_util import caja, capsula, cil, escena, lampara, mat, muestra, piso_ajedrez, proyectar  # noqa: E402
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 OUT = muestra() or RAIZ / 'public' / 'assets' / 'escenarios'
@@ -251,12 +251,14 @@ def camara_libre(pos, mira, lente=28):
 def persona(x, y, polera, pelo='#2d3748', piel='#e0ac69'):
     """Persona low-poly de fondo (cajera, clientes)."""
     from bl_util import mat as _mat
-    caja(x - 0.09, y, 0, 0.14, 0.16, 0.8, '#2d3748')
-    caja(x + 0.09, y, 0, 0.14, 0.16, 0.8, '#2d3748')
-    caja(x, y, 0.8, 0.44, 0.26, 0.6, polera)
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.17, location=(x, y, 1.57))
+    capsula(x - 0.09, y, 0, 0.14, 0.16, 0.9, '#2d3748')
+    capsula(x + 0.09, y, 0, 0.14, 0.16, 0.9, '#2d3748')
+    capsula(x, y, 0.75, 0.44, 0.28, 0.7, polera)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=10, radius=0.17, location=(x, y, 1.57))
+    bpy.ops.object.shade_smooth()
     bpy.context.object.data.materials.append(_mat(piel, 0.7))
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.18, location=(x, y + 0.03, 1.64))
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=10, radius=0.18, location=(x, y + 0.03, 1.64))
+    bpy.ops.object.shade_smooth()
     o = bpy.context.object
     o.scale = (1, 1, 0.65)
     o.data.materials.append(_mat(pelo, 0.8))

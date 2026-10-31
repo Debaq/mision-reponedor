@@ -47,19 +47,58 @@ def mat(color, rough=0.9):
     return m
 
 
+def biselar(o, ancho, segmentos=2):
+    """Cantos redondeados (atrapan la luz): bisel en las aristas vivas, caras planas con normales
+    endurecidas para que no se vean abolladas."""
+    m = o.modifiers.new('bisel', 'BEVEL')
+    m.width = ancho
+    m.segments = segmentos
+    m.limit_method = 'ANGLE'
+    m.harden_normals = True
+    for p in o.data.polygons:
+        p.use_smooth = True
+    return o
+
+
+def escalar_malla(o, sx, sy, sz):
+    """Medidas en la malla y no en la escala del objeto: así el bisel queda parejo."""
+    for v in o.data.vertices:
+        v.co = (v.co.x * sx, v.co.y * sy, v.co.z * sz)
+
+
 def caja(x, y, z, sx, sy, sz, color, rz=0, rough=0.9):
-    """Caja apoyada en z (z = base)."""
+    """Caja apoyada en z (z = base), con los cantos biselados (salvo las muy delgadas)."""
     bpy.ops.mesh.primitive_cube_add(location=(x, y, z + sz / 2), rotation=(0, 0, rz))
     o = bpy.context.object
-    o.scale = (sx / 2, sy / 2, sz / 2)
+    escalar_malla(o, sx / 2, sy / 2, sz / 2)
     o.data.materials.append(mat(color, rough))
+    lado = min(sx, sy, sz)
+    if lado >= 0.02:
+        biselar(o, min(0.03, lado * 0.15))
     return o
 
 
 def cil(x, y, z, r, h, color, n=10):
-    bpy.ops.mesh.primitive_cylinder_add(vertices=n, radius=r, depth=h, location=(x, y, z + h / 2))
+    """Cilindro redondo (al menos 24 caras, sombreado suave) con el borde de las tapas biselado."""
+    bpy.ops.mesh.primitive_cylinder_add(vertices=max(n, 24), radius=r, depth=h, location=(x, y, z + h / 2))
     o = bpy.context.object
     o.data.materials.append(mat(color))
+    if min(r, h) >= 0.02:
+        biselar(o, min(0.015, r * 0.1, h * 0.12))
+    return o
+
+
+def capsula(x, y, z, sx, sy, sz, color, rough=0.8):
+    """Píldora apoyada en z, de sx × sy × sz (piernas y cuerpo de la gente de fondo)."""
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=10, radius=1, location=(x, y, z + sz / 2))
+    o = bpy.context.object
+    r = min(sx, sy) / 2
+    for v in o.data.vertices:
+        tramo = max(sz / 2 - r, 0) * (1 if v.co.z > 0 else -1)
+        v.co = (v.co.x * sx / 2, v.co.y * sy / 2, v.co.z * r + tramo)
+    for p in o.data.polygons:
+        p.use_smooth = True
+    o.data.materials.append(mat(color, rough))
     return o
 
 

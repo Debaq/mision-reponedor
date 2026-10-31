@@ -140,7 +140,8 @@ def suavizar(o, subdividir=False):
     bpy.ops.object.shade_smooth()
     if subdividir and not any(m.type == 'SUBSURF' for m in o.modifiers):
         m = o.modifiers.new('sub', 'SUBSURF')
-        m.levels = m.render_levels = 1
+        m.levels = 1
+        m.render_levels = 2
 
 
 def pegar(o, arm):
@@ -495,7 +496,8 @@ def ropa(c, nombre, col, huesos, grosor, color=BLANCO, rough=0.7, manga=None, co
     a = o.modifiers.new('esqueleto', 'ARMATURE')
     a.object = c.arm
     sub = o.modifiers.new('sub', 'SUBSURF')
-    sub.levels = sub.render_levels = 1
+    sub.levels = 1
+    sub.render_levels = 2
     return o
 
 
@@ -701,7 +703,7 @@ def preparar():
     escena(ANCHO_PX, ALTO_PX, fondo='#ffffff', sol=2.0, ambiente=0.5)
     s = bpy.context.scene
     s.render.film_transparent = True
-    s.eevee.taa_render_samples = 16
+    s.eevee.taa_render_samples = 32
     camara()
 
 
