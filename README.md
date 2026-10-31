@@ -86,7 +86,7 @@ Solo se regeneran las líneas que cambiaron.
 
 ## Mapa (Blender)
 
-El mapa del supermercado es un render isométrico modelado en `tools/gen_mapa.py` (bodega, cuatro pasillos con su color, cajas, entrada y clientes), siguiendo la imagen de referencia del documento. El script también calcula dónde queda cada zona en pantalla y lo guarda en `src/data/mapa.json`:
+El mapa del supermercado es un render isométrico modelado en `tools/gen_mapa.py` (bodega, cuatro pasillos con su color, cajas, entrada y clientes), siguiendo la imagen de referencia del documento. El script también calcula dónde queda cada zona en pantalla y lo guarda en `src/data/mapa.json`. Los muebles que pueden tapar al personaje (góndolas, cajas, muros de la bodega, pallets, personas) se recortan del fondo como piezas (`public/assets/mapa/piezas.png`, con `tools/mapa.py`) y el juego las dibuja delante o detrás del personaje según dónde pisa:
 
 ```bash
 npm run mapa

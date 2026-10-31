@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
-import { ANCHO, COLOR, estiloTexto } from '../lib/estilo.js';
+import { ALTO, ANCHO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { Indicador, marca, panel, producto, sacudir } from '../lib/ui.js';
-import { caminar, crearPersonaje } from '../lib/personaje.js';
+import { caminar, crearPersonaje, enPiso, mirarHacia } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
@@ -29,7 +29,12 @@ export default class Mapa extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(300);
     this.listo = false;
-    this.add.image(0, 0, 'mapa').setOrigin(0).setDisplaySize(ANCHO, 720);
+    this.add.image(0, 0, 'mapa').setOrigin(0).setDisplaySize(ANCHO, ALTO);
+    // Muebles recortados del fondo (góndolas, cajas, muros...): van delante o detrás del personaje.
+    this.piezas = Object.entries(MAPA.piezas).filter(([n]) => this.textures.get('mapa_piezas').has(n)).map(([n, planta]) => {
+      const img = this.add.image(0, 0, 'mapa_piezas', n).setOrigin(0);
+      return { img: img.setScale(ANCHO / img.frame.realWidth), planta };
+    });
     this.ind = new Indicador(this);
     this.zonas = {};
     this.crearZona('bodega', NOMBRE_BODEGA);
@@ -38,7 +43,7 @@ export default class Mapa extends Phaser.Scene {
 
     // El personaje parte en la entrada (va a la bodega) o en la puerta de la bodega (lleva el carro).
     const inicio = this.destino === 'bodega' ? MAPA.entrada.centro : MAPA.bodega.puerta;
-    this.yo = crearPersonaje(this, inicio[0], inicio[1] - 30, estado.avatar, 0.11).setDepth(6);
+    this.yo = crearPersonaje(this, inicio[0], enPiso(inicio[1], ESCALA), estado.avatar, ESCALA).setDepth(6);
     this.intro();
   }
 
@@ -46,14 +51,14 @@ export default class Mapa extends Phaser.Scene {
   crearZona(id, p) {
     const z = MAPA[id];
     const poli = new Phaser.Geom.Polygon(z.poligono.flat());
-    const brillo = this.add.graphics().setDepth(5);
+    const brillo = this.add.graphics().setDepth(7.5);
     const dibujar = (activo) => {
       brillo.clear();
       if (!activo) return;
       brillo.fillStyle(0xffffff, 0.22).fillPoints(poli.points, true);
       brillo.lineStyle(5, COLOR.amarillo, 1).strokePoints(poli.points, true);
     };
-    const toque = this.add.zone(0, 0, ANCHO, 720).setOrigin(0).setInteractive(poli, Phaser.Geom.Polygon.Contains);
+    const toque = this.add.zone(0, 0, ANCHO, ALTO).setOrigin(0).setInteractive(poli, Phaser.Geom.Polygon.Contains);
     toque.input.cursor = 'pointer';
     toque.on('pointerover', () => dibujar(true));
     toque.on('pointerout', () => dibujar(false));
@@ -78,13 +83,19 @@ export default class Mapa extends Phaser.Scene {
   }
 
   // Al llevar el carro: recordatorio de los productos de la lista, para buscar el pasillo con esos dibujos.
+  // Abajo a la izquierda, en el rincón que deja libre el local.
   crearLista() {
+    this.lista = [];
     if (this.destino === 'bodega') return;
     const lista = this.nivel.lista;
-    const alto = 60 + lista.length * 80;
-    panel(this, 1205, 200 + alto / 2, 130, alto, COLOR.papel, 16).setDepth(20);
-    this.add.image(1205, 228, 'ui_shoppingCart').setDisplaySize(40, 40).setTint(COLOR.marca).setDepth(21);
-    lista.forEach((it, i) => producto(this, 1205, 290 + i * 80, it.p, 66).setDepth(21));
+    const ancho = 76 + lista.length * 78;
+    const x0 = 16;
+    const y = 548;
+    this.lista.push(
+      panel(this, x0 + ancho / 2, y, ancho, 96, COLOR.papel, 16).setDepth(20),
+      this.add.image(x0 + 38, y, 'ui_shoppingCart').setDisplaySize(40, 40).setTint(COLOR.marca).setDepth(21),
+      ...lista.map((it, i) => producto(this, x0 + 106 + i * 78, y, it.p, 66).setDepth(21)),
+    );
   }
 
   async intro() {
@@ -115,10 +126,31 @@ export default class Mapa extends Phaser.Scene {
     marca(this, mx, my - 70, true);
     sfx(this, 'bien');
     voz.decir('zona_' + id);
+    this.acercar();
     // Caminar hasta el lugar elegido por los pasillos (no en línea recta sobre las góndolas).
     await this.recorrer(ruta(this.destino === 'bodega' ? 'entrada' : 'bodega_puerta', id));
     await new Promise((r) => this.time.delayedCall(300, r));
     siguiente(this);
+  }
+
+  // Cada pieza va delante del personaje si él está detrás de ella en el piso. La cámara mira desde
+  // el frente a la derecha: está delante de una pieza si pisa a su derecha (x mayor) o adelante (y menor).
+  update() {
+    const [a, b, c, d, e, f] = MAPA.piso;
+    const px = this.yo.x;
+    const py = this.yo.y - enPiso(0, ESCALA);
+    const x = a * px + b * py + c;
+    const y = d * px + e * py + f;
+    for (const { img, planta } of this.piezas) img.setDepth(x >= planta[2] || y <= planta[1] ? 5 : 7);
+  }
+
+  // La cámara se acerca y sigue al personaje mientras camina (la lista ya no hace falta).
+  acercar() {
+    const cam = this.cameras.main;
+    cam.setBounds(0, 0, ANCHO, ALTO);
+    cam.startFollow(this.yo, false, 0.08, 0.08);
+    cam.zoomTo(ZOOM, 900, 'Sine.easeInOut');
+    this.tweens.add({ targets: this.lista, alpha: 0, duration: 300 });
   }
 
   // Camina de punto en punto a velocidad pareja, mirando hacia donde va.
@@ -131,20 +163,23 @@ export default class Mapa extends Phaser.Scene {
           fin();
           return;
         }
-        const [x, y] = puntos[i];
+        const x = puntos[i][0];
+        const y = enPiso(puntos[i][1], ESCALA);
         const dx = x - this.yo.x;
-        if (Math.abs(dx) > 2) this.yo.cuerpo.scaleX = Math.sign(dx);
-        const largo = Math.hypot(dx, y - PIE - this.yo.y);
-        this.tweens.add({ targets: this.yo, x, y: y - PIE, duration: Math.max(80, largo / VELOCIDAD * 1000), onComplete: () => paso(i + 1) });
+        const dy = y - this.yo.y;
+        mirarHacia(this.yo, dx, dy);
+        const largo = Math.hypot(dx, dy);
+        this.tweens.add({ targets: this.yo, x, y, duration: Math.max(80, largo / VELOCIDAD * 1000), onComplete: () => paso(i + 1) });
       };
       paso(0);
     });
   }
 }
 
-// Distancia de los pies al centro del personaje en el mapa, y velocidad al caminar (px/s).
-const PIE = 30;
-const VELOCIDAD = 230;
+// Tamaño del personaje en el mapa, velocidad al caminar (px/s) y acercamiento de la cámara al caminar.
+const ESCALA = 0.125;
+const VELOCIDAD = 180;
+const ZOOM = 1.8;
 
 // Camino más corto (Dijkstra) por la red de caminos del mapa, de un nodo a otro: lista de puntos.
 function ruta(desde, hasta) {

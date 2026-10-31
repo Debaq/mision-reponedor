@@ -26,6 +26,7 @@ export default class Boot extends Phaser.Scene {
     this.load.setPath('assets/');
     for (const g of ['hombre', 'mujer', 'nobinario']) this.load.atlas('p_' + g, v(`personaje3d/${g}.png`), v(`personaje3d/${g}.json`));
     this.load.image('mapa', v('mapa/mapa.jpg'));
+    this.load.atlas('mapa_piezas', v('mapa/piezas.png'), v('mapa/piezas.json'));
     for (const e of ['bodega', 'sala', 'gondola3', 'tienda', 'habitacion', 'fachada']) this.load.image('esc_' + e, v(`escenarios/${e}.jpg`));
     for (const id of Object.keys(productos)) this.load.image('prod_' + id, v(`productos/${id}.png`));
     for (const id of ['basura_lata', 'basura_envoltorio', 'basura_manzana', 'basura_vaso']) this.load.image(id, v(`productos/${id}.png`));
