@@ -3,7 +3,7 @@
 Uso:  npm run mapa   (lo llama tools/mapa.py, que después recorta las piezas)
 
 Genera:
-- .cache/mapa/mapa.png: el fondo (1600x900, el juego lo muestra a 1280x720).
+- .cache/mapa/mapa.png: el fondo (2000x900, 20:9; la franja central de 1600x900 es la pantalla 16:9).
 - .cache/mapa/piezas/<pieza>.png: máscara de cada mueble que puede tapar al personaje (góndolas, cajas,
   muros de la bodega...), para recortarlo del fondo y dibujarlo delante o detrás del personaje.
 - src/data/mapa.json: dónde quedan en pantalla las zonas tocables (polígonos), los letreros y la entrada,
@@ -21,11 +21,12 @@ import bpy
 from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from bl_util import caja, capsula, cil, escena, mat, muestra, piso_ajedrez, proyectar  # noqa: E402
+from bl_util import ANCHO_RENDER, caja, capsula, cil, escena, mat, muestra, piso_ajedrez, proyectar  # noqa: E402
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 PASILLOS = json.loads((RAIZ / 'src' / 'data' / 'pasillos.json').read_text())
-W, H = 1600, 900
+W16 = 1600                         # encuadre del local: en 16:9
+W, H = round(W16 * ANCHO_RENDER), 900   # render: 20:9 (los lados se ven en celulares)
 CACHE = RAIZ / '.cache' / 'mapa'
 random.seed(7)
 
@@ -247,10 +248,13 @@ def encuadrar(cam, margen=0.02):
     pts = [a_cam @ Vector((x, y, z)) for x in (X0 - g, X1 + g) for y in (Y0 - g, Y1 + g) for z in (0, 2.8)]
     x0, x1 = min(p.x for p in pts), max(p.x for p in pts)
     y0, y1 = min(p.y for p in pts), max(p.y for p in pts)
-    orto = max(x1 - x0, (y1 - y0) * W / H) * (1 + 2 * margen)
-    cam.data.ortho_scale = orto
-    cam.data.shift_x = (x0 + x1) / 2 / orto
-    cam.data.shift_y = (y0 + y1) / 2 / orto
+    orto = max(x1 - x0, (y1 - y0) * W16 / H) * (1 + 2 * margen)
+    # El encuadre se calcula para 16:9 y luego se ensancha sin cambiar la franja central (ortho_scale y
+    # shift son relativos al lado más largo de la imagen).
+    ancho = orto * ANCHO_RENDER
+    cam.data.ortho_scale = ancho
+    cam.data.shift_x = (x0 + x1) / 2 / ancho
+    cam.data.shift_y = (y0 + y1) / 2 / ancho
 
 
 def envolvente(puntos):

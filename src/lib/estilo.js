@@ -1,5 +1,10 @@
 export const ANCHO = 1280;
 export const ALTO = 720;
+// En pantallas más alargadas que 16:9 (celulares) el juego se ensancha hasta ANCHO_MAX (20:9) sin cortar
+// nada: el contenido sigue en 0..ANCHO y la cámara lo centra (src/lib/pantalla.js). Lo que llena todo
+// el ancho (fondos, capas oscuras, barras) va de X_IZQ a X_IZQ + ANCHO_MAX.
+export const ANCHO_MAX = 1600;
+export const X_IZQ = -(ANCHO_MAX - ANCHO) / 2;
 
 export const FUENTE = 'system-ui, "Segoe UI", Roboto, Arial, sans-serif';
 

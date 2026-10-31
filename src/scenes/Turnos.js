@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ANCHO, COLOR, estiloTexto } from '../lib/estilo.js';
+import { ANCHO, COLOR, estiloTexto, ANCHO_MAX, X_IZQ } from '../lib/estilo.js';
 import { fondoEntrada } from '../lib/fondos.js';
 import { dibujarReloj, flechaSiguiente, letreroPasillo } from '../lib/ui.js';
 import { tarjeta } from '../lib/objetos.js';
@@ -19,7 +19,7 @@ export default class Turnos extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(300);
     fondoEntrada(this);
-    this.add.graphics().fillStyle(0x000000, 0.35).fillRect(0, 0, ANCHO, 720);
+    this.add.graphics().fillStyle(0x000000, 0.35).fillRect(X_IZQ, 0, ANCHO_MAX, ALTO);
     crearPersonaje(this, 150, enPiso(640), SUPERVISOR, ESCALA);
     this.elegido = null;
 

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ANCHO, COLOR, estiloTexto } from '../lib/estilo.js';
+import { ANCHO, COLOR, estiloTexto, ANCHO_MAX, X_IZQ } from '../lib/estilo.js';
 import { carro } from '../lib/fondos.js';
 import { caminar, crearPersonaje, enPiso, ESCALA } from '../lib/personaje.js';
 import { estado } from '../lib/estado.js';
@@ -22,10 +22,10 @@ export default class Traslado extends Phaser.Scene {
     this.cameras.main.fadeIn(300);
     const g = this.add.graphics();
     // mitad bodega, mitad sala
-    g.fillStyle(0x8a96a3, 1).fillRect(0, 0, ANCHO / 2, 560);
-    g.fillStyle(0xeef3f6, 1).fillRect(ANCHO / 2, 0, ANCHO / 2, 560);
-    g.fillStyle(0x6b737c, 1).fillRect(0, 560, ANCHO / 2, 160);
-    g.fillStyle(0xe7e1d6, 1).fillRect(ANCHO / 2, 560, ANCHO / 2, 160);
+    g.fillStyle(0x8a96a3, 1).fillRect(X_IZQ, 0, ANCHO / 2 - X_IZQ, 560);
+    g.fillStyle(0xeef3f6, 1).fillRect(ANCHO / 2, 0, ANCHO_MAX / 2, 560);
+    g.fillStyle(0x6b737c, 1).fillRect(X_IZQ, 560, ANCHO / 2 - X_IZQ, 160);
+    g.fillStyle(0xe7e1d6, 1).fillRect(ANCHO / 2, 560, ANCHO_MAX / 2, 160);
     g.fillStyle(0x5f6b78, 1).fillRect(ANCHO / 2 - 90, 180, 180, 380);
     g.fillStyle(0x9aa5b1, 1).fillRect(ANCHO / 2 - 80, 190, 160, 370);
     this.add.text(320, 110, 'BODEGA', estiloTexto(44, '#ffffff')).setOrigin(0.5);

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { COLOR, estiloTexto } from '../lib/estilo.js';
+import { COLOR, estiloTexto, ANCHO_MAX, X_IZQ, ALTO } from '../lib/estilo.js';
 import { fondoRender } from '../lib/fondos.js';
 import { Indicador, marca, sacudir } from '../lib/ui.js';
 import { basurero, charco, herramienta, letreroPisoMojado, tarjeta } from '../lib/objetos.js';
@@ -77,7 +77,7 @@ export default class Derrame extends Phaser.Scene {
 
   elegirHerramienta() {
     const opciones = Phaser.Utils.Array.Shuffle(['trapero', 'escoba', 'plumero']);
-    const fondo = this.add.graphics().fillStyle(0x000000, 0.45).fillRect(0, 0, 1280, 720);
+    const fondo = this.add.graphics().fillStyle(0x000000, 0.45).fillRect(X_IZQ, 0, ANCHO_MAX, ALTO);
     const objs = [fondo];
     opciones.forEach((tipo, i) => {
       const x = 400 + i * 240;

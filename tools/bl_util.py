@@ -11,6 +11,10 @@ from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
 JUEGO = (1280, 720)
+# Los fondos y el mapa se renderizan más anchos que 16:9 (20:9: ANCHO_MAX = 1600 en src/lib/estilo.js),
+# para llenar pantallas alargadas. La franja central de 16:9 queda igual que antes: el juego sigue
+# usando coordenadas 0..1280 y lo de los lados solo se ve en celulares.
+ANCHO_RENDER = 1.25   # ancho del render / ancho de la franja 16:9
 
 
 def muestra():
@@ -188,5 +192,7 @@ def escena(W, H, fondo='#8fb9c9', sol_rot=LUZ_SOL, sol=3.0, ambiente=0.75, calid
 
 
 def proyectar(cam, p):
+    """Punto 3D → coordenadas del juego (0..1280 en la franja central del render ancho)."""
     v = world_to_camera_view(bpy.context.scene, cam, Vector(p))
-    return [round(v.x * JUEGO[0], 1), round((1 - v.y) * JUEGO[1], 1)]
+    ancho = JUEGO[0] * ANCHO_RENDER
+    return [round(v.x * ancho - (ancho - JUEGO[0]) / 2, 1), round((1 - v.y) * JUEGO[1], 1)]

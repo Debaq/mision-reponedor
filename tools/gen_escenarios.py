@@ -8,7 +8,8 @@ y el piso (z = 0) queda en y = 560. Así las cajas y repisas del render calzan c
 que usan las escenas Bodega y Sala (cajas, productos, etiquetas). El carro se renderiza delante y su
 posición en pantalla se guarda en src/data/escenarios.json.
 
-Genera public/assets/escenarios/bodega.jpg y sala.jpg (1600x900; el juego los muestra a 1280x720).
+Genera public/assets/escenarios/*.jpg a 2000x900 (20:9). El juego los muestra a 720 de alto y centrados:
+la franja central de 1600x900 corresponde a la pantalla 16:9 (1280x720); los lados se ven en celulares.
 """
 import json
 import math
@@ -19,11 +20,11 @@ import sys
 import bpy
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from bl_util import caja, capsula, cil, escena, lampara, mat, muestra, piso_ajedrez, proyectar  # noqa: E402
+from bl_util import ANCHO_RENDER, caja, capsula, cil, escena, lampara, mat, muestra, piso_ajedrez, proyectar  # noqa: E402
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 OUT = muestra() or RAIZ / 'public' / 'assets' / 'escenarios'
-W, H = 1600, 900
+W, H = round(1600 * ANCHO_RENDER), 900   # 20:9; la franja central de 1600 es la de 16:9
 PX = 200          # px del juego por metro, en el plano y = 0
 ALTURA_CAM = 1.0  # la cámara está horizontal a 1 m: y = 360 px ↔ z = 1 m; z = 0 ↔ y = 560 px
 DIST = 6.0        # distancia de la cámara al plano y = 0
@@ -46,8 +47,8 @@ def camara():
     bpy.ops.object.camera_add(location=(0, -DIST, ALTURA_CAM), rotation=(math.radians(90), 0, 0))
     cam = bpy.context.object
     cam.data.sensor_fit = 'HORIZONTAL'
-    cam.data.sensor_width = 36
-    cam.data.lens = DIST * 36 / (1280 / PX)   # ancho visible en y = 0: 6,4 m = 1280 px
+    cam.data.sensor_width = 36 * ANCHO_RENDER   # más ancho, misma escala: los lados se agregan
+    cam.data.lens = DIST * 36 / (1280 / PX)   # franja central en y = 0: 6,4 m = 1280 px
     bpy.context.scene.camera = cam
     return cam
 
@@ -243,6 +244,8 @@ def camara_libre(pos, mira, lente=28):
     bpy.ops.object.camera_add(location=pos)
     cam = bpy.context.object
     cam.data.lens = lente
+    cam.data.sensor_fit = 'HORIZONTAL'
+    cam.data.sensor_width = 36 * ANCHO_RENDER   # la franja central queda como con el sensor de 36 mm
     cam.rotation_euler = (Vector(mira) - Vector(pos)).to_track_quat('-Z', 'Y').to_euler()
     bpy.context.scene.camera = cam
     return cam

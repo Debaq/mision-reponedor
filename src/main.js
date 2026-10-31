@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { ANCHO, ALTO } from './lib/estilo.js';
+import { ANCHO, ALTO, ANCHO_MAX } from './lib/estilo.js';
+import { Centrado } from './lib/pantalla.js';
 import Boot from './scenes/Boot.js';
 import Hud from './scenes/Hud.js';
 import Inicio from './scenes/Inicio.js';
@@ -31,7 +32,10 @@ function iniciar() {
     width: ANCHO,
     height: ALTO,
     backgroundColor: '#1f2d3a',
-    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+    // EXPAND: en pantallas más anchas que 16:9 el juego se ensancha (hasta ANCHO_MAX) en vez de dejar
+    // franjas; en pantallas más altas (tablets 4:3) queda como antes, con franjas arriba y abajo.
+    scale: { mode: Phaser.Scale.EXPAND, autoCenter: Phaser.Scale.CENTER_BOTH, max: { width: ANCHO_MAX, height: ALTO } },
+    plugins: { scene: [{ key: 'Centrado', plugin: Centrado, mapping: 'centrado' }] },
     scene: [Boot, Inicio, Etapas, Avatar, Turnos, Contrato, Supervisor, Lista, Mapa, Bodega, Traslado, Sala,
       Ordenes, Derrame, Basura, Vencidos, Cliente, Precios, Faltantes, Fin, Hud],
   });

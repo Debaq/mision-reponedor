@@ -7,6 +7,7 @@ import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { siguiente } from '../lib/flujo.js';
 import { sombraRect } from '../lib/sombras.js';
+import { fondoImagen } from '../lib/fondos.js';
 
 const CEL = { x: 860, y: 330, ancho: 330, alto: 560 };
 const AZUL = 0x2b6cb0;
@@ -19,7 +20,7 @@ export default class Contrato extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(300);
-    this.add.image(0, 0, 'esc_habitacion').setOrigin(0).setDisplaySize(ANCHO, ALTO);
+    fondoImagen(this, 'esc_habitacion');
     this.yo = crearPersonaje(this, 330, enPiso(), estado.avatar, ESCALA);
     this.crearCelular();
     this.time.delayedCall(800, () => this.llegaMensaje());

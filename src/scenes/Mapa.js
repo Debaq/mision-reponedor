@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ALTO, ANCHO, COLOR, estiloTexto } from '../lib/estilo.js';
+import { ALTO, ANCHO, ANCHO_MAX, COLOR, X_IZQ, estiloTexto } from '../lib/estilo.js';
 import { Indicador, marca, panel, producto, sacudir } from '../lib/ui.js';
 import { caminar, crearPersonaje, enPiso, mirarHacia } from '../lib/personaje.js';
 import { estado, sumarError } from '../lib/estado.js';
@@ -44,11 +44,14 @@ export default class Mapa extends Phaser.Scene {
     this.cameras.main.fadeIn(300);
     this.listo = false;
     this.errores = 0;
-    this.add.image(0, 0, 'mapa').setOrigin(0).setDisplaySize(ANCHO, ALTO);
+    // Fondo y piezas a alto completo y centrados (el render es más ancho que 16:9).
+    const k = ALTO / this.textures.get('mapa').getSourceImage().height;
+    this.add.image(ANCHO / 2, 0, 'mapa').setOrigin(0.5, 0).setScale(k);
     // Muebles recortados del fondo (góndolas, cajas, muros...): van delante o detrás del personaje.
     this.piezas = Object.entries(MAPA.piezas).filter(([n]) => this.textures.get('mapa_piezas').has(n)).map(([n, planta]) => {
-      const img = this.add.image(0, 0, 'mapa_piezas', n).setOrigin(0);
-      return { img: img.setScale(ANCHO / img.frame.realWidth), planta };
+      const img = this.add.image(0, 0, 'mapa_piezas', n).setOrigin(0).setScale(k);
+      img.x = ANCHO / 2 - (img.frame.realWidth * k) / 2;
+      return { img, planta };
     });
     this.ind = new Indicador(this);
     this.zonas = {};
@@ -171,7 +174,7 @@ export default class Mapa extends Phaser.Scene {
   // La cámara se acerca y sigue al personaje mientras camina (la lista ya no hace falta).
   acercar() {
     const cam = this.cameras.main;
-    cam.setBounds(0, 0, ANCHO, ALTO);
+    cam.setBounds(X_IZQ, 0, ANCHO_MAX, ALTO);
     cam.startFollow(this.yo, false, 0.08, 0.08);
     cam.zoomTo(ZOOM, 900, 'Sine.easeInOut');
     this.tweens.add({ targets: this.lista, alpha: 0, duration: 300 });

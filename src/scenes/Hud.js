@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
-import { ANCHO, ALTO, COLOR, estiloTexto } from '../lib/estilo.js';
+import { ANCHO, ALTO, COLOR, estiloTexto, ANCHO_MAX } from '../lib/estilo.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { estado, totales } from '../lib/estado.js';
 import { destello, dibujarReloj } from '../lib/ui.js';
 import { sombraCirculo } from '../lib/sombras.js';
 import { compacto } from '../lib/movil.js';
+import { margenLateral } from '../lib/pantalla.js';
 
 const COLOR_VOZ = { guia: COLOR.azul, jugador: COLOR.verde, jugadora: COLOR.verde, jugadore: COLOR.verde, jefe: 0x6b46c1, cliente: 0xb7791f };
 const VOZ_PREMIO = { 3: 'premio_3', 2: 'premio_2', 1: 'premio_1' };
@@ -48,6 +49,14 @@ export default class Hud extends Phaser.Scene {
     this.ondas = this.tweens.add({ targets: this.parlante, scale: this.parlante.scale * 1.1, duration: 300, yoyo: true, repeat: -1, paused: true });
     this.crearMarcador();
     this.crearReloj();
+    // En pantallas alargadas, marcador y reloj van pegados a los bordes reales.
+    const anclar = () => {
+      const m = margenLateral(this);
+      this.marcador.x = m;
+      this.reloj.x = -m;
+    };
+    anclar();
+    this.scale.on('resize', anclar);
   }
 
   // Arriba a la derecha: estrellas y puntos de la partida.
@@ -139,7 +148,7 @@ export default class Hud extends Phaser.Scene {
     this.marcador.setVisible(true);
 
     // Capa que bloquea los toques mientras dura el premio.
-    const capa = this.add.rectangle(cx, ALTO / 2, ANCHO, ALTO, 0x000000, 0.55).setInteractive().setAlpha(0);
+    const capa = this.add.rectangle(cx, ALTO / 2, ANCHO_MAX, ALTO, 0x000000, 0.55).setInteractive().setAlpha(0);
     const caja = this.add.graphics();
     caja.fillStyle(0xffffff, 1).fillRoundedRect(cx - 230, cy - 110, 460, 230, 28);
     caja.lineStyle(6, COLOR.amarillo, 1).strokeRoundedRect(cx - 230, cy - 110, 460, 230, 28);

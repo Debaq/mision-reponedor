@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ANCHO, ALTO, COLOR, estiloTexto } from '../lib/estilo.js';
+import { ANCHO, ALTO, COLOR, estiloTexto, ANCHO_MAX, X_IZQ } from '../lib/estilo.js';
 import { fondoEntrada } from '../lib/fondos.js';
 import { boton } from '../lib/ui.js';
 import { voz } from '../lib/voz.js';
@@ -21,7 +21,7 @@ export default class Inicio extends Phaser.Scene {
     hud.mostrarMarcador(false);
     nuevaPartida();
     fondoEntrada(this);
-    this.add.graphics().fillStyle(0x000000, 0.35).fillRect(0, 0, ANCHO, ALTO);
+    this.add.graphics().fillStyle(0x000000, 0.35).fillRect(X_IZQ, 0, ANCHO_MAX, ALTO);
     crearPersonaje(this, 230, enPiso(640), AVATAR_INICIAL, ESCALA);
 
     const titulo = this.add.text(ANCHO / 2 + 80, 290, 'MISIÓN\nREPONEDOR', estiloTexto(92, '#ffffff', {

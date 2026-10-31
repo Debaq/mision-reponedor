@@ -10,6 +10,7 @@ import { estrellasGuardadas } from '../lib/perfil.js';
 import { CHALECOS } from '../lib/premios.js';
 import { sombraPuntos } from '../lib/sombras.js';
 import { campoTexto, compacto } from '../lib/movil.js';
+import { fondoImagen } from '../lib/fondos.js';
 
 // Categorías del editor: voz, nombre, parte que se ve en la miniatura e ícono de la pestaña.
 // Ícono: capa del atlas del personaje y su color.
@@ -53,7 +54,7 @@ export default class Avatar extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(300);
-    this.add.image(0, 0, 'esc_habitacion').setOrigin(0).setDisplaySize(ANCHO, ALTO);
+    fondoImagen(this, 'esc_habitacion');
     const trabajo = this.modo === 'trabajo';
     // Sin chaleco al empezar: en "trabajo" hay que ponérselo.
     this.cfg = estado.nombre ? { ...estado.avatar, chaleco: 'no' } : { ...estado.avatar, ...CALLE };

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ANCHO, COLOR, estiloTexto } from '../lib/estilo.js';
+import { ANCHO, COLOR, estiloTexto, ANCHO_MAX, ALTO } from '../lib/estilo.js';
 import { fondoEntrada } from '../lib/fondos.js';
 import { boton, dibujarReloj, panel } from '../lib/ui.js';
 import { crearPersonaje, SUPERVISOR, enPiso, ESCALA, imagenCapa } from '../lib/personaje.js';
@@ -101,7 +101,7 @@ export default class Fin extends Phaser.Scene {
     estado.estrellasInicio = ahora;
     if (!nuevos.chalecos.length && !nuevos.turno2) return;
 
-    const capa = this.add.rectangle(ANCHO / 2, 360, ANCHO, 720, 0x000000, 0.6).setInteractive().setDepth(200);
+    const capa = this.add.rectangle(ANCHO / 2, ALTO / 2, ANCHO_MAX, ALTO, 0x000000, 0.6).setInteractive().setDepth(200);
     const objs = [capa, panel(this, ANCHO / 2, 330, 620, 380, 0xffffff, 24).setDepth(201)];
     const add = (o) => objs.push(o.setDepth(202));
     add(this.add.text(ANCHO / 2, 175, '¡NUEVO!', estiloTexto(44, '#553c9a')).setOrigin(0.5));
