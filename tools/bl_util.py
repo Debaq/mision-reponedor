@@ -89,27 +89,60 @@ def piso_ajedrez(x0, y0, x1, y1, c1, c2, tam=1.0, z=0.0):
 
 
 # ---------------------------------------------------------------- escena
-def escena(W, H, fondo='#8fb9c9', sol_rot=(42, 18, -30), sol=3.0, ambiente=0.75):
+# Luz común de fondos, mapa, productos y personaje: sol cálido (~4300 K) con relleno frío del cielo,
+# lámparas de ~3500 K y oclusión con rebote de luz (sombras en los rincones).
+LUZ_SOL = (50, 5, 20)          # dirección del sol de las escenas de frente y del personaje (grados)
+SOL_CALIDO = '#ffe4c4'        # ~5000 K: más naranjo pone crema el blanco
+LAMPARA = '#ffc896'
+RELLENO = '#b8cde0'            # se mezcla con el color de fondo de cada escena
+
+
+def mezclar(a, b, t):
+    return tuple(round(x + (y - x) * t) for x, y in zip(hexa(a), hexa(b)))
+
+
+def lampara(tipo, pos, energia, tam=None):
+    """Luz de techo o lámpara (cálida)."""
+    bpy.ops.object.light_add(type=tipo, location=pos)
+    luz = bpy.context.object
+    luz.data.energy = energia
+    luz.data.color = [lineal(c) for c in hexa(LAMPARA)]
+    if tam:
+        if tipo == 'AREA':
+            luz.data.size = tam
+        else:
+            luz.data.shadow_soft_size = tam
+    return luz
+
+
+def escena(W, H, fondo='#8fb9c9', sol_rot=LUZ_SOL, sol=3.0, ambiente=0.75):
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete()
     s = bpy.context.scene
     motores = [e.identifier for e in bpy.types.RenderSettings.bl_rna.properties['engine'].enum_items]
     s.render.engine = 'BLENDER_EEVEE_NEXT' if 'BLENDER_EEVEE_NEXT' in motores else 'BLENDER_EEVEE'
     s.render.resolution_x, s.render.resolution_y = W, H
+    # Standard y no AgX: AgX desatura los colores de marca y vuelve gris el blanco de los productos.
     s.view_settings.view_transform = 'Standard'
-    try:
-        s.eevee.use_shadows = True
-    except AttributeError:
-        pass
+    s.view_settings.exposure = 0.3
+    e = s.eevee
+    e.use_shadows = True
+    e.use_raytracing = True
+    e.use_fast_gi = True
+    e.fast_gi_distance = 1.5
+    e.shadow_ray_count = 2
+    e.shadow_step_count = 8
+    e.shadow_resolution_scale = 1.0
     w = s.world or bpy.data.worlds.new('w')
     s.world = w
     w.use_nodes = True
-    w.node_tree.nodes['Background'].inputs['Color'].default_value = (*[lineal(c) for c in hexa(fondo)], 1)
+    w.node_tree.nodes['Background'].inputs['Color'].default_value = (*[lineal(c) for c in mezclar(fondo, RELLENO, 0.4)], 1)
     w.node_tree.nodes['Background'].inputs['Strength'].default_value = ambiente
     bpy.ops.object.light_add(type='SUN', rotation=tuple(math.radians(a) for a in sol_rot))
     luz = bpy.context.object
     luz.data.energy = sol
-    luz.data.angle = math.radians(25)
+    luz.data.angle = math.radians(15)
+    luz.data.color = [lineal(c) for c in hexa(SOL_CALIDO)]
 
 
 def proyectar(cam, p):

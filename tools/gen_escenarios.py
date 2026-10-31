@@ -19,7 +19,7 @@ import sys
 import bpy
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from bl_util import caja, cil, escena, mat, muestra, piso_ajedrez, proyectar  # noqa: E402
+from bl_util import caja, cil, escena, lampara, mat, muestra, piso_ajedrez, proyectar  # noqa: E402
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 OUT = muestra() or RAIZ / 'public' / 'assets' / 'escenarios'
@@ -78,15 +78,12 @@ def luces_techo(y0, y1, z=3.6):
     for y in range(int(y0), int(y1), 2):
         for x in (-2.0, 2.0):
             caja(x, y, z, 1.6, 0.25, 0.05, '#f7fafc', rough=0.3)
-        bpy.ops.object.light_add(type='AREA', location=(0, y, z - 0.1))
-        luz = bpy.context.object
-        luz.data.energy = 60
-        luz.data.size = 3
+        lampara('AREA', (0, y, z - 0.1), 60, 3.5)
 
 
 # ---------------------------------------------------------------- bodega
 def bodega():
-    escena(W, H, fondo='#a9b7c6', sol_rot=(55, 10, 20), sol=1.9, ambiente=0.65)
+    escena(W, H, fondo='#a9b7c6', sol=1.9, ambiente=0.65)
     random.seed(3)
     # Piso de cemento con línea de seguridad amarilla, muro del fondo
     caja(0, -2, -0.05, 14, 14, 0.05, '#7b8794')
@@ -153,7 +150,7 @@ def plataforma(cam, x, y, ancho):
 
 # ---------------------------------------------------------------- sala
 def sala():
-    escena(W, H, fondo='#dfe8ee', sol_rot=(50, 0, 15), sol=1.5, ambiente=0.55)
+    escena(W, H, fondo='#dfe8ee', sol=1.5, ambiente=0.55)
     random.seed(5)
     # Piso de baldosas y muro del fondo con franja de la marca
     caja(0, -2, -0.05, 16, 16, 0.05, '#e6d8bf')
@@ -208,7 +205,7 @@ def sala():
 
 def fondo_sala(semilla):
     """Piso, muro con franja de la marca y góndolas vecinas en perspectiva (común a las vistas de sala)."""
-    escena(W, H, fondo='#dfe8ee', sol_rot=(50, 0, 15), sol=1.5, ambiente=0.55)
+    escena(W, H, fondo='#dfe8ee', sol=1.5, ambiente=0.55)
     random.seed(semilla)
     caja(0, -2, -0.05, 16, 16, 0.05, '#e6d8bf')
     piso_ajedrez(-8, -9, 8, 6, '#f3e9d8', '#e6d8bf', 0.8, 0.001)
@@ -267,7 +264,7 @@ def persona(x, y, polera, pelo='#2d3748', piel='#e0ac69'):
 
 def tienda():
     """Interior del supermercado a la altura de los ojos (fondo de conversaciones y tareas)."""
-    escena(W, H, fondo='#e8eef2', sol_rot=(55, 0, 25), sol=1.4, ambiente=0.6)
+    escena(W, H, fondo='#e8eef2', sol=1.4, ambiente=0.6)
     random.seed(11)
     piso_ajedrez(-12, -6, 12, 30, '#f3e9d8', '#e6d8bf', 1.0)
     caja(0, 30, 0, 24, 0.3, 6, '#eef3f6')                       # muro del fondo
@@ -316,8 +313,7 @@ def tienda():
             caja(lx, ly, 3.9, 0.02, 0.02, 1.1, '#4a5568')
             bpy.ops.mesh.primitive_cone_add(vertices=16, radius1=0.45, radius2=0.12, depth=0.4, location=(lx, ly, 3.75))
             bpy.context.object.data.materials.append(mat('#553c9a', 0.6))
-            bpy.ops.object.light_add(type='POINT', location=(lx, ly, 3.5))
-            bpy.context.object.data.energy = 150
+            lampara('POINT', (lx, ly, 3.5), 150, 0.3)
     # Cámara a 1,09 m y horizontal: una persona de 1,72 m a ~4,2 m mide ~380 px con los pies en y ≈ 600,
     # la misma escala que en la bodega y las estanterías (ver ESCALA en src/lib/personaje.js).
     camara_libre((0, -3.5, 1.09), (0, 12, 1.09), lente=26)
@@ -335,9 +331,7 @@ def habitacion():
     caja(-4.6, 0, 0, 0.2, 10, 3.4, '#4fb5af')                    # muro izquierdo
     caja(5.6, 0, 0, 0.2, 10, 3.4, '#4fb5af')                     # muro derecho
     caja(0.5, 0, 3.4, 10.6, 10, 0.1, '#f7fafc')                  # techo
-    bpy.ops.object.light_add(type='AREA', location=(0.5, 1.0, 3.2))
-    bpy.context.object.data.energy = 250
-    bpy.context.object.data.size = 4
+    lampara('AREA', (0.5, 1.0, 3.2), 250, 4.5)
     caja(0.6, 4.48, 0, 11, 0.05, 0.15, '#f7fafc')                # guardapolvo
     # Ventana con cortinas
     caja(-1.2, 4.47, 1.2, 1.6, 0.04, 1.3, '#bfe7f7', rough=0.2)
@@ -362,8 +356,7 @@ def habitacion():
     cil(2.2, 4.1, 0.6, 0.08, 0.35, '#e2e8f0')
     bpy.ops.mesh.primitive_cone_add(vertices=16, radius1=0.25, radius2=0.15, depth=0.3, location=(2.2, 4.1, 1.08))
     bpy.context.object.data.materials.append(mat('#f6e05e', 0.5))
-    bpy.ops.object.light_add(type='POINT', location=(2.2, 4.0, 1.0))
-    bpy.context.object.data.energy = 60
+    lampara('POINT', (2.2, 4.0, 1.0), 60, 0.15)
     # Alfombra, póster y planta
     caja(0.6, 1.0, 0.004, 3.0, 2.0, 0.01, '#805ad5')
     caja(0.6, 1.0, 0.012, 2.6, 1.6, 0.006, '#b794f4')

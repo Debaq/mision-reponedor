@@ -276,7 +276,7 @@ def zona_pantalla(cam, x0, y0, x1, y1, alto):
     return envolvente([proyectar(cam, p) for p in esquinas])
 
 
-escena(W, H)
+escena(W, H, sol_rot=(42, 18, -30))   # vista isométrica: su propia dirección de sol
 piso_ajedrez(X0, Y0, X1, Y1, '#f3e9d8', '#e6d8bf', 1.0)
 bpy.ops.mesh.primitive_plane_add(location=(0, 0, -0.02))
 suelo = bpy.context.object

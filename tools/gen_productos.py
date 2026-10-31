@@ -4,9 +4,12 @@ No se usa directo: lo llama tools/productos.py (npm run productos), que además
 recorta y reduce los renders a 128 px como los productos de Kenney.
 Uso interno:  blender -b -P tools/gen_productos.py -- <carpeta> [id ...]
 """
-import math, sys
+import math, pathlib, sys
 import bpy
 from mathutils import Vector
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import bl_util  # noqa: E402
 
 args = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
 OUT = args[0] if args else '/tmp'
@@ -134,21 +137,10 @@ MODELOS = {'detergente': detergente, 'cloro': cloro, 'lavaloza': lavaloza, 'pape
 
 
 def escena():
-    s = bpy.context.scene
-    s.render.engine = 'BLENDER_EEVEE_NEXT' if 'BLENDER_EEVEE_NEXT' in [e.identifier for e in bpy.types.RenderSettings.bl_rna.properties['engine'].enum_items] else 'BLENDER_EEVEE'
-    s.render.film_transparent = True
-    s.render.resolution_x = s.render.resolution_y = 512
-    s.view_settings.view_transform = 'Standard'
-    w = s.world or bpy.data.worlds.new('w')
-    s.world = w
-    w.use_nodes = True
-    w.node_tree.nodes['Background'].inputs['Color'].default_value = (1, 1, 1, 1)
-    w.node_tree.nodes['Background'].inputs['Strength'].default_value = 0.45
-    # Sol desde arriba a la izquierda: cara superior clara, frente medio, costado derecho más oscuro.
-    bpy.ops.object.light_add(type='SUN', rotation=(math.radians(40), math.radians(-25), math.radians(-35)))
-    sol = bpy.context.object
-    sol.data.energy = 3.4
-    sol.data.angle = math.radians(10)
+    # Luz común del juego (bl_util), con el sol desde arriba a la izquierda: cara superior clara,
+    # frente medio, costado derecho más oscuro.
+    bl_util.escena(512, 512, fondo='#ffffff', sol_rot=(40, -25, -35), sol=3.4, ambiente=0.45)
+    bpy.context.scene.render.film_transparent = True
 
 
 def camara(objs):

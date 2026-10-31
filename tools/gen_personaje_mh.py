@@ -697,7 +697,8 @@ def camara():
 
 
 def preparar():
-    escena(ANCHO_PX, ALTO_PX, fondo='#ffffff', sol_rot=(50, 10, 40), sol=2.0, ambiente=0.5)
+    # Misma luz que los fondos de frente (bl_util.LUZ_SOL), para que no se vea pegado.
+    escena(ANCHO_PX, ALTO_PX, fondo='#ffffff', sol=2.0, ambiente=0.5)
     s = bpy.context.scene
     s.render.film_transparent = True
     s.eevee.taa_render_samples = 16
