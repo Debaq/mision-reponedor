@@ -2,6 +2,7 @@
   "name": "mision-reponedor",
   "private": true,
   "version": "0.1.0",
+  "sitio": "",
   "type": "module",
   "scripts": {
     "dev": "vite",

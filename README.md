@@ -22,6 +22,8 @@ Cada build lleva una versión automática: `versión de package.json + commit de
 2. Opcional: `npm version patch` para subir el número (0.1.0 → 0.1.1).
 3. `npm run build` y subir la carpeta `dist/` completa.
 
+**Vista previa al compartir el link** (WhatsApp, Facebook, Telegram): la imagen es `public/compartir.jpg` (1200×630) y los textos están en las etiquetas `og:` de `index.html`. WhatsApp solo muestra la imagen si tiene la dirección completa: poner la dirección pública del juego en `"sitio"` de `package.json` (por ejemplo `"https://mi-servidor.cl/reponedor/"`) antes del build, o usar `URL_SITIO=https://... npm run build`. WhatsApp guarda la vista previa un tiempo: si se cambia la imagen, conviene cambiarle el nombre.
+
 No hace falta que nadie fuerce la recarga:
 
 - Al abrir, el juego consulta `version.json` sin caché. Si hay una versión más nueva, recarga solo.
