@@ -9,6 +9,7 @@ import { FLUJO, siguiente } from '../lib/flujo.js';
 import { estrellasGuardadas } from '../lib/perfil.js';
 import { CHALECOS } from '../lib/premios.js';
 import { sombraPuntos } from '../lib/sombras.js';
+import { campoTexto } from '../lib/movil.js';
 
 // Categorías del editor: voz, nombre, parte que se ve en la miniatura e ícono de la pestaña.
 // Ícono: capa del atlas del personaje y su color.
@@ -92,12 +93,8 @@ export default class Avatar extends Phaser.Scene {
       this.listo = flechaSiguiente(this, () => this.validarTrabajo());
       voz.decir(FLUJO[estado.paso]?.turno === 2 ? 'vestir_t2' : 'vestir_intro');
     } else {
-      this.input_ = this.add.dom(960, 165).createFromHTML('<input class="nombre" maxlength="14" placeholder="Tu nombre" autocomplete="off">');
-      this.input_.setScale(0.8);
-      const campo = this.input_.node.querySelector('input');
-      campo.value = estado.nombre;
+      const campo = campoTexto(this, 960, 165, 304, 62, { maxLength: 14, placeholder: 'Tu nombre', value: estado.nombre });
       campo.addEventListener('focus', () => voz.decir('avatar_nombre'));
-      campo.addEventListener('keydown', (e) => e.stopPropagation());
       campo.addEventListener('input', () => mostrarEstrellas(campo.value.trim()));
       mostrarEstrellas(campo.value.trim());
       this.listo = flechaSiguiente(this, () => this.validarPersonaje(campo));
