@@ -111,14 +111,66 @@ export default class Mapa extends Phaser.Scene {
     }
     this.listo = true;
     this.ind.ocultar();
-    const [x, y] = z.centro;
-    marca(this, x, y - 70, true);
+    const [mx, my] = z.centro;
+    marca(this, mx, my - 70, true);
     sfx(this, 'bien');
     voz.decir('zona_' + id);
-    // Caminar hasta el lugar elegido.
-    caminar(this.yo, true);
-    this.tweens.add({ targets: this.yo, x, y: y - 30, duration: 1300, ease: 'Sine.easeInOut', onComplete: () => caminar(this.yo, false) });
-    await new Promise((r) => this.time.delayedCall(1600, r));
+    // Caminar hasta el lugar elegido por los pasillos (no en línea recta sobre las góndolas).
+    await this.recorrer(ruta(this.destino === 'bodega' ? 'entrada' : 'bodega_puerta', id));
+    await new Promise((r) => this.time.delayedCall(300, r));
     siguiente(this);
   }
+
+  // Camina de punto en punto a velocidad pareja, mirando hacia donde va.
+  recorrer(puntos) {
+    caminar(this.yo, true);
+    return new Promise((fin) => {
+      const paso = (i) => {
+        if (i >= puntos.length) {
+          caminar(this.yo, false);
+          fin();
+          return;
+        }
+        const [x, y] = puntos[i];
+        const dx = x - this.yo.x;
+        if (Math.abs(dx) > 2) this.yo.cuerpo.scaleX = Math.sign(dx);
+        const largo = Math.hypot(dx, y - PIE - this.yo.y);
+        this.tweens.add({ targets: this.yo, x, y: y - PIE, duration: Math.max(80, largo / VELOCIDAD * 1000), onComplete: () => paso(i + 1) });
+      };
+      paso(0);
+    });
+  }
+}
+
+// Distancia de los pies al centro del personaje en el mapa, y velocidad al caminar (px/s).
+const PIE = 30;
+const VELOCIDAD = 230;
+
+// Camino más corto (Dijkstra) por la red de caminos del mapa, de un nodo a otro: lista de puntos.
+function ruta(desde, hasta) {
+  const { nodos, aristas } = MAPA.caminos;
+  const vecinos = {};
+  for (const [a, b] of aristas) {
+    (vecinos[a] ||= []).push(b);
+    (vecinos[b] ||= []).push(a);
+  }
+  const dist = { [desde]: 0 };
+  const previo = {};
+  const pendientes = new Set(Object.keys(nodos));
+  while (pendientes.size) {
+    let u = null;
+    for (const n of pendientes) if (dist[n] !== undefined && (u === null || dist[n] < dist[u])) u = n;
+    if (u === null || u === hasta) break;
+    pendientes.delete(u);
+    for (const v of vecinos[u] || []) {
+      const d = dist[u] + Math.hypot(nodos[u][0] - nodos[v][0], nodos[u][1] - nodos[v][1]);
+      if (dist[v] === undefined || d < dist[v]) {
+        dist[v] = d;
+        previo[v] = u;
+      }
+    }
+  }
+  const camino = [];
+  for (let n = hasta; n; n = previo[n]) camino.unshift(nodos[n]);
+  return camino.slice(1);
 }

@@ -70,8 +70,6 @@ export default class Supervisor extends Phaser.Scene {
     fondoRender(this, 'esc_tienda', 'SUPERMERCADO EL BARRIO');
     this.jefe = crearPersonaje(this, 1070, enPiso(), SUPERVISOR, ESCALA);
     this.yo = crearPersonaje(this, 210, enPiso(), estado.avatar, ESCALA);
-    this.add.text(1070, 196, 'Don Jorge', estiloTexto(24, '#ffffff', { backgroundColor: '#6b46c1', padding: { x: 10, y: 4 } })).setOrigin(0.5);
-    this.add.text(210, 196, estado.nombre || 'Tú', estiloTexto(24, '#ffffff', { backgroundColor: '#2f855a', padding: { x: 10, y: 4 } })).setOrigin(0.5);
 
     // El que habla se mueve un poco.
     this.alHablar = (id, texto, quien) => {

@@ -267,5 +267,39 @@ for id_, z in zonas_pas.items():
                   'centro': proyectar(cam, ((x0 + x1) / 2, (y0 + y1) / 2, 0)),
                   'letrero': proyectar(cam, z['letrero'])}
 datos['entrada'] = {'centro': proyectar(cam, (0, Y0 + 1.0, 0))}
+
+
+def caminos():
+    """Red de caminos por el piso (para que el personaje camine por los pasillos y no en diagonal por
+    encima de las góndolas): nodos en metros y aristas. Cada pasillo se recorre por su centro, entre
+    sus dos góndolas, entrando por los extremos."""
+    mx, _ = PASILLO_T
+    xl, xm, xr = X0 + 7.2, (PASILLO_C[0][0] + mx + PASILLO_C[1][0] - mx) / 2, X1 - 1.1   # corredores verticales
+    yf, ym = Y0 + 3.2, (PASILLO_C[0][1] + PASILLO_C[2][1]) / 2                           # frente y centro
+    bx0, by0, bx1, by1 = BODEGA
+    nodos = {'entrada': (0, Y0 + 1.0), 'f0': (0, yf), 'fl': (xl, yf), 'fm': (xm, yf), 'fr': (xr, yf),
+             'ml': (xl, ym), 'mm': (xm, ym), 'mr': (xr, ym),
+             'bodega_puerta': (bx1 + 0.8, by0 - 0.6), 'bodega_entra': (bx1 - 1.0, by0 + 1.2),
+             'bodega': ((bx0 + bx1) / 2, (by0 + by1) / 2)}
+    aristas = [('entrada', 'f0'), ('f0', 'fl'), ('f0', 'fm'), ('fm', 'fr'),
+               ('ml', 'mm'), ('mm', 'mr'), ('ml', 'bodega_puerta'), ('bodega_puerta', 'bodega_entra'),
+               ('bodega_entra', 'bodega')]
+    filas = sorted({cy for _, cy in PASILLO_C})
+    for col, x in (('l', xl), ('m', xm), ('r', xr)):
+        cadena = ['f' + col] + [f'{col}{k}' for k in range(len(filas))]
+        for k, cy in enumerate(filas):
+            nodos[f'{col}{k}'] = (x, cy)
+        # el corredor central (y = ym) queda entre las dos filas
+        cadena.insert(2, 'm' + col)
+        aristas += list(zip(cadena, cadena[1:]))
+    for id_, (cx, cy) in zip(PASILLOS, PASILLO_C):
+        k = filas.index(cy)
+        izq, der = ('l', 'm') if cx < xm else ('m', 'r')
+        nodos[id_] = (cx, cy)
+        aristas += [(id_, f'{izq}{k}'), (id_, f'{der}{k}')]
+    return {'nodos': {n: proyectar(cam, (x, y, 0)) for n, (x, y) in nodos.items()}, 'aristas': aristas}
+
+
+datos['caminos'] = caminos()
 (RAIZ / 'src' / 'data' / 'mapa.json').write_text(json.dumps(datos, ensure_ascii=False, indent=1))
 print('mapa listo')

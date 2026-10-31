@@ -143,8 +143,9 @@ function armar(scene, c) {
     c.capas[parte] = img;
   }
 
-  // Globo de diálogo sobre la cabeza (visible mientras habla): deja claro quién habla.
-  const globo = scene.add.container(60, PIES_LOCAL - 640).setVisible(false);
+  // Globo de diálogo arriba y al lado de la cabeza (visible mientras habla): deja claro quién habla
+  // sin tapar la cara.
+  const globo = scene.add.container(150, PIES_LOCAL - 770).setVisible(false);
   const g = scene.add.graphics();
   g.fillStyle(0x000000, 0.15).fillRoundedRect(-86, -50, 180, 104, 40);
   g.fillStyle(0xffffff, 1).fillRoundedRect(-90, -56, 180, 104, 40).fillTriangle(-50, 40, -10, 40, -60, 84);

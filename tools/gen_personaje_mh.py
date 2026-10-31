@@ -16,6 +16,7 @@ import sys
 import bmesh
 import bpy
 from mathutils import Matrix, Vector
+from mathutils.bvhtree import BVHTree
 from mathutils.geometry import intersect_point_line
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
@@ -162,6 +163,30 @@ def mover_a(o, col):
     col.objects.link(o)
 
 
+def alisar_pecho(o, veces=40):
+    """Cuerpo con menos detalle: el busto sin punta (antes de las expresiones, que se guardan como
+    shape keys sobre esta malla). La ropa sale de este mismo cuerpo, así que tampoco la marca."""
+    pecho = {g.index for g in o.vertex_groups if g.name.startswith('breast')}
+    bm = bmesh.new()
+    bm.from_mesh(o.data)
+    capa = bm.verts.layers.deform.active
+    peso = {v: max((w for i, w in v[capa].items() if i in pecho), default=0.0) for v in bm.verts}
+    zona = [v for v in bm.verts if peso[v] > 0.05]
+    if not zona:
+        bm.free()
+        return
+    # Se acerca el busto al plano del pecho (el borde de la zona, por delante), según el peso del hueso.
+    borde = [v.co.y for v in zona if any(peso[e.other_vert(v)] <= 0.05 for e in v.link_edges) and v.co.y < 0]
+    plano = sorted(borde)[len(borde) // 2] if borde else max(v.co.y for v in zona)
+    for v in zona:
+        if v.co.y < plano:
+            v.co.y = plano + (v.co.y - plano) * (1 - 0.55 * min(1.0, peso[v] * 1.5))
+    for _ in range(veces):
+        bmesh.ops.smooth_vert(bm, verts=zona, factor=0.5, use_axis_x=True, use_axis_y=True, use_axis_z=True)
+    bm.to_mesh(o.data)
+    bm.free()
+
+
 class Cuerpo:
     def __init__(self, entrada, nombre):
         self.nombre = nombre
@@ -185,6 +210,7 @@ class Cuerpo:
         # Peinados y zapatos (cada FBX trae su propio cuerpo: se toma solo la malla del accesorio)
         for o in self.mallas.values():
             suavizar(o, subdividir=(o == self.cuerpo))
+        alisar_pecho(self.cuerpo)
         for juego, mh in PELOS.items():
             for o in importar(entrada / f'{nombre}_pelo_{mh}.fbx'):
                 if o.type == 'MESH' and o.name.startswith(mh):
@@ -243,8 +269,9 @@ class Cuerpo:
 BRAZOS_ABAJO = [('upperarm01.X', (0, 1, 0), 22), ('lowerarm01.X', (0, 1, 0), 5)]
 POSES = {
     'quieto': BRAZOS_ABAJO,
-    'habla': [('upperarm01.L', (0, 1, 0), 22), ('lowerarm01.L', (0, 1, 0), 5),
-              ('upperarm01.R', (0, -1, 0), 14), ('upperarm01.R', (1, 0, 0), -30), ('lowerarm01.R', (1, 0, 0), -65)],
+    # gesticula con la mano izquierda: la derecha queda libre para el portapapeles del supervisor
+    'habla': [('upperarm01.R', (0, -1, 0), 22), ('lowerarm01.R', (0, -1, 0), 5),
+              ('upperarm01.L', (0, 1, 0), 14), ('upperarm01.L', (1, 0, 0), -30), ('lowerarm01.L', (1, 0, 0), -65)],
     'feliz': [('upperarm01.X', (0, 1, 0), -95), ('lowerarm01.X', (0, 1, 0), -12), ('neck01', (1, 0, 0), -8)],
     'triste': BRAZOS_ABAJO + [('spine01', (1, 0, 0), 6), ('neck01', (1, 0, 0), 20)],
     'camina1': BRAZOS_ABAJO + [('upperleg01.L', (1, 0, 0), -22), ('lowerleg01.L', (1, 0, 0), 15),
@@ -301,11 +328,16 @@ def expresiones(c, entrada):
                 k.data[i].co = base[i].co + inv @ d
 
 
+# La boca abierta se exagera: en el juego la cara es chica y al hablar tiene que notarse.
+INTENSIDAD = {'abierta': 1.7}
+
+
 def poner_expresion(c, juego):
     for o in [c.cuerpo, *c.col('cejas').objects, *c.col('rasgos').objects, *c.col('cara').objects]:
         if o.data.shape_keys:
             for kb in o.data.shape_keys.key_blocks[1:]:
-                kb.value = 1.0 if kb.name == juego else 0.0
+                kb.slider_max = 2.0
+                kb.value = INTENSIDAD.get(juego, 1.0) if kb.name == juego else 0.0
     bpy.context.view_layer.update()
 
 
@@ -350,9 +382,22 @@ def capa_cara(c):
     s_.levels = s_.render_levels = 1
 
 
-def ropa(c, nombre, col, huesos, grosor, color=BLANCO, rough=0.7, quitar=None):
-    """Prenda sacada del propio cuerpo: se conservan los vértices que mueven los huesos que cubre
-    (con `(desde, hasta)` solo ese tramo del hueso) y se infla `grosor` metros. Calza en cualquier pose."""
+BRAZO = ('upperarm01', 'upperarm02', 'lowerarm01', 'lowerarm02', 'wrist')
+
+
+def eje_brazo(c, lado):
+    """Hombro, codo y muñeca (reposo) del brazo `lado` ('L' o 'R')."""
+    b = c.arm.data.bones
+    return (b['upperarm01.' + lado].head_local, b['lowerarm01.' + lado].head_local, b['wrist.' + lado].head_local)
+
+
+def ropa(c, nombre, col, huesos, grosor, color=BLANCO, rough=0.7, manga=None, cortes=(), suave=6):
+    """Prenda sacada del propio cuerpo: se conservan los vértices que mueven los huesos que cubre, se
+    alisa (sin pezones, ombligo ni músculos marcados, como una tela), se infla `grosor` metros y se
+    recorta con planos para que los bordes queden rectos. Calza en cualquier pose.
+    - manga: fracción del brazo que cubre (0 = sisa en el hombro, 0.5 = codo, 1 = muñeca).
+    - cortes: (punto, normal, borrar) -> se corta con ese plano y se borran las caras del torso cuyo
+      centro cumple borrar(centro)."""
     me = c.cuerpo.data.copy()
     o = bpy.data.objects.new(nombre, me)
     col.objects.link(o)
@@ -360,32 +405,80 @@ def ropa(c, nombre, col, huesos, grosor, color=BLANCO, rough=0.7, quitar=None):
     if me.shape_keys:
         o.shape_key_clear()
     info = hueso_dominante(c.cuerpo)
-    huesos_arm = c.arm.data.bones
     bm = bmesh.new()
     bm.from_mesh(me)
     bm.verts.ensure_lookup_table()
+    # Lado del brazo de cada vértice (+1 izquierdo, -1 derecho, 0 torso o piernas)
+    brazo = bm.verts.layers.float.new('brazo')
+    pecho = []
     borrar = []
     for v in bm.verts:
-        h, co = info[v.index]
+        h, _ = info[v.index]
         base = h.rsplit('.', 1)[0] if h and h[-2:] in ('.L', '.R') else h
-        rango = huesos.get(base)
-        if rango is None:
+        if base not in huesos:
             borrar.append(v)
-            continue
-        if not isinstance(rango, tuple):
-            rango = (0.0, rango)
-        b = huesos_arm[h]
-        _, t = intersect_point_line(co, b.head_local, b.tail_local)
-        t = min(max(t, 0.0), 1.0)
-        if not (rango[0] <= t <= rango[1]) or (quitar and quitar(co)):
-            borrar.append(v)
+        elif base in BRAZO:
+            v[brazo] = 1.0 if h.endswith('.L') else -1.0
+        elif base == 'breast':
+            pecho.append(v)
     bmesh.ops.delete(bm, geom=borrar, context='VERTS')
-    borde = list({v for e in bm.edges if e.is_boundary for v in e.verts})
-    for _ in range(3):
-        bmesh.ops.smooth_vert(bm, verts=borde, factor=0.6, use_axis_x=True, use_axis_y=True, use_axis_z=True)
+    interior = [v for v in bm.verts if not v.is_boundary]
+    for _ in range(suave):
+        bmesh.ops.smooth_vert(bm, verts=interior, factor=0.5, use_axis_x=True, use_axis_y=True, use_axis_z=True)
+    # La tela no marca el busto: se alisa aparte (pecho y alrededor) mucho más.
+    zona = {n for v in pecho if v.is_valid for e in v.link_edges for n in e.verts} | {v for v in pecho if v.is_valid}
+    for _ in range(25 if zona else 0):
+        bmesh.ops.smooth_vert(bm, verts=list(zona), factor=0.5, use_axis_x=True, use_axis_y=True, use_axis_z=True)
     bm.normal_update()
     for v in bm.verts:
         v.co += v.normal * grosor
+    # Al alisar, la tela puede quedar dentro del cuerpo: se empuja afuera lo que quedó muy pegado.
+    arbol = arbol_cuerpo(c)
+    for v in bm.verts:
+        p_, n_, _, _ = arbol.find_nearest(v.co)
+        if p_ is not None and (v.co - p_).dot(n_) < grosor:
+            v.co = p_ + n_ * grosor
+
+    # Primero todos los cortes (planos) y después se borra: si no, lo borrado por un plano deja
+    # dientes donde el siguiente aún no cortaba.
+    planos, quitar = [], []
+    lado_de = lambda f: sum(v[brazo] for v in f.verts) / len(f.verts)  # noqa: E731
+    if manga is not None:
+        for lado, s_ in (('L', 1), ('R', -1)):
+            hombro, codo, muneca = eje_brazo(c, lado)
+            if manga <= 0.5:
+                p_, d = hombro.lerp(codo, manga * 2), (codo - hombro).normalized()
+            else:
+                p_, d = codo.lerp(muneca, manga * 2 - 1), (muneca - codo).normalized()
+            planos.append((p_, d))
+            quitar.append(lambda f, p_=p_, d=d, s_=s_: lado_de(f) * s_ > 0.5 and (f.calc_center_median() - p_).dot(d) > 0)
+    for corte in cortes:
+        punto, normal, q = corte[:3]
+        todo = len(corte) > 3 and corte[3]
+        planos.append((Vector(punto), Vector(normal)))
+        quitar.append(lambda f, q=q, todo=todo: (todo or abs(lado_de(f)) < 0.5) and q(f.calc_center_median()))
+    for punto, normal in planos:
+        geom = bm.verts[:] + bm.edges[:] + bm.faces[:]
+        bmesh.ops.bisect_plane(bm, geom=geom, dist=0.0005, plane_co=punto, plane_no=normal)
+    bmesh.ops.delete(bm, geom=[f for f in bm.faces if any(q(f) for q in quitar)], context='FACES')
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
+    # Islas sueltas que dejaron los cortes (pedacitos): fuera.
+    vistas = set()
+    for f in bm.faces:
+        if f in vistas:
+            continue
+        isla, pila = [], [f]
+        vistas.add(f)
+        while pila:
+            g = pila.pop()
+            isla.append(g)
+            for e in g.edges:
+                for h in e.link_faces:
+                    if h not in vistas:
+                        vistas.add(h)
+                        pila.append(h)
+        if len(isla) < 40:
+            bmesh.ops.delete(bm, geom=isla, context='FACES')
     bm.to_mesh(me)
     bm.free()
     me.materials.clear()
@@ -403,23 +496,40 @@ def ropa(c, nombre, col, huesos, grosor, color=BLANCO, rough=0.7, quitar=None):
     return o
 
 
-TORSO = {'spine04': 1, 'spine03': 1, 'spine02': 1, 'spine01': 1, 'breast': 1,
-         'clavicle': 1, 'shoulder01': 1, 'neck01': 0.25}
+def arbol_cuerpo(c):
+    """Superficie del cuerpo contra la que se empuja la ropa."""
+    if not hasattr(c, 'arbol'):
+        bm = bmesh.new()
+        bm.from_mesh(c.cuerpo.data)
+        c.arbol = BVHTree.FromBMesh(bm)
+        bm.free()
+    return c.arbol
+
+
+def z_hueso(c, hueso, extremo='head'):
+    return getattr(c.arm.data.bones[hueso], extremo + '_local').z
+
+
+TORSO = ('spine05', 'spine04', 'spine03', 'spine02', 'spine01', 'breast', 'clavicle', 'shoulder01', 'neck01', 'neck02',
+         'pelvis', 'root')
 
 
 def polera(c, manga):
-    huesos = dict(TORSO)
-    huesos.update({'upperarm01': 1, 'upperarm02': 0.25})
-    if manga == 'larga':
-        huesos.update({'upperarm02': 1, 'lowerarm01': 1, 'lowerarm02': 0.9})
-    ropa(c, 'polera_' + manga, c.col('polera_' + manga), huesos, 0.006)
+    """Polera suelta, por fuera del pantalón: bastilla bajo la cintura y cuello redondo."""
+    zb = z_hueso(c, 'spine05') + 0.01
+    zc = z_hueso(c, 'neck01')
+    cortes = [((0, 0, zb), (0, 0, -1), lambda p: p.z < zb),
+              ((0, 0, zc), (0, -0.45, 1), lambda p: p.z - zc - 0.45 * p.y > 0)]
+    ropa(c, 'polera_' + manga, c.col('polera_' + manga), TORSO + BRAZO, 0.016,
+         manga=0.42 if manga == 'corta' else 0.97, cortes=cortes, suave=6)
 
 
 def pantalon(c, largo):
-    huesos = {'root': 1, 'pelvis': 1, 'spine05': 1, 'spine04': 0.35, 'upperleg01': 1, 'upperleg02': 0.4}
-    if largo == 'largo':
-        huesos.update({'upperleg02': 1, 'lowerleg01': 1, 'lowerleg02': 0.85})
-    ropa(c, 'pantalon_' + largo, c.col('pantalon_' + largo), huesos, 0.008)
+    zc = z_hueso(c, 'spine04') + 0.035
+    zp = 0.07 if largo == 'largo' else z_hueso(c, 'lowerleg01.L') + 0.1
+    cortes = [((0, 0, zc), (0, 0, 1), lambda p: p.z > zc), ((0, 0, zp), (0, 0, -1), lambda p: p.z < zp)]
+    huesos = ('root', 'pelvis', 'spine05', 'spine04', 'upperleg01', 'upperleg02', 'lowerleg01', 'lowerleg02')
+    ropa(c, 'pantalon_' + largo, c.col('pantalon_' + largo), huesos, 0.01, cortes=cortes, suave=4)
 
 
 CHALECOS = {
@@ -438,11 +548,18 @@ def frente_y(c, z, x=0.0):
 def chaleco(c, variante):
     color, franja, lineas = CHALECOS[variante]
     col = c.col('chaleco_' + variante)
-    huesos = {'spine05': (0.5, 1), 'spine04': 1, 'spine03': 1, 'spine02': 1, 'spine01': 1, 'breast': 1,
-              'clavicle': 1, 'shoulder01': 0.5, 'upperarm01': 0.0, 'neck01': 0.1}
-    z0 = c.arm.data.bones['spine01'].head_local.z - 0.03
-    abertura = lambda co: co.y < 0 and co.z > z0 and abs(co.x) < 0.008 + (co.z - z0) * 0.25  # noqa: E731
-    o = ropa(c, 'chaleco', col, huesos, 0.016, color, 0.75, abertura)
+    # Bastilla a la cadera, sisas en el hombro, cuello y escote en V con bordes rectos.
+    zb = z_hueso(c, 'spine05') + 0.03
+    zc = z_hueso(c, 'neck01') - 0.005
+    z0, a_, k = z_hueso(c, 'spine01') - 0.04, 0.012, 0.3
+    en_v = lambda p: p.y < 0 and p.z > z0 and abs(p.x) < a_ + k * (p.z - z0)  # noqa: E731
+    cortes = [((0, 0, zb), (0, 0, -1), lambda p: p.z < zb),
+              ((0, 0, zc), (0, -0.3, 1), lambda p: p.z - zc - 0.3 * p.y > 0),
+              ((a_, 0, z0), (1, 0, -k), en_v), ((-a_, 0, z0), (1, 0, k), en_v)]
+    # Sisas: planos verticales a la altura del hombro (como una pechera), brazos fuera.
+    xs = c.arm.data.bones['upperarm01.L'].head_local.x - 0.012
+    cortes += [((xs, 0, 0), (1, 0, 0), lambda p: p.x > xs, True), ((-xs, 0, 0), (-1, 0, 0), lambda p: p.x < -xs, True)]
+    o = ropa(c, 'chaleco', col, TORSO + BRAZO, 0.034, color, 0.75, cortes=cortes, suave=6)
     zf = c.arm.data.bones['spine03'].head_local.z + 0.01
     for z, alto, cl, extra in ((zf, 0.05, franja, 0.006), (zf - 0.027, 0.006, lineas, 0.009), (zf + 0.027, 0.006, lineas, 0.009)):
         b = o.copy()
@@ -473,15 +590,15 @@ def chaleco(c, variante):
         b.data.materials.append(mat(cl, 0.35))
         a = b.modifiers.new('esqueleto', 'ARMATURE')
         a.object = c.arm
-    # Logo (y estrella en los de reconocimiento) en el pecho
-    zl = c.arm.data.bones['spine01'].head_local.z - 0.02
-    for x, color_, forma in ((-0.085, '#ffffff', 'disco'), (0.085, '#f6c343' if variante != 'oro' else '#ffffff', 'estrella')):
+    # Logo (y estrella en los de reconocimiento) arriba, junto al cuello del chaleco (no sobre el busto)
+    zl = z_hueso(c, 'neck01') - 0.085
+    for x, color_, forma in ((-0.088, '#ffffff', 'disco'), (0.088, '#f6c343' if variante != 'oro' else '#ffffff', 'estrella')):
         if forma == 'estrella' and variante == 'basico':
             continue
-        y = frente_y(c, zl, x) - 0.02
-        pieza = disco(0.024) if forma == 'disco' else estrella(0.028)
+        y = frente_y(c, zl, x) - 0.042
+        pieza = disco(0.02) if forma == 'disco' else estrella(0.025)
         pieza.location = c.arm.matrix_world @ Vector((x, y, zl))
-        pieza.rotation_euler = (math.radians(90), 0, 0)
+        pieza.rotation_euler = (math.radians(75), 0, 0)  # inclinada como la parte alta del pecho
         pieza.data.materials.append(mat(color_, 0.4))
         mover_a(pieza, col)
         a_hueso(pieza, c.arm, 'spine01')
@@ -546,7 +663,7 @@ def accesorios(c):
     # Corbata: nudo bajo el cuello y hoja por el pecho, al frente
     zc = c.arm.data.bones['neck01'].head_local.z - 0.02
     for z, alto, ancho in ((zc, 0.03, 0.034), (zc - 0.15, 0.26, 0.045)):
-        y = frente_y(c, z) - 0.012
+        y = frente_y(c, z) - 0.02
         bpy.ops.mesh.primitive_cube_add(location=aw @ Vector((0, y, z)))
         t = bpy.context.object
         t.scale = (ancho / 2, 0.006, alto / 2)
@@ -604,12 +721,11 @@ def armar(entrada, nombre):
 def capas(c):
     pelos = [n for n in c.cols if n.startswith('pelo_')]
     d = {'piel': [], 'zapatos': [], 'pantalon_largo': ['piel'], 'pantalon_corto': ['piel'],
-         # el pantalón va encima de la polera en la cintura (polera adentro)
-         'polera_corta': ['piel', 'pantalon_largo'], 'polera_larga': ['piel', 'pantalon_largo'],
+          'polera_corta': ['piel'], 'polera_larga': ['piel'],
          **{'chaleco_' + v: ['piel', 'polera_larga'] for v in CHALECOS},
          **{p: ['piel', 'polera_larga', 'chaleco_basico'] for p in pelos}}
     if 'lentes' in c.cols:
-        d.update({'corbata': ['piel', 'polera_larga'], 'lentes': ['piel'], 'tabla': []})
+        d.update({'corbata': ['piel', 'polera_larga', 'chaleco_basico'], 'lentes': ['piel'], 'tabla': []})
     return d
 
 
@@ -665,9 +781,10 @@ def preview(entrada, salida):
     """Vista previa vestida: hombre y mujer en varias poses y expresiones, con colores de prueba."""
     salida = pathlib.Path(salida)
     tintes = {'piel': '#c68642', 'cara': '#c68642', 'zapatos': '#2d3748', 'polera_corta': '#e53e3e',
-              'polera_larga': '#f7fafc', 'pantalon_largo': '#2c5282', 'pelo_corto': '#3b2a1a', 'pelo_cola': '#1a1a1a',
+              'polera_larga': '#f7fafc', 'pantalon_largo': '#2c5282', 'pelo_corto': '#3b2a1a', 'pelo_cola': '#1a1a1a', 'pelo_melena': '#6b4423',
               'cejas': '#3b2a1a'}
-    for nombre, pelo, chaleco_, polera_ in (('hombre', 'pelo_corto', 'chaleco_basico', 'polera_larga'), ('mujer', 'pelo_cola', 'chaleco_oro', 'polera_corta')):
+    for nombre, pelo, chaleco_, polera_ in (('hombre', 'pelo_corto', 'chaleco_basico', 'polera_larga'), ('mujer', 'pelo_cola', 'chaleco_oro', 'polera_corta'),
+                                            ('nobinario', 'pelo_melena', None, 'polera_corta')):
         bpy.ops.wm.read_factory_settings(use_empty=True)
         _mats.clear()
         preparar()
@@ -693,7 +810,7 @@ def preview(entrada, salida):
         for pose, cara in (('quieto', 'sonrisa'), ('habla', 'abierta'), ('feliz', 'abierta'), ('triste', 'triste')):
             c.posar(pose)
             poner_expresion(c, cara)
-            bpy.context.scene.render.filepath = str(salida.with_name(f'{salida.stem}_{nombre}_{pose}.png'))
+            bpy.context.scene.render.filepath = str(salida.with_name(f'{salida.stem}_{nombre}_{pose}{"" if chaleco_ else "_sin"}.png'))
             bpy.ops.render.render(write_still=True)
 
 

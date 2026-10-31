@@ -23,7 +23,11 @@ PELOS = ['short02', 'short04', 'short01', 'short03', 'afro01', 'bob02', 'long01'
 EXPRESIONES = ['neutra', 'sleep01', 'smile02', 'vocalize01', 'sad01']
 BASE = {'macrodetails/Age': 0.5, 'macrodetails-universal/Muscle': 0.55, 'macrodetails-universal/Weight': 0.5,
         'macrodetails-height/Height': 0.5, 'macrodetails-proportions/BodyProportions': 0.6,
-        'macrodetails/African': 0.34, 'macrodetails/Asian': 0.33, 'macrodetails/Caucasian': 0.33}
+        'macrodetails/African': 0.34, 'macrodetails/Asian': 0.33, 'macrodetails/Caucasian': 0.33,
+        # Cuerpo con menos detalle (la ropa del juego es ajustada): sin pezones, busto redondeado y
+        # pectorales poco marcados.
+        'breast/nipple-size-decr|incr': -1.0, 'breast/nipple-point-decr|incr': -1.0,
+        'breast/breast-point-decr|incr': -0.8, 'torso/torso-muscle-pectoral-decr|incr': -0.5}
 MODELOS = [
     {'nombre': 'hombre', 'modificadores': {**BASE, 'macrodetails/Gender': 1.0}, 'cejas': 'eyebrow001'},
     {'nombre': 'mujer', 'modificadores': {**BASE, 'macrodetails/Gender': 0.0}, 'cejas': 'eyebrow010'},
