@@ -6,6 +6,7 @@ import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { siguiente } from '../lib/flujo.js';
+import { sombraRect } from '../lib/sombras.js';
 import niveles from '../data/niveles.json';
 import pasillos from '../data/pasillos.json';
 import MAPA from '../data/mapa.json';
@@ -69,7 +70,7 @@ export default class Mapa extends Phaser.Scene {
     const c = this.add.container(lx, ly).setDepth(8);
     const ancho = 34 + p.nombre.length * 12 + (p.n ? 34 : 0);
     const g = this.add.graphics();
-    g.fillStyle(0x000000, 0.25).fillRoundedRect(-ancho / 2 + 2, -19 + 4, ancho, 38, 19);
+    sombraRect(g, -ancho / 2 + 1, -19 + 5, ancho, 38, 19, 0.3, 8);
     g.fillStyle(color(p.color), 1).fillRoundedRect(-ancho / 2, -19, ancho, 38, 19);
     g.lineStyle(3, 0xffffff, 1).strokeRoundedRect(-ancho / 2, -19, ancho, 38, 19);
     c.add(g);

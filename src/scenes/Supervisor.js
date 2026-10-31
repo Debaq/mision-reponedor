@@ -7,6 +7,7 @@ import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { siguiente } from '../lib/flujo.js';
+import { sombraRect } from '../lib/sombras.js';
 
 /**
  * Muestra opciones de respuesta como tarjetas. Tocar una tarjeta la lee en voz alta;
@@ -25,7 +26,7 @@ export function elegirRespuesta(scene, opciones, { x = 640, y0 = 150, ancho = 52
       const g = scene.add.graphics();
       const dibujar = (sel) => {
         g.clear();
-        g.fillStyle(0x000000, 0.2).fillRoundedRect(-ancho / 2 + 3, -44 + 5, ancho, 88, 16);
+        sombraRect(g, -ancho / 2 + 2, -44 + 7, ancho, 88, 16, 0.22);
         g.fillStyle(sel ? 0xfff4c2 : 0xffffff, 1).fillRoundedRect(-ancho / 2, -44, ancho, 88, 16);
         g.lineStyle(sel ? 6 : 3, sel ? COLOR.amarillo : 0xb8c4cf, 1).strokeRoundedRect(-ancho / 2, -44, ancho, 88, 16);
       };

@@ -5,7 +5,7 @@
 // Tiene vida: respira, parpadea, gesticula y mueve la boca cuando habla su voz, y el personaje del
 // jugador celebra los aciertos y se pone triste con los errores (eventos 'reaccion' que emite sfx()).
 import { voz } from './voz.js';
-import { sombra } from './sombras.js';
+import { sombra, sombraRect } from './sombras.js';
 
 export const OPCIONES = {
   genero: ['hombre', 'mujer', 'nobinario'],
@@ -151,7 +151,7 @@ function armar(scene, c) {
   // sin tapar la cara.
   const globo = scene.add.container(150, PIES_LOCAL - 770).setVisible(false);
   const g = scene.add.graphics();
-  g.fillStyle(0x000000, 0.15).fillRoundedRect(-86, -50, 180, 104, 40);
+  sombraRect(g, -88, -48, 180, 104, 40, 0.18);
   g.fillStyle(0xffffff, 1).fillRoundedRect(-90, -56, 180, 104, 40).fillTriangle(-50, 40, -10, 40, -60, 84);
   g.lineStyle(5, 0x1f2d3a, 0.15).strokeRoundedRect(-90, -56, 180, 104, 40);
   globo.puntos = [-44, 0, 44].map((px) => scene.add.circle(px, -4, 14, 0x553c9a));

@@ -6,6 +6,7 @@ import { crearPersonaje, SUPERVISOR, enPiso, ESCALA } from '../lib/personaje.js'
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { siguiente } from '../lib/flujo.js';
+import { sombraRect } from '../lib/sombras.js';
 import niveles from '../data/niveles.json';
 import productos from '../data/productos.json';
 
@@ -45,7 +46,7 @@ export default class Lista extends Phaser.Scene {
       const y = 385;
       const c = this.add.container(x, y);
       const g = this.add.graphics();
-      g.fillStyle(0x000000, 0.12).fillRoundedRect(-ancho / 2 + 4, -150 + 6, ancho, 300, 20);
+      sombraRect(g, -ancho / 2 + 2, -150 + 10, ancho, 300, 20, 0.24, 16);
       g.fillStyle(0xffffff, 1).fillRoundedRect(-ancho / 2, -150, ancho, 300, 20);
       g.lineStyle(5, BORDES[i % BORDES.length], 1).strokeRoundedRect(-ancho / 2, -150, ancho, 300, 20);
       const nombre = this.add.text(0, -118, productos[item.p].nombre, estiloTexto(24, '#1f2d3a')).setOrigin(0.5);

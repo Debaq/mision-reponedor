@@ -8,6 +8,7 @@ import { estado, sumarError } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { partirReloj, siguiente } from '../lib/flujo.js';
+import { sombraRect } from '../lib/sombras.js';
 import niveles from '../data/niveles.json';
 import productos from '../data/productos.json';
 import ESCENARIOS from '../data/escenarios.json';
@@ -59,7 +60,7 @@ export default class Bodega extends Phaser.Scene {
     const c = this.add.container(x, y);
     // La caja está en el render; aquí va la etiqueta con el dibujo del producto (y un producto asomado).
     const g = this.add.graphics();
-    g.fillStyle(0x000000, 0.15).fillRoundedRect(-40, -18, 84, 66, 8);
+    sombraRect(g, -41, -18, 84, 66, 8, 0.2, 8);
     g.fillStyle(0xffffff, 1).fillRoundedRect(-42, -22, 84, 66, 8);
     g.lineStyle(2, 0xb8c4cf, 1).strokeRoundedRect(-42, -22, 84, 66, 8);
     c.add([this.add.image(26, -52, 'prod_' + p).setDisplaySize(44, 44), g, this.add.image(0, 11, 'prod_' + p).setDisplaySize(60, 60)]);

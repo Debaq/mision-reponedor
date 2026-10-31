@@ -4,6 +4,7 @@ import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { estado, totales } from '../lib/estado.js';
 import { destello, dibujarReloj } from '../lib/ui.js';
+import { sombraCirculo } from '../lib/sombras.js';
 
 const COLOR_VOZ = { guia: COLOR.azul, jugador: COLOR.verde, jugadora: COLOR.verde, jugadore: COLOR.verde, jefe: 0x6b46c1, cliente: 0xb7791f };
 const VOZ_PREMIO = { 3: 'premio_3', 2: 'premio_2', 1: 'premio_1' };
@@ -28,7 +29,7 @@ export default class Hud extends Phaser.Scene {
     // Botón parlante: repite la última instrucción.
     this.parlante = this.add.container(70, y);
     const g = this.add.graphics();
-    g.fillStyle(0x000000, 0.25).fillCircle(0, 4, 46);
+    sombraCirculo(g, 0, 6, 46, 0.3, 10);
     g.fillStyle(COLOR.azul, 1).fillCircle(0, 0, 46);
     g.lineStyle(4, 0xffffff, 0.5).strokeCircle(0, 0, 40);
     this.parlante.add([g, this.add.image(0, 0, 'ui_audioOn').setDisplaySize(56, 56)]);

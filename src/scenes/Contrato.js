@@ -6,6 +6,7 @@ import { estado, nombreJugador, segunGenero } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { siguiente } from '../lib/flujo.js';
+import { sombraRect } from '../lib/sombras.js';
 
 const CEL = { x: 860, y: 330, ancho: 330, alto: 560 };
 const AZUL = 0x2b6cb0;
@@ -28,7 +29,7 @@ export default class Contrato extends Phaser.Scene {
     const { x, y, ancho, alto } = CEL;
     this.cel = this.add.container(x, y);
     const g = this.add.graphics();
-    g.fillStyle(0x000000, 0.3).fillRoundedRect(-ancho / 2 + 8, -alto / 2 + 10, ancho, alto, 40);
+    sombraRect(g, -ancho / 2 + 6, -alto / 2 + 14, ancho, alto, 40, 0.32, 24);
     g.fillStyle(0x1a202c, 1).fillRoundedRect(-ancho / 2, -alto / 2, ancho, alto, 40);
     g.fillStyle(0x4a5568, 1).fillRoundedRect(-ancho / 2 + 3, -alto / 2 + 3, ancho - 6, alto - 6, 38);
     g.fillStyle(0x1a202c, 1).fillRoundedRect(-ancho / 2 + 6, -alto / 2 + 6, ancho - 12, alto - 12, 36);
@@ -57,7 +58,7 @@ export default class Contrato extends Phaser.Scene {
     // Notificación: sobre azul, remitente y vista previa
     const noti = this.add.container(0, 0).setAlpha(0);
     const f = this.add.graphics();
-    f.fillStyle(0x000000, 0.12).fillRoundedRect(-140, -50, 284, 110, 18);
+    sombraRect(f, -142, -48, 284, 110, 18, 0.16);
     f.fillStyle(0xffffff, 1).fillRoundedRect(-142, -54, 284, 110, 18);
     noti.add([f, sobre(this, -100, 0, 1),
       this.add.text(-62, -30, 'Supermercado El Barrio', estiloTexto(17, '#1f2d3a')).setOrigin(0, 0),

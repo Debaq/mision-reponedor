@@ -9,6 +9,7 @@ import { estado } from '../lib/estado.js';
 import { voz } from '../lib/voz.js';
 import { sfx } from '../lib/sfx.js';
 import { FLUJO, irA, siguiente } from '../lib/flujo.js';
+import { sombraRect } from '../lib/sombras.js';
 
 const TAREAS = {
   derrame: { escena: 'Derrame', nombre: 'Derrame' },
@@ -75,7 +76,7 @@ export default class Ordenes extends Phaser.Scene {
   crearTarjeta(id) {
     const c = this.add.container(this.puestos[0], Y_TARJETA);
     const g = this.add.graphics();
-    g.fillStyle(0x000000, 0.25).fillRoundedRect(-104, -124, 208, 260, 18);
+    sombraRect(g, -104, -122, 208, 260, 18, 0.24, 16);
     g.fillStyle(0xffffff, 1).fillRoundedRect(-104, -130, 208, 260, 18);
     c.add(g);
     c.add(this.dibujoTarea(id));

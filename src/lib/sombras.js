@@ -47,6 +47,29 @@ export function levantar(obj) {
   });
 }
 
+// Sombra de borde difuso para paneles, tarjetas y botones (en un Graphics, antes de dibujar la
+// forma): la misma figura en capas tenues, cada una un poco más grande. (x, y, w, h) es el rectángulo
+// de la sombra; `difuso` es cuánto se desvanece el borde, en px.
+const CAPAS = 6;
+const alfaCapa = (alfa) => 1 - (1 - alfa) ** (1 / CAPAS);
+const crece = (difuso, i) => difuso * (i / (CAPAS - 1) - 0.4);
+
+export function sombraRect(g, x, y, w, h, radio = 16, alfa = 0.2, difuso = 12) {
+  g.fillStyle(0x000000, alfaCapa(alfa));
+  for (let i = 0; i < CAPAS; i++) {
+    const e = crece(difuso, i);
+    const [ww, hh] = [w + 2 * e, h + 2 * e];
+    g.fillRoundedRect(x - e, y - e, ww, hh, Math.max(0, Math.min(radio + e, ww / 2, hh / 2)));
+  }
+  return g;
+}
+
+export function sombraCirculo(g, x, y, r, alfa = 0.2, difuso = 12) {
+  g.fillStyle(0x000000, alfaCapa(alfa));
+  for (let i = 0; i < CAPAS; i++) g.fillCircle(x, y, r + crece(difuso, i));
+  return g;
+}
+
 // Sombra difusa bajo algo apoyado en el piso, centrada en (x, y).
 export function sombra(scene, x, y, ancho, alto, alfa = 0.3) {
   return scene.add.image(x, y, 'sombra').setDisplaySize(ancho, alto).setAlpha(alfa);

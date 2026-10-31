@@ -2,14 +2,14 @@ import Phaser from 'phaser';
 import { COLOR, estiloTexto } from './estilo.js';
 import { sfx } from './sfx.js';
 import { voz } from './voz.js';
+import { sombraRect } from './sombras.js';
 import pasillos from '../data/pasillos.json';
 
 // Rectángulo redondeado con sombra.
 export function panel(scene, x, y, w, h, color = COLOR.papel, radio = 18, sombra = true) {
   const g = scene.add.graphics();
   if (sombra) {
-    g.fillStyle(0x000000, 0.18);
-    g.fillRoundedRect(x - w / 2 + 4, y - h / 2 + 6, w, h, radio);
+    sombraRect(g, x - w / 2 + 2, y - h / 2 + 8, w, h, radio, 0.22);
   }
   g.fillStyle(color, 1);
   g.fillRoundedRect(x - w / 2, y - h / 2, w, h, radio);
@@ -27,8 +27,7 @@ export function boton(scene, x, y, opts = {}) {
   const fondo = scene.add.graphics();
   const dibujar = (col) => {
     fondo.clear();
-    fondo.fillStyle(0x000000, 0.25);
-    fondo.fillRoundedRect(-ancho / 2, -alto / 2 + 6, ancho, alto, 20);
+    sombraRect(fondo, -ancho / 2, -alto / 2 + 8, ancho, alto, 20, 0.28, 10);
     fondo.fillStyle(col, 1);
     fondo.fillRoundedRect(-ancho / 2, -alto / 2, ancho, alto, 20);
     fondo.lineStyle(3, 0xffffff, 0.35);

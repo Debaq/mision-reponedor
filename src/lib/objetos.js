@@ -1,5 +1,5 @@
 import { COLOR, estiloTexto } from './estilo.js';
-import { sombra } from './sombras.js';
+import { sombra, sombraRect } from './sombras.js';
 
 // Objetos dibujados con formas simples (estilo plano como Kenney).
 
@@ -69,7 +69,7 @@ export function canasto(scene, x, y, texto, color = COLOR.rojo) {
 export function tarjeta(scene, x, y, w, h) {
   const c = scene.add.container(x, y);
   const g = scene.add.graphics();
-  g.fillStyle(0x000000, 0.2).fillRoundedRect(-w / 2 + 4, -h / 2 + 6, w, h, 18);
+  sombraRect(g, -w / 2 + 2, -h / 2 + 8, w, h, 18, 0.22);
   g.fillStyle(0xffffff, 1).fillRoundedRect(-w / 2, -h / 2, w, h, 18);
   g.lineStyle(4, 0xb8c4cf, 1).strokeRoundedRect(-w / 2, -h / 2, w, h, 18);
   c.add(g);
