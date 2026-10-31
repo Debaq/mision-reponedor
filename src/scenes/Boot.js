@@ -4,6 +4,7 @@ import { LINEAS, voz } from '../lib/voz.js';
 import { SFX } from '../lib/sfx.js';
 import productos from '../data/productos.json';
 import { conVersion as v } from '../lib/version.js';
+import { crearSombras } from '../lib/sombras.js';
 
 const ICONOS = ['audioOn', 'checkmark', 'cross', 'home', 'information', 'left', 'next', 'phone', 'question',
   'return', 'right', 'shoppingCart', 'star', 'trashcan', 'warning'];
@@ -36,6 +37,7 @@ export default class Boot extends Phaser.Scene {
   }
 
   create() {
+    crearSombras(this);
     voz.iniciar(this.game);
     this.scene.launch('Hud');
     this.scene.start('Inicio');

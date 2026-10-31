@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { ANCHO, ALTO, COLOR, estiloTexto } from './estilo.js';
+import { sombra } from './sombras.js';
 
 const PRODUCTOS_DECO = ['atun', 'leche', 'aceite', 'bebida', 'tomate', 'ketchup', 'miel', 'chocolate', 'jugo', 'mani', 'pan', 'queso'];
 
@@ -67,6 +68,7 @@ export function estanteDeco(scene, x, y, ancho, niveles = 3, altoNivel = 90, tam
 // Carro de reposición (plataforma con ruedas). Devuelve un container.
 export function carro(scene, x, y, ancho = 300) {
   const c = scene.add.container(x, y);
+  c.add(sombra(scene, 0, 40, ancho * 1.05, 34, 0.35));
   const g = scene.add.graphics();
   g.fillStyle(0x2b6cb0, 1).fillRoundedRect(-ancho / 2, -16, ancho, 28, 6);
   g.fillStyle(0x1e4e80, 1).fillRect(ancho / 2 - 14, -150, 12, 140);

@@ -5,6 +5,7 @@
 // Tiene vida: respira, parpadea, gesticula y mueve la boca cuando habla su voz, y el personaje del
 // jugador celebra los aciertos y se pone triste con los errores (eventos 'reaccion' que emite sfx()).
 import { voz } from './voz.js';
+import { sombra } from './sombras.js';
 
 export const OPCIONES = {
   genero: ['hombre', 'mujer', 'nobinario'],
@@ -125,8 +126,8 @@ export function actualizarPersonaje(scene, c, cfg) {
 }
 
 function armar(scene, c) {
-  // Sombra en el piso, bajo los pies.
-  c.add(scene.add.ellipse(0, PIES_LOCAL + 4, 230, 40, 0x000000, 0.16));
+  // Sombra en el piso: una penumbra amplia y una más oscura justo bajo los pies.
+  c.add([sombra(scene, 0, PIES_LOCAL + 6, 300, 64, 0.3), sombra(scene, 0, PIES_LOCAL + 2, 180, 32, 0.55)]);
   // El cuerpo cuelga de los pies (así respirar o saltar escala desde el piso). El render mira hacia la
   // izquierda: para mirar a la derecha se espeja.
   const cuerpo = scene.add.container(0, PIES_LOCAL).setScale(c.mirar === 'izquierda' ? 1 : -1, 1);

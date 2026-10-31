@@ -1,4 +1,5 @@
 import { COLOR, estiloTexto } from './estilo.js';
+import { sombra } from './sombras.js';
 
 // Objetos dibujados con formas simples (estilo plano como Kenney).
 
@@ -79,8 +80,8 @@ export function tarjeta(scene, x, y, w, h) {
 // Carro de reposición: canasta de alambre con manilla y ruedas (para productos que hay que devolver).
 export function carroReposicion(scene, x, y) {
   const c = scene.add.container(x, y);
+  c.add(sombra(scene, 0, 78, 250, 34, 0.3));
   const g = scene.add.graphics();
-  g.fillStyle(0x000000, 0.15).fillEllipse(0, 78, 220, 26);
   // Canasta
   g.fillStyle(0x553c9a, 0.18).fillRoundedRect(-95, -80, 190, 90, 10);
   g.lineStyle(5, 0x553c9a, 1).strokeRoundedRect(-95, -80, 190, 90, 10);
