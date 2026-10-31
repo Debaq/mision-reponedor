@@ -564,6 +564,26 @@
     "voz": "guia",
     "texto": "Ahí no es. Mira los dibujos y prueba otra vez."
   },
+  "mapa_ir_alimentos": {
+    "voz": "guia",
+    "texto": "Camina hasta el pasillo uno, alimentos. Tócalo en el mapa."
+  },
+  "mapa_ir_bebidas": {
+    "voz": "guia",
+    "texto": "Camina hasta el pasillo dos, bebidas. Tócalo en el mapa."
+  },
+  "mapa_ir_limpieza": {
+    "voz": "guia",
+    "texto": "Camina hasta el pasillo tres, limpieza. Tócalo en el mapa."
+  },
+  "mapa_ir_higiene": {
+    "voz": "guia",
+    "texto": "Camina hasta el pasillo cuatro, higiene personal. Tócalo en el mapa."
+  },
+  "mapa_faltan_bodega": {
+    "voz": "guia",
+    "texto": "Toca la bodega en el mapa."
+  },
   "zona_bodega": {
     "voz": "guia",
     "texto": "Bodega."

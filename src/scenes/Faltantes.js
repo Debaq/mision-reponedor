@@ -91,11 +91,16 @@ export default class Faltantes extends Phaser.Scene {
   }
 
   async irBodega() {
+    // Corta las instrucciones si aún sonaban (si no, se repetirían ya en la bodega).
+    voz.callar();
     if (!(await voz.decir('faltan_listo'))) return;
     this.cameras.main.fadeOut(300, 31, 45, 58);
     this.cameras.main.once('camerafadeoutcomplete', () => {
       this.children.removeAll(true);
-      this.bodega();
+      // Se camina a la bodega por el mapa; al llegar, el mapa despierta esta escena.
+      this.events.once('wake', () => this.bodega());
+      this.scene.launch('Mapa', { destino: 'bodega', desde: 'bebidas', linea: 'mapa_faltan_bodega', volver: 'Faltantes' });
+      this.scene.sleep();
     });
   }
 

@@ -207,7 +207,9 @@ export default class Ordenes extends Phaser.Scene {
     t.num.setVisible(true);
     this.tweens.add({ targets: t, scale: 1.12, duration: 200, yoyo: true });
     if (!(await voz.decir('tarea_' + t.tarea))) return;
-    irA(this, FLUJO.findIndex((p) => p.escena === TAREAS[t.tarea].escena && p.enOrden === this.bloque));
+    // Primero el mapa, para caminar hasta el pasillo de la tarea.
+    const tarea = FLUJO.findIndex((p) => p.escena === TAREAS[t.tarea].escena && p.enOrden === this.bloque);
+    irA(this, FLUJO[tarea - 1]?.mapa ? tarea - 1 : tarea);
   }
 
   async terminar() {

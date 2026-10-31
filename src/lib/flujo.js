@@ -8,6 +8,7 @@ import { voz } from './voz.js';
 // `enOrden`: id de la etapa Órdenes que encarga esta tarea (al terminarla se vuelve a ese tablero).
 // `datos.tiempo`: segundos para hacer la tarea (el jefe lo anuncia y aparece el reloj).
 // `omitir`: si devuelve true, la etapa se salta al avanzar.
+// `lugar`: pasillo donde se hace la tarea; antes se va caminando por el mapa (etapa Mapa con `mapa: true`).
 const TURNO_1 = [
   { escena: 'Avatar', datos: { modo: 'personaje' }, titulo: '1. Crear personaje' },
   // Quien ya desbloqueó el turno 2 elige qué turno jugar.
@@ -28,13 +29,13 @@ const TURNO_1 = [
   { escena: 'Traslado', datos: { nivel: 'practica' } },
   { escena: 'Sala', datos: { nivel: 'practica' }, titulo: '7. Práctica: estantería', id: 'sala_practica', nombre: 'Estante · práctica' },
   { escena: 'Ordenes', datos: { tareas: ['derrame', 'basura', 'vencidos'] }, titulo: '8. Órdenes del supervisor (1)', id: 'ordenes', nombre: 'Órdenes 1' },
-  { escena: 'Derrame', datos: { tiempo: 60 }, titulo: '8. Tarea: limpiar derrame', id: 'derrame', nombre: 'Derrame', enOrden: 'ordenes' },
-  { escena: 'Basura', datos: { tiempo: 45 }, titulo: '8. Tarea: recoger basura', id: 'basura', nombre: 'Basura', enOrden: 'ordenes' },
-  { escena: 'Vencidos', datos: { tiempo: 90 }, titulo: '8. Tarea: productos vencidos', id: 'vencidos', nombre: 'Vencidos', enOrden: 'ordenes' },
+  { escena: 'Derrame', lugar: 'bebidas', datos: { tiempo: 60 }, titulo: '8. Tarea: limpiar derrame', id: 'derrame', nombre: 'Derrame', enOrden: 'ordenes' },
+  { escena: 'Basura', lugar: 'higiene', datos: { tiempo: 45 }, titulo: '8. Tarea: recoger basura', id: 'basura', nombre: 'Basura', enOrden: 'ordenes' },
+  { escena: 'Vencidos', lugar: 'alimentos', datos: { tiempo: 90 }, titulo: '8. Tarea: productos vencidos', id: 'vencidos', nombre: 'Vencidos', enOrden: 'ordenes' },
   { escena: 'Cliente', titulo: '8. Tarea: orientar a un cliente', id: 'cliente', nombre: 'Atención cliente' },
   { escena: 'Ordenes', datos: { tareas: ['precios', 'faltantes'] }, titulo: '9. Órdenes del supervisor (2)', id: 'ordenes_2', nombre: 'Órdenes 2' },
-  { escena: 'Precios', datos: { tiempo: 60 }, titulo: '9. Tarea: precios y ofertas', id: 'precios', nombre: 'Precios', enOrden: 'ordenes_2' },
-  { escena: 'Faltantes', datos: { tiempo: 90 }, titulo: '9. Tarea: revisar faltantes', id: 'faltantes', nombre: 'Faltantes', enOrden: 'ordenes_2' },
+  { escena: 'Precios', lugar: 'limpieza', datos: { tiempo: 60 }, titulo: '9. Tarea: precios y ofertas', id: 'precios', nombre: 'Precios', enOrden: 'ordenes_2' },
+  { escena: 'Faltantes', lugar: 'bebidas', datos: { tiempo: 90 }, titulo: '9. Tarea: revisar faltantes', id: 'faltantes', nombre: 'Faltantes', enOrden: 'ordenes_2' },
   { escena: 'Fin', titulo: 'Fin del turno' },
 ];
 
@@ -48,15 +49,17 @@ const TURNO_2 = [
   { escena: 'Traslado', datos: { nivel: 'turno2' } },
   { escena: 'Sala', datos: { nivel: 'turno2', tiempo: 120 }, titulo: 'T2. Estantería', id: 't2_sala', nombre: 'Estantería' },
   { escena: 'Ordenes', datos: { tareas: ['derrame', 'basura', 'vencidos', 'precios', 'faltantes'], elegir: 3 }, titulo: 'T2. Órdenes del supervisor', id: 't2_ordenes', nombre: 'Órdenes' },
-  { escena: 'Derrame', datos: { tiempo: 45 }, id: 't2_derrame', nombre: 'Derrame', enOrden: 't2_ordenes' },
-  { escena: 'Basura', datos: { tiempo: 45 }, id: 't2_basura', nombre: 'Basura', enOrden: 't2_ordenes' },
-  { escena: 'Vencidos', datos: { tiempo: 60 }, id: 't2_vencidos', nombre: 'Vencidos', enOrden: 't2_ordenes' },
-  { escena: 'Precios', datos: { tiempo: 45 }, id: 't2_precios', nombre: 'Precios', enOrden: 't2_ordenes' },
-  { escena: 'Faltantes', datos: { tiempo: 60 }, id: 't2_faltantes', nombre: 'Faltantes', enOrden: 't2_ordenes' },
+  { escena: 'Derrame', lugar: 'bebidas', datos: { tiempo: 45 }, id: 't2_derrame', nombre: 'Derrame', enOrden: 't2_ordenes' },
+  { escena: 'Basura', lugar: 'higiene', datos: { tiempo: 45 }, id: 't2_basura', nombre: 'Basura', enOrden: 't2_ordenes' },
+  { escena: 'Vencidos', lugar: 'alimentos', datos: { tiempo: 60 }, id: 't2_vencidos', nombre: 'Vencidos', enOrden: 't2_ordenes' },
+  { escena: 'Precios', lugar: 'limpieza', datos: { tiempo: 45 }, id: 't2_precios', nombre: 'Precios', enOrden: 't2_ordenes' },
+  { escena: 'Faltantes', lugar: 'bebidas', datos: { tiempo: 60 }, id: 't2_faltantes', nombre: 'Faltantes', enOrden: 't2_ordenes' },
   { escena: 'Fin', titulo: 'T2. Fin del turno' },
 ];
 
-export const FLUJO = [...TURNO_1.map((p) => ({ ...p, turno: 1 })), ...TURNO_2.map((p) => ({ ...p, turno: 2 }))];
+// Las tareas con `lugar` llevan antes el mapa: se camina hasta su pasillo.
+const conMapa = (pasos) => pasos.flatMap((p) => (p.lugar ? [{ escena: 'Mapa', datos: { destino: p.lugar }, enOrden: p.enOrden, mapa: true }, p] : [p]));
+export const FLUJO = [...conMapa(TURNO_1).map((p) => ({ ...p, turno: 1 })), ...conMapa(TURNO_2).map((p) => ({ ...p, turno: 2 }))];
 // Primera etapa de cada turno (en el turno 1, la que sigue a crear el personaje).
 export const inicioTurno = (n) => (n === 1 ? indiceDe('Contrato') : FLUJO.findIndex((p) => p.turno === 2));
 
@@ -91,9 +94,9 @@ export function irA(scene, indice, extra = {}) {
 function proxima() {
   const paso = FLUJO[estado.paso];
   // Tarea encargada desde Órdenes: volver a su tablero.
-  if (paso.enOrden && estado.ordenes) return { indice: FLUJO.findIndex((p) => p.id === paso.enOrden), extra: { volver: true } };
+  if (paso.enOrden && estado.ordenes && !paso.mapa) return { indice: FLUJO.findIndex((p) => p.id === paso.enOrden), extra: { volver: true } };
   let i = estado.paso + 1;
-  // Desde Órdenes (ya terminadas): saltar sus tareas, que se hicieron desde el tablero.
+  // Desde Órdenes (ya terminadas): saltar sus tareas (y sus mapas), que se hicieron desde el tablero.
   if (paso.escena === 'Ordenes') while (FLUJO[i].enOrden === paso.id) i++;
   while (FLUJO[i]?.omitir?.()) i++;
   return { indice: Math.min(i, FLUJO.length - 1) };
@@ -105,7 +108,7 @@ export async function siguiente(scene) {
   const hud = scene.scene.get('Hud');
   hud.detenerReloj();
   const paso = FLUJO[estado.paso];
-  if (paso.enOrden && estado.ordenes) estado.ordenes.hechas++;
+  if (paso.enOrden && estado.ordenes && !paso.mapa) estado.ordenes.hechas++;
   if (paso.id) {
     const r = registrarResultado(paso.id);
     guardarEstrellas(paso.id, r.estrellas);

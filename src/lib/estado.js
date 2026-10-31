@@ -21,6 +21,7 @@ export const estado = {
   tarde: false, // se acabó el tiempo en la etapa actual
   resultados: {}, // id de etapa → { errores, tarde, estrellas, puntos }
   ordenes: null, // tareas encadenadas del supervisor: { bloque, lista, hechas, errores }
+  lugar: null, // dónde quedó el personaje en el mapa (nodo de MAPA.caminos): de ahí parte la próxima vez
   estrellasInicio: null, // estrellas guardadas al empezar la partida (para avisar lo que se desbloqueó)
 };
 

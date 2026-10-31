@@ -15,7 +15,12 @@ const color = (hex) => parseInt(hex.slice(1), 16);
 const NOMBRE_BODEGA = { n: null, nombre: 'Bodega', color: '#3d4852' };
 
 // Mapa del supermercado (render isométrico hecho en Blender: tools/gen_mapa.py).
-// El jugador toca adónde ir. datos: { nivel, destino: 'bodega' | 'pasillo', guiado }
+// El jugador toca adónde ir. datos: { nivel, destino, guiado, desde, linea, volver }
+// - destino: 'bodega', 'pasillo' (el del nivel, llevando el carro con la lista) o un pasillo (tareas).
+// - desde: nodo de MAPA.caminos donde parte; si no, la entrada (a la bodega), la puerta de la bodega
+//   (con el carro) o donde quedó la última vez (estado.lugar).
+// - linea: voz que dice adónde ir. volver: escena dormida que se despierta al llegar (en vez de seguir
+//   el flujo), para tareas que pasan por el mapa a la mitad.
 export default class Mapa extends Phaser.Scene {
   constructor() {
     super('Mapa');
@@ -23,13 +28,22 @@ export default class Mapa extends Phaser.Scene {
 
   init(datos) {
     this.nivel = niveles[datos.nivel || 'tutorial'];
-    this.destino = datos.destino === 'pasillo' ? this.nivel.pasillo : 'bodega';
+    this.conCarro = datos.destino === 'pasillo';
+    this.destino = this.conCarro ? this.nivel.pasillo : datos.destino || 'bodega';
     this.guiado = !!datos.guiado;
+    this.volver = datos.volver;
+    const porDefecto = { bodega: 'entrada', pasillo: 'bodega_puerta' }[datos.destino];
+    this.desde = datos.desde || (!datos.linea && porDefecto) || estado.lugar || 'entrada';
+    // Voz de inicio y la que se repite al equivocarse.
+    if (this.conCarro) [this.linea, this.ayuda] = ['mapa_pasillo', 'mapa_mal'];
+    else if (this.destino === 'bodega' && !datos.linea) [this.linea, this.ayuda] = ['mapa_bodega', 'mapa_mal'];
+    else this.linea = this.ayuda = datos.linea || 'mapa_ir_' + this.destino;
   }
 
   create() {
     this.cameras.main.fadeIn(300);
     this.listo = false;
+    this.errores = 0;
     this.add.image(0, 0, 'mapa').setOrigin(0).setDisplaySize(ANCHO, ALTO);
     // Muebles recortados del fondo (góndolas, cajas, muros...): van delante o detrás del personaje.
     this.piezas = Object.entries(MAPA.piezas).filter(([n]) => this.textures.get('mapa_piezas').has(n)).map(([n, planta]) => {
@@ -42,8 +56,7 @@ export default class Mapa extends Phaser.Scene {
     for (const [id, p] of Object.entries(pasillos)) this.crearZona(id, p);
     this.crearLista();
 
-    // El personaje parte en la entrada (va a la bodega) o en la puerta de la bodega (lleva el carro).
-    const inicio = this.destino === 'bodega' ? MAPA.entrada.centro : MAPA.bodega.puerta;
+    const inicio = MAPA.caminos.nodos[this.desde];
     this.yo = crearPersonaje(this, inicio[0], enPiso(inicio[1], ESCALA), estado.avatar, ESCALA).setDepth(6);
     this.intro();
   }
@@ -87,7 +100,7 @@ export default class Mapa extends Phaser.Scene {
   // Abajo a la izquierda, en el rincón que deja libre el local.
   crearLista() {
     this.lista = [];
-    if (this.destino === 'bodega') return;
+    if (!this.conCarro) return;
     const lista = this.nivel.lista;
     const ancho = 76 + lista.length * 78;
     const x0 = 16;
@@ -100,8 +113,7 @@ export default class Mapa extends Phaser.Scene {
   }
 
   async intro() {
-    const linea = this.destino === 'bodega' ? 'mapa_bodega' : 'mapa_pasillo';
-    if (!(await voz.decir(linea))) return;
+    if (!(await voz.decir(this.linea))) return;
     if (this.guiado) this.apuntar();
   }
 
@@ -117,8 +129,10 @@ export default class Mapa extends Phaser.Scene {
       sfx(this, 'error');
       sumarError();
       sacudir(this, this.yo);
-      await voz.secuencia(['zona_' + id, 'mapa_mal']);
-      if (this.guiado) this.apuntar();
+      this.errores++;
+      await voz.secuencia(['zona_' + id, this.ayuda]);
+      // Sin guía, la flecha aparece al segundo error.
+      if (this.guiado || this.errores >= 2) this.apuntar();
       return;
     }
     this.listo = true;
@@ -129,9 +143,18 @@ export default class Mapa extends Phaser.Scene {
     voz.decir('zona_' + id);
     this.acercar();
     // Caminar hasta el lugar elegido por los pasillos (no en línea recta sobre las góndolas).
-    await this.recorrer(ruta(this.destino === 'bodega' ? 'entrada' : 'bodega_puerta', id));
+    await this.recorrer(ruta(this.desde, id));
+    estado.lugar = id;
     await new Promise((r) => this.time.delayedCall(300, r));
-    siguiente(this);
+    if (!this.volver) {
+      siguiente(this);
+      return;
+    }
+    this.cameras.main.fadeOut(300, 31, 45, 58);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.scene.wake(this.volver);
+      this.scene.stop();
+    });
   }
 
   // Cada pieza va delante del personaje si él está detrás de ella en el piso. La cámara mira desde
