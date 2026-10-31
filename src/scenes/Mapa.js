@@ -174,7 +174,8 @@ export default class Mapa extends Phaser.Scene {
   // La cámara se acerca y sigue al personaje mientras camina (la lista ya no hace falta).
   acercar() {
     const cam = this.cameras.main;
-    cam.setBounds(X_IZQ, 0, ANCHO_MAX, ALTO);
+    // Límites: todo lo que se ve (el render ancho, o más si la pantalla es aún más ancha o más alta).
+    cam.setBounds(Math.min(X_IZQ, cam.scrollX), Math.min(0, cam.scrollY), Math.max(ANCHO_MAX, cam.width), Math.max(ALTO, cam.height));
     cam.startFollow(this.yo, false, 0.08, 0.08);
     cam.zoomTo(ZOOM, 900, 'Sine.easeInOut');
     this.tweens.add({ targets: this.lista, alpha: 0, duration: 300 });
