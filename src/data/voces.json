@@ -564,6 +564,10 @@
     "voz": "guia",
     "texto": "Camina hasta el pasillo cuatro, higiene personal. Tócalo en el mapa."
   },
+  "mapa_cliente": {
+    "voz": "guia",
+    "texto": "Acompaña a la clienta hasta el pasillo uno, alimentos. Tócalo en el mapa."
+  },
   "mapa_faltan_bodega": {
     "voz": "guia",
     "texto": "Toca la bodega en el mapa."

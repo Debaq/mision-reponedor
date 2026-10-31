@@ -21,6 +21,7 @@ const NOMBRE_BODEGA = { n: null, nombre: 'Bodega', color: '#3d4852' };
 //   (con el carro) o donde quedó la última vez (estado.lugar).
 // - linea: voz que dice adónde ir. volver: escena dormida que se despierta al llegar (en vez de seguir
 //   el flujo), para tareas que pasan por el mapa a la mitad.
+// - acompanante: apariencia de alguien que camina detrás del jugador (ej. la clienta que se acompaña).
 export default class Mapa extends Phaser.Scene {
   constructor() {
     super('Mapa');
@@ -32,6 +33,7 @@ export default class Mapa extends Phaser.Scene {
     this.destino = this.conCarro ? this.nivel.pasillo : datos.destino || 'bodega';
     this.guiado = !!datos.guiado;
     this.volver = datos.volver;
+    this.acompanante = datos.acompanante;
     const porDefecto = { bodega: 'entrada', pasillo: 'bodega_puerta' }[datos.destino];
     this.desde = datos.desde || (!datos.linea && porDefecto) || estado.lugar || 'entrada';
     // Voz de inicio y la que se repite al equivocarse.
@@ -61,6 +63,12 @@ export default class Mapa extends Phaser.Scene {
 
     const inicio = MAPA.caminos.nodos[this.desde];
     this.yo = crearPersonaje(this, inicio[0], enPiso(inicio[1], ESCALA), estado.avatar, ESCALA).setDepth(6);
+    // Quien acompaña sigue los pasos del jugador, un poco atrás (repite su recorrido con retraso).
+    this.otro = null;
+    if (this.acompanante) {
+      this.otro = crearPersonaje(this, inicio[0] - 14, enPiso(inicio[1] + 4, ESCALA), this.acompanante, ESCALA).setDepth(6);
+      this.huella = [];
+    }
     this.intro();
   }
 
@@ -163,12 +171,37 @@ export default class Mapa extends Phaser.Scene {
   // Cada pieza va delante del personaje si él está detrás de ella en el piso. La cámara mira desde
   // el frente a la derecha: está delante de una pieza si pisa a su derecha (x mayor) o adelante (y menor).
   update() {
+    this.seguir();
     const [a, b, c, d, e, f] = MAPA.piso;
     const px = this.yo.x;
     const py = this.yo.y - enPiso(0, ESCALA);
     const x = a * px + b * py + c;
     const y = d * px + e * py + f;
     for (const { img, planta } of this.piezas) img.setDepth(x >= planta[2] || y <= planta[1] ? 5 : 7);
+  }
+
+  // Quien acompaña va por el mismo camino que el jugador, DISTANCIA px atrás (si él se detiene, ella se
+  // detiene detrás, sin encimarse), mirando hacia donde camina y delante o detrás de él según el piso.
+  seguir() {
+    if (!this.otro) return;
+    const h = this.huella;
+    const ult = h[h.length - 1];
+    if (!ult || Math.hypot(this.yo.x - ult.x, this.yo.y - ult.y) > 1) h.push({ x: this.yo.x, y: this.yo.y });
+    if (h.length > 300) h.splice(0, h.length - 300);
+    let falta = DISTANCIA;
+    for (let i = h.length - 1; i > 0; i--) {
+      const [a, b] = [h[i], h[i - 1]];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d >= falta) {
+        const x = a.x + ((b.x - a.x) * falta) / d;
+        const y = a.y + ((b.y - a.y) * falta) / d;
+        const [dx, dy] = [x - this.otro.x, y - this.otro.y];
+        if (Math.abs(dx) + Math.abs(dy) > 0.3) mirarHacia(this.otro, dx, dy);
+        this.otro.setPosition(x, y).setDepth(y > this.yo.y ? 6.1 : 5.9);
+        return;
+      }
+      falta -= d;
+    }
   }
 
   // La cámara se acerca y sigue al personaje mientras camina (la lista ya no hace falta).
@@ -184,10 +217,12 @@ export default class Mapa extends Phaser.Scene {
   // Camina de punto en punto a velocidad pareja, mirando hacia donde va.
   recorrer(puntos) {
     caminar(this.yo, true);
+    if (this.otro) caminar(this.otro, true);
     return new Promise((fin) => {
       const paso = (i) => {
         if (i >= puntos.length) {
           caminar(this.yo, false);
+          if (this.otro) caminar(this.otro, false);
           fin();
           return;
         }
@@ -208,6 +243,8 @@ export default class Mapa extends Phaser.Scene {
 const ESCALA = 0.125;
 const VELOCIDAD = 180;
 const ZOOM = 1.8;
+// A cuántos px (por el camino) va quien acompaña detrás del jugador.
+const DISTANCIA = 34;
 
 // Camino más corto (Dijkstra) por la red de caminos del mapa, de un nodo a otro: lista de puntos.
 function ruta(desde, hasta) {

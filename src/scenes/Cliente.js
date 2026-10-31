@@ -67,12 +67,23 @@ export default class Cliente extends Phaser.Scene {
       const linea = r.id === 'rc_nose' ? ['cliente_mal_nose', 'guia_cliente_nose'] : ['guia_cliente_p2'];
       if (!(await voz.secuencia(linea))) return;
     }
-    // Acompañar a la clienta al pasillo 1 (alimentos)
-    const c2 = this.carteles[0];
-    this.tweens.add({ targets: c2, scale: 1.1, duration: 300, yoyo: true, repeat: 2 });
-    this.tweens.add({ targets: this.clienta, x: c2.x - 80, duration: 1800, ease: 'Sine.easeInOut' });
-    this.tweens.add({ targets: this.yo, x: c2.x + 90, duration: 1800, ease: 'Sine.easeInOut' });
-    await new Promise((r) => this.time.delayedCall(1200, r));
+    // Acompañarla caminando por el mapa hasta el pasillo 1 (alimentos); al llegar, el mapa despierta
+    // esta escena y ella da las gracias junto al cartel.
+    await new Promise((r) => this.time.delayedCall(500, r));
+    this.cameras.main.fadeOut(300, 31, 45, 58);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.events.once('wake', () => this.llegar());
+      this.scene.launch('Mapa', { destino: 'alimentos', linea: 'mapa_cliente', volver: 'Cliente', acompanante: CLIENTA });
+      this.scene.sleep();
+    });
+  }
+
+  async llegar() {
+    const c1 = this.carteles[0];
+    this.clienta.x = c1.x - 60;
+    this.yo.x = c1.x + 110;
+    this.cameras.main.fadeIn(300);
+    this.tweens.add({ targets: c1, scale: 1.1, duration: 300, yoyo: true, repeat: 2 });
     sfx(this, 'logro');
     if (!(await voz.decir('cliente_gracias'))) return;
     siguiente(this);

@@ -40,7 +40,7 @@ No hace falta que nadie fuerce la recarga:
 5. Lista de reposición: imagen del producto + cantidad, leída en voz alta. Luego el mapa del supermercado: ir a la bodega y, con el carro, elegir el pasillo correcto (1 Alimentos, 2 Bebidas, 3 Limpieza, 4 Higiene).
 6. Tutorial guiado: identificar, buscar en la bodega, seleccionar y contar, trasladar, ubicar en la estantería, ordenar.
 7. Práctica sin ayuda con una lista nueva, en el pasillo de higiene.
-8. Órdenes del supervisor: encarga tres tareas en un orden al azar (derrame: botar la botella, limpiar y poner el letrero; basura; vencidos) y hay que elegirlas en ese orden; cada una tiene tiempo límite. Antes de cada tarea se camina por el mapa hasta su pasillo (`lugar` en `src/lib/flujo.js`). Después, orientar a una clienta.
+8. Órdenes del supervisor: encarga tres tareas en un orden al azar (derrame: botar la botella, limpiar y poner el letrero; basura; vencidos) y hay que elegirlas en ese orden; cada una tiene tiempo límite. Antes de cada tarea se camina por el mapa hasta su pasillo (`lugar` en `src/lib/flujo.js`). Después, orientar a una clienta y acompañarla caminando por el mapa hasta el pasillo del aceite.
 9. Segundas órdenes (dos tareas): cambiar etiquetas de precio y colgar el cartel de oferta (pasillo de limpieza), y revisar faltantes en el pasillo de bebidas y verificar en la bodega si quedan (si no, avisar al jefe).
 10. Fin del turno, con estrellas, puntos y errores por etapa.
 
