@@ -2,7 +2,21 @@
 
 Juego web educativo: simulador de reponedor de supermercado para jóvenes de 20 a 24 años, pensado para personas que no leen (todo tiene imagen y voz).
 
+![Portada: fachada del Supermercado El Barrio y el reponedor](public/compartir.jpg)
+
+**Jugar:** https://tecmedhub.org/mision_reponedor/ (en celular, mejor instalarlo en la pantalla de inicio: funciona sin internet).
+
 Hecho con **Phaser 3 + Vite**. Gráficos de [Kenney](https://kenney.nl) (CC0). Voces neuronales de Microsoft (edge-tts).
+
+## Capturas
+
+| | |
+|---|---|
+| ![Crear personaje](docs/img/personaje.jpg) <br> 1. Crear personaje | ![Supervisor](docs/img/supervisor.jpg) <br> 4. Presentación con el supervisor |
+| ![Lista de reposición](docs/img/lista.jpg) <br> 5. Lista de reposición, leída en voz alta | ![Mapa](docs/img/mapa.jpg) <br> 5. Mapa del supermercado |
+| ![Bodega](docs/img/bodega.jpg) <br> 6. Bodega: buscar y contar | ![Estantería](docs/img/estanteria.jpg) <br> 6. Estantería: ubicar y ordenar |
+| ![Órdenes](docs/img/ordenes.jpg) <br> 8. Órdenes del supervisor | ![Derrame](docs/img/derrame.jpg) <br> 8. Tarea: limpiar un derrame |
+| ![Clienta](docs/img/cliente.jpg) <br> 8. Orientar a una clienta | ![Precios](docs/img/precios.jpg) <br> 9. Cambiar etiquetas de precio |
 
 ## Uso
 
@@ -20,16 +34,27 @@ Cada build lleva una versión automática: `versión de package.json + commit de
 
 1. Hacer commit de los cambios (el hash del commit forma parte de la versión).
 2. Opcional: `npm version patch` para subir el número (0.1.0 → 0.1.1).
-3. `npm run build` y subir la carpeta `dist/` completa.
+3. `npm run build` **después** del commit, y subir la carpeta `dist/` completa (incluye `sw.js` y `workbox-*.js`). Si se compila antes del commit, la versión no cambia y los celulares no se enteran de la actualización.
+
+`dist/` no está en git: se sube a mano al servidor (hoy, https://tecmedhub.org/mision_reponedor/).
 
 **Vista previa al compartir el link** (WhatsApp, Facebook, Telegram): la imagen es `public/compartir.jpg` (1200×630) y los textos están en las etiquetas `og:` de `index.html`. WhatsApp solo muestra la imagen si tiene la dirección completa: poner la dirección pública del juego en `"sitio"` de `package.json` (por ejemplo `"https://mi-servidor.cl/reponedor/"`) antes del build, o usar `URL_SITIO=https://... npm run build`. WhatsApp guarda la vista previa un tiempo: si se cambia la imagen, conviene cambiarle el nombre.
 
 No hace falta que nadie fuerce la recarga:
 
-- Al abrir, el juego consulta `version.json` sin caché. Si hay una versión más nueva, recarga solo.
+- Al abrir, el juego consulta `version.json` sin caché. Si hay una versión más nueva, instala el service worker nuevo y recarga solo (nunca a mitad de una partida).
 - Imágenes y audios se piden con `?v=<versión>`, así que se descargan de nuevo cuando cambian.
 - El código JS ya lleva un hash en el nombre, gracias a Vite.
-- `public/_headers` le indica a Netlify y Cloudflare Pages que no guarden en caché `index.html` ni `version.json`.
+- `public/_headers` le indica a Netlify y Cloudflare Pages que no guarden en caché `index.html`, `version.json` ni `sw.js` (otros servidores lo ignoran, y no pasa nada).
+
+## Sin internet (PWA)
+
+Después de abrir el juego una vez con internet, se puede jugar sin conexión, desde el navegador o instalado en la pantalla de inicio. Lo hace un service worker que genera `vite-plugin-pwa` (configuración en `vite.config.js`):
+
+- **Precache** (~1,6 MB): `index.html`, el JS del juego, el manifest y los íconos.
+- **Imágenes, voces y sonidos** (~20 MB, caché `assets-juego`): se guardan la primera vez que `Boot` los carga. Al terminar la carga, `prepararSinConexion()` (`src/lib/version.js`) guarda los que falten y borra los de versiones anteriores.
+- `version.json` nunca se guarda: es lo que avisa que hay una versión nueva.
+- En `npm run dev` no hay service worker. Para probarlo: `npm run build && npm run preview`, abrir el juego, cortar el servidor y recargar.
 
 ## Etapas (según el documento)
 
@@ -48,7 +73,7 @@ El documento pide elegir la vestimenta al crear el personaje; aquí se elige des
 
 ## Celulares y tablets
 
-El juego se juega en horizontal (en vertical aparece el aviso "Gira tu celular"). Al tocar COMENZAR pasa a pantalla completa donde el navegador lo permite (Android y iPad). En iPhone, Safari no deja usar pantalla completa desde una página: para ganar espacio, instalarlo con **Compartir → Agregar a inicio**; así se abre sin barras del navegador (en Android: menú → **Instalar app**). El ícono y el modo de pantalla completa están en `public/manifest.webmanifest`.
+El juego se juega en horizontal (en vertical aparece el aviso "Gira tu celular"). Al tocar COMENZAR pasa a pantalla completa donde el navegador lo permite (Android y iPad). En iPhone, Safari no deja usar pantalla completa desde una página: para ganar espacio, instalarlo con **Compartir → Agregar a inicio**; así se abre sin barras del navegador (en Android: menú → **Instalar app**). Instalado, también funciona sin internet (ver [Sin internet](#sin-internet-pwa)). El ícono y el modo de pantalla completa están en `public/manifest.webmanifest`.
 
 En celulares (pantalla táctil con el lado corto < 500 px) se activa el **modo compacto** (`compacto()` en `src/lib/movil.js`): productos y zonas de toque más grandes (mínimo 44 px reales), lo que se arrastra va un poco arriba del dedo para que no lo tape, más margen al soltar, subtítulo y parlante más grandes. En iPhone con Safari, la portada muestra una vez cómo agregarlo a la pantalla de inicio. Para probarlo en PC: abrir con `?movil=1`. Plan completo en `docs/plan-movil.md`.
 
@@ -75,14 +100,22 @@ Con las estrellas guardadas (la mejor de cada etapa) se desbloquea, según `src/
 
 Al terminar un turno, una tarjeta "¡NUEVO!" muestra lo que se desbloqueó en esa partida.
 
-## Personajes (Blender)
+## Personajes (MakeHuman + Blender)
 
-El personaje es 3D, modelado en `tools/gen_personaje.py`: un cuerpo continuo (modificador Skin) con esqueleto y pesos automáticos, ropa sacada del mismo cuerpo, 9 peinados, cara con ojos, párpados, cejas y bocas, chalecos de reconocimiento y accesorios del supervisor (lentes, corbata y portapapeles). Se renderiza **por capas en blanco** (piel, zapatos, pantalón, polera, chaleco, cara, pelo…) en 6 poses (quieto, habla, feliz, triste y dos de caminar), y el juego las colorea y combina (`src/lib/personaje.js`). Cada capa se renderiza con lo que la tapa como *holdout*, así se pueden superponer en cualquier combinación.
+Hay tres cuerpos (hombre, mujer y no binario) hechos con MakeHuman, con peinados, zapatos y expresiones. Blender los arma, saca la ropa (polera, pantalón, chaleco) del mismo cuerpo, agrega chalecos de reconocimiento y accesorios del supervisor (lentes, corbata y portapapeles), y renderiza **por capas en blanco** (piel, zapatos, pantalón, polera, chaleco, cara, pelo…) en 6 poses (quieto, habla, feliz, triste y dos de caminar). El juego colorea y combina las capas (`src/lib/personaje.js`). Cada capa se renderiza con lo que la tapa como *holdout*, así se pueden superponer en cualquier combinación.
 
 ```bash
-npm run personaje   # renderiza las capas y arma public/assets/personaje3d/personaje.png + .json
-npm run personaje -- preview <carpeta>   # (con blender -b -P tools/gen_personaje.py) vistas previas armadas
+npm run personaje            # los tres cuerpos → public/assets/personaje3d/<cuerpo>.png + .json
+npm run personaje -- mujer   # solo algunos
 ```
+
+Pasos (`tools/personaje.py`):
+
+1. MakeHuman exporta cuerpos, peinados, zapatos y expresiones a `.cache/mh` (`tools/mh_exportar.py`, que abre MakeHuman con `tools/makehuman.sh` y su plugin `tools/makehuman/9_mision_reponedor.py`). Solo la primera vez, o si se borra esa carpeta o se cambia un modelo. Para afinar un cuerpo a mano: guardar `tools/makehuman/modelos/<cuerpo>.mhm` desde MakeHuman.
+2. Blender arma, viste y renderiza cada capa en cada pose (`tools/gen_personaje_mh.py`).
+3. Se recortan las imágenes y se empaqueta un atlas por cuerpo.
+
+Requiere MakeHuman 1.3 en `/opt/makehuman`, Blender y uv.
 
 Todos los fondos y el personaje usan la misma escala: una persona de 1,72 m mide ~380 px con los pies en y = 600 (`ESCALA` y `enPiso()` en `personaje.js`). El personaje respira, parpadea, gesticula y mueve la boca con su voz (con un globo de diálogo), camina en el mapa y el traslado, y el del jugador celebra los aciertos y se pone triste con los errores (cada `sfx()` emite `reaccion`).
 
