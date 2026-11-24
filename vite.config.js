@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // Versión = package.json + commit de git (cambia en cada commit aunque no se suba la versión).
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url)));
@@ -41,10 +42,41 @@ const vistaPrevia = {
   },
 };
 
+// PWA: un service worker para que el juego funcione sin internet después de abrirlo una vez.
+// - Precache: index.html, el JS del juego e íconos (poco peso, se actualiza con cada versión).
+// - Imágenes, voces y sonidos (public/assets, ~20 MB): se guardan en caché la primera vez que Boot los
+//   carga, con la URL completa (?v=versión). Así no se descargan dos veces. Al cambiar de versión, Boot
+//   borra las copias viejas (src/lib/version.js: limpiarCacheVieja).
+// - version.json no se guarda nunca: es lo que avisa que hay una versión nueva.
+// El manifest es el de public/ y el registro lo hace src/main.js (sin recargas automáticas a mitad del juego).
+const pwa = VitePWA({
+  injectRegister: false,
+  manifest: false,
+  workbox: {
+    globPatterns: ['index.html', 'assets/*.js', '*.{png,svg,webmanifest}'],
+    navigateFallback: 'index.html',
+    skipWaiting: true,
+    clientsClaim: true,
+    cleanupOutdatedCaches: true,
+    maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+    runtimeCaching: [
+      {
+        urlPattern: ({ url, sameOrigin }) => sameOrigin && /\/assets\/.+\.(png|jpe?g|json|mp3)$/.test(url.pathname),
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'assets-juego',
+          cacheableResponse: { statuses: [200] },
+          rangeRequests: true,
+        },
+      },
+    ],
+  },
+});
+
 // base relativa para poder publicar en cualquier carpeta (GitHub Pages, itch.io, etc.)
 export default defineConfig({
   base: './',
   define: { __VERSION__: JSON.stringify(VERSION) },
-  plugins: [archivoVersion, vistaPrevia],
+  plugins: [archivoVersion, vistaPrevia, pwa],
   build: { chunkSizeWarningLimit: 2000 },
 });

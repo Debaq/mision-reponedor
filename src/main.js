@@ -22,7 +22,7 @@ import Cliente from './scenes/Cliente.js';
 import Precios from './scenes/Precios.js';
 import Faltantes from './scenes/Faltantes.js';
 import Fin from './scenes/Fin.js';
-import { revisarVersion, VERSION } from './lib/version.js';
+import { revisarVersion, registrarServiceWorker, VERSION } from './lib/version.js';
 import { pausarEnVertical } from './lib/movil.js';
 
 function iniciar() {
@@ -53,5 +53,6 @@ try {
 } catch {
   // navegador sin sesiones de audio
 }
+registrarServiceWorker();
 // Si hay una versión nueva publicada, recarga antes de arrancar el juego.
 revisarVersion().then((recargando) => recargando || iniciar());

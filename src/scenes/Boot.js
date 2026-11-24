@@ -3,7 +3,7 @@ import { ANCHO, ALTO, COLOR, estiloTexto } from '../lib/estilo.js';
 import { LINEAS, voz } from '../lib/voz.js';
 import { SFX } from '../lib/sfx.js';
 import productos from '../data/productos.json';
-import { conVersion as v } from '../lib/version.js';
+import { conVersion as v, prepararSinConexion } from '../lib/version.js';
 import { crearSombras } from '../lib/sombras.js';
 
 const ICONOS = ['audioOn', 'checkmark', 'cross', 'home', 'information', 'left', 'next', 'phone', 'question',
@@ -23,6 +23,9 @@ export default class Boot extends Phaser.Scene {
       barra.fillStyle(COLOR.verdeClaro, 1).fillRoundedRect(ANCHO / 2 - 300, ALTO / 2, Math.max(36, 600 * p), 36, 18);
     });
     this.load.on('complete', () => txt.destroy());
+    // URLs de todo lo cargado, para guardarlas en la caché sin conexión (ver create).
+    this.urlsCargadas = [];
+    this.load.on('load', (archivo) => this.urlsCargadas.push(new URL(archivo.src, location.href).href));
 
     this.load.setPath('assets/');
     for (const g of ['hombre', 'mujer', 'nobinario']) this.load.atlas('p_' + g, v(`personaje3d/${g}.png`), v(`personaje3d/${g}.json`));
@@ -37,6 +40,7 @@ export default class Boot extends Phaser.Scene {
   }
 
   create() {
+    prepararSinConexion(this.urlsCargadas);
     crearSombras(this);
     voz.iniciar(this.game);
     this.scene.launch('Hud');
