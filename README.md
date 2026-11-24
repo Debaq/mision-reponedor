@@ -180,3 +180,13 @@ Requiere Blender y uv. Deja PNG de 128 px en `public/assets/productos/`.
 ## Identidad visual
 
 El supermercado "El Barrio" es ficticio y usa **violeta + turquesa** para no parecerse a cadenas reales (Jumbo, Líder, Unimarc, Tottus, Santa Isabel).
+
+## Licencia
+
+Código bajo [MIT](LICENSE); contenido propio (escenarios, personajes, productos, guion, textos) bajo [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.es). Los gráficos y sonidos de Kenney son CC0. Las voces generadas con edge-tts no están cubiertas por CC BY 4.0. Detalle en [LICENCIAS.md](LICENCIAS.md).
+
+## Cómo citar
+
+Los datos para citar están en [CITATION.cff](CITATION.cff) (GitHub muestra el botón *Cite this repository*). Cada versión publicada queda archivada en Zenodo con su DOI.
+
+> Baier Quezada, N. (2026). *Misión Reponedor: juego web educativo para aprender el trabajo de reponedor de supermercado* (versión 1.0.0) [Software]. Zenodo.

@@ -1,7 +1,10 @@
 {
   "name": "mision-reponedor",
   "private": true,
-  "version": "0.1.0",
+  "description": "Juego web educativo: simulador de reponedor de supermercado para personas que no leen",
+  "author": "Nicolás Baier Quezada",
+  "license": "MIT",
+  "version": "1.0.0",
   "sitio": "https://tecmedhub.org/mision_reponedor/",
   "type": "module",
   "scripts": {

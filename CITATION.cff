@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "Si usas este juego, cítalo con estos datos."
+type: software
+title: "Misión Reponedor: juego web educativo para aprender el trabajo de reponedor de supermercado"
+abstract: >-
+  Juego web educativo que simula el trabajo de reponedor de supermercado,
+  pensado para jóvenes de 20 a 24 años que no leen: todas las instrucciones
+  tienen imagen y voz. Recorre la contratación, la ropa de trabajo, la
+  conversación con el supervisor, la lista de reposición, la bodega, las
+  estanterías, tareas con tiempo límite (derrames, basura, vencidos, precios,
+  faltantes) y la atención a clientes. Hecho con Phaser 3 y Vite; funciona
+  sin internet como aplicación instalable (PWA).
+authors:
+  - family-names: "Baier Quezada"
+    given-names: "Nicolás"
+version: "1.0.0"
+date-released: "2026-11-23"
+license: MIT
+repository-code: "https://github.com/Debaq/mision-reponedor"
+url: "https://tecmedhub.org/mision_reponedor/"
+keywords:
+  - juego educativo
+  - serious game
+  - inclusión laboral
+  - accesibilidad
+  - personas que no leen
+  - reponedor
+  - supermercado
+  - Phaser
+  - PWA

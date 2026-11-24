@@ -1,0 +1,31 @@
+{
+  "upload_type": "software",
+  "title": "Misión Reponedor: juego web educativo para aprender el trabajo de reponedor de supermercado",
+  "description": "<p>Juego web educativo que simula el trabajo de reponedor de supermercado, pensado para jóvenes de 20 a 24 años que no leen: todas las instrucciones tienen imagen y voz, con un estilo adulto.</p><p>El recorrido incluye: crear el personaje (hombre, mujer o no binario), el aviso de contratación, elegir la ropa de trabajo, la conversación con el supervisor, la lista de reposición leída en voz alta, el mapa del supermercado, buscar y contar en la bodega, ubicar y ordenar en la estantería, órdenes consecutivas con tiempo límite (derrames, basura, productos vencidos, cambio de precios, faltantes), orientar a una clienta y un resumen final con estrellas, puntos y errores por etapa.</p><p>Hecho con Phaser 3 y Vite. Funciona en computador, tablet y celular, y se puede instalar como aplicación que funciona sin internet (PWA). Versión jugable: <a href=\"https://tecmedhub.org/mision_reponedor/\">https://tecmedhub.org/mision_reponedor/</a>.</p><p>Licencias: código MIT; contenido propio CC BY 4.0. Gráficos y sonidos de Kenney (CC0). Las voces, generadas con voces neuronales de Microsoft (edge-tts), no están cubiertas por CC BY 4.0. Detalle en LICENCIAS.md.</p>",
+  "creators": [
+    {
+      "name": "Baier Quezada, Nicolás"
+    }
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "language": "spa",
+  "keywords": [
+    "juego educativo",
+    "serious game",
+    "inclusión laboral",
+    "accesibilidad",
+    "personas que no leen",
+    "reponedor",
+    "supermercado",
+    "Phaser",
+    "PWA"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://tecmedhub.org/mision_reponedor/",
+      "relation": "isSupplementedBy",
+      "resource_type": "other"
+    }
+  ]
+}

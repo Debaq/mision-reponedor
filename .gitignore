@@ -5,3 +5,6 @@ dist/
 .DS_Store
 .cache/
 __pycache__/
+
+# Encargo original (no se publica)
+*.pdf
